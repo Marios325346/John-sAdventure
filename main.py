@@ -1,6 +1,7 @@
 #COPYRIGHT 2020-2021
 #THE DEMO HAS BEEN DISCONTINUED DUE TO PERSONAL REASONS
 
+import os
 import pygame
 import random
 import math
@@ -12,7 +13,7 @@ from pygame import *
 pygame.init()
 
 #screen
-screen = pygame.display.set_mode((1200,900))
+screen = pygame.display.set_mode((0,0))
 clock = pygame.time.Clock()
 
 #Logo 
@@ -31,8 +32,8 @@ menu_background = pygame.image.load('mainmenu.png')
 start_text = myfont.render("Press Enter to start the game", True, black)
 
 #Background music
-pygame.mixer.music.load("sound/home.mp3")
-pygame.mixer.music.play(-1)
+#pygame.mixer.music.load("sound/home.mp3")
+#pygame.mixer.music.play(-1)
 
 menu = True
 while menu:
@@ -49,6 +50,9 @@ while menu:
             elif event.key == pygame.K_ESCAPE:
                 time.sleep(1)
                 pygame.quit()   
+            elif event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
     screen.blit(start_text , (400, 600))
     pygame.display.update()
 
@@ -103,7 +107,6 @@ def hearts():
         heartY = playerY - 50
     heartImg = pygame.image.load('heart.png')
     screen.blit(heartImg,(heartX,heartY))
-
 
 def sword():
     global playerX
