@@ -11,7 +11,7 @@ pygame.init()
 screen = pygame.display.set_mode((640,480))
 clock = pygame.time.Clock()
 
-#Logo 
+#Logo
 pygame.display.set_caption("John's Adventure")
 icon = pygame.image.load('items/logo.png')
 pygame.display.set_icon(icon)
