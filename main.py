@@ -7,7 +7,6 @@ from pygame import *
 
 pygame.init()
 
-os.chdir('C:\Users\Marios Papazogloy\Documents\GitHub\John-s-adventure-')
 # screen
 screen = pygame.display.set_mode((640, 480))
 clock = pygame.time.Clock()
@@ -34,12 +33,10 @@ start_text = myfont.render("Press Enter/Click \n to start the game", True, black
 
 Pixel_font = pygame.font.Font("fonts/pixelfont.ttf", 18)
 
-
 def framerate():
     fps = str(int(clock.get_fps()))
     fps_text = Pixel_font.render(fps, 1, pygame.Color("yellow"))
     return fps_text
-
 
 catalogImg = pygame.image.load('sprites/catalog.png')
 def stairs_catalog():
@@ -313,29 +310,25 @@ while main_room:
     elif playerX >= 580:
         playerX = 580
     # Y Position 900
-    if playerY <= 40:
-        playerY = 40
+    if playerY <= 10:
+        playerY = 10
     elif playerY >= 410:
         playerY = 410
+    if playerY <= 40 and playerX <= 245:
+        playerY = 40
 
-    # Kitchen Collisions
-    if playerY >= -6 and playerY <= 92 and playerX >= 101 and playerX <= 480:
-        #playerY = 96
-        pass
-    # Kitchen furniture collision
-    if playerY >= -6 and playerY <= 285 and playerX >= 479 and playerX <= 673:
-        #playerX = 673
-        pass
-
-    # BASEMENT
-    if playerY >= 430 and playerY <= 610 and playerX >= 1000:
+    # BASEMENT or Outdoors
+    if playerY >= 290 and playerY <= 320 and playerX >= 570:
         main_room = False
         basement = True
+        print("You went to basement oh yes")
+    elif playerY >= 370 and playerX >= 220 and playerX <= 320:
+        print("You went outside")
 
     # MOVEMENT X AND Y
     playerX += playerX_change
     playerY -= playerY_change
-
+    print("X:",playerX , "Y:",playerY)
     screen.blit(framerate(), (10, 0))
     clock.tick(60)
     gameWindow()
