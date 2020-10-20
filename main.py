@@ -7,7 +7,7 @@ from pygame import *
 
 pygame.init()
 
-os.chdir('/John-s-adventure-/')
+os.chdir('C:\Users\Marios Papazogloy\Documents\GitHub\John-s-adventure-')
 # screen
 screen = pygame.display.set_mode((640, 480))
 clock = pygame.time.Clock()
