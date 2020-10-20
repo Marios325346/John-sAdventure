@@ -1,14 +1,14 @@
 #COPYRIGHT 2020-2021
 #version 0.
 
-import os, pygame, random , math , time , sys
+import os, pygame, random, math, time, sys
 from pygame import mixer
 from pygame import *
 
 pygame.init()
 
 #screen
-screen = pygame.display.set_mode((640,480))
+screen = pygame.display.set_mode((640, 480))
 clock = pygame.time.Clock()
 
 #Logo
@@ -32,11 +32,28 @@ start_text = myfont.render("Press Enter/Click \n to start the game", True, black
 #pygame.mixer.music.load("sound/home.mp3")
 #pygame.mixer.music.play(-1)
 
-Arial_font = pygame.font.SysFont("Arial",28)
+Pixel_font = pygame.font.Font("fonts/pixelfont.ttf",18)
 def framerate():
     fps = str(int(clock.get_fps()))
-    fps_text = Arial_font.render(fps, 1, pygame.Color("yellow"))
+    fps_text = Pixel_font.render(fps, 1, pygame.Color("yellow"))
     return fps_text
+
+catalogImg = pygame.image.load('sprites/catalog.png')
+def stairs_catalog():
+    global catalogImg
+    text = Pixel_font.render("Want to go downstairs? ", True, (255,255,255))
+    n = 0
+    if playerX >= 440 and playerX <= 530 and playerY >= 60 and playerY <= 120:
+        if event.key == pygame.K_RETURN:
+            screen.blit(catalogImg, (100, 340))
+            screen.blit(text, (120, 350))
+            n += 1
+            if n == 2:
+                print("going to kitchen")
+            print(n)
+        else:
+            pass
+
 
 menu = True
 while menu:
@@ -127,25 +144,12 @@ def hearts():
     health = 10
     max_health = 10
     heartX = 20
-    heartY = 405
+    heartY = 400
     heartImg = pygame.image.load('sprites/player/john_ui.png')
     hp_text = myfont.render(str(health)+"  "+str(max_health) ,True , (255,0,0))
     screen.blit(heartImg,(heartX,heartY))
     screen.blit(hp_text,(heartX + 87, heartY + 12))
-    
 
-#Abilities
-def sprint():
-    global playerX_change
-    global playerY_change
-    if up:
-        playerY_change = playerY_change + 10
-    elif down:
-        playerY_change = playerY_change - 10
-    elif right:
-        playerX_change = playerX_change + 10
-    elif left:
-        playerX_change = playerX_change - 10
 
 # BEDROOM
 #Catalog
@@ -204,10 +208,6 @@ while game:
                 right = False
                 up = False
                 down = True
-            #Sprint 
-            if event.key == pygame.K_LSHIFT:
-                sprint()                          
-
           if event.type == pygame.KEYUP:
             if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT or event.key == pygame.K_UP or event.key == pygame.K_DOWN:
                 playerX_change = 0
@@ -225,15 +225,15 @@ while game:
 
     #Stops the player from going out of bounds
     #X Position 1200
-    if playerX <= 45:
-        playerX = 45
-    elif playerX >= 525:
-        playerX = 525
+    if playerX <= 5:
+        playerX = 5
+    elif playerX >= 580:
+        playerX = 580
     #Y Position 900
-    if playerY <= 0:
-        playerY = 0
-    elif playerY >= 335:
-        playerY = 335
+    if playerY <= 40:
+        playerY = 40
+    elif playerY >= 410:
+        playerY = 410
 
 
     #Cynthia interaction checker
@@ -243,14 +243,10 @@ while game:
             #screen.blit(cynthia_text , (100, 630))
             #screen.blit(cynthia_name , (900, 725))
 
-    #Level2
-    if playerX >= 320 and playerX <= 420 and playerY >= 0 and playerY <= 70:
-        game  = False
-        main_room = True
-
-    print("X:",playerX,"Y",playerY)
+    #print("X:",playerX,"Y",playerY)
     screen.blit(framerate(), (10,0))
     hearts()
+    stairs_catalog()
     clock.tick(60)
     gameWindow()
 
@@ -297,10 +293,6 @@ while main_room:
                 right = False
                 up = False
                 down = True
-         #Sprint 
-          if event.key == pygame.K_LSHIFT:
-              sprint()                      
-
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT or event.key == pygame.K_UP or event.key == pygame.K_DOWN:
                 playerX_change = 0
