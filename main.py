@@ -93,13 +93,16 @@ def stairs_catalog():
     if playerX >= 440 and playerX <= 530 and playerY >= 60 and playerY <= 120:
         screen.blit(catalogImg, (100, 340))
         screen.blit(text, (120, 350))
-        if event.key == pygame.K_RETURN:
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_RETURN:
+                    print("Next level")
+                    #game = not game
+                    #main_room = True
             #time.wait(1000)
-            game = not game
-            main_room = True
-
-        else:
-            pass
+            #changeMap = True
+        #if changeMap:
+            #game = not game
+            #main_room = True
 
 menu = True
 while menu:
