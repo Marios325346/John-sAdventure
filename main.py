@@ -31,16 +31,19 @@ cursor = pygame.image.load('sprites/j_g_mouse.png')
 pygame.mouse.set_visible(False)
 start_text = myfont.render("Press Enter/Click \n to start the game", True, black)
 
+
 # Background music
 # pygame.mixer.music.load("sound/home.mp3")
 # pygame.mixer.music.play(-1)
 
-#Controls
+# Controls
 def controls():
     global playerX, playerY
     global playerX_change, playerY_change
     global walkCount
     global left, right, up, down
+    global interactable
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -71,6 +74,10 @@ def controls():
             elif event.key == pygame.K_ESCAPE:
                 pygame.quit()
                 sys.exit()
+            if event.key == pygame.K_RETURN:
+                interactable = True
+            else:
+                interactable = False
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT or event.key == pygame.K_UP or event.key == pygame.K_DOWN:
                 playerX_change = 0
@@ -78,30 +85,32 @@ def controls():
                 left, right, up, down = False, False, False, False
                 walkCount = 0
 
+
 Pixel_font = pygame.font.Font("fonts/pixelfont.ttf", 18)
+
 
 def framerate():
     fps = str(int(clock.get_fps()))
     fps_text = Pixel_font.render(fps, 1, pygame.Color("yellow"))
     return fps_text
 
+
 catalogImg = pygame.image.load('sprites/catalog.png')
+
+
 def stairs_catalog():
     global catalogImg, game, main_room
+    global interactable
     text = Pixel_font.render("Go downstairs?", True, (255, 255, 255))
     changeMap = False
     if playerX >= 440 and playerX <= 530 and playerY >= 60 and playerY <= 120:
         screen.blit(catalogImg, (100, 340))
         screen.blit(text, (120, 350))
-        if event.key == pygame.K_RETURN:
-                print("Next level")
-                game = not game
-                main_room = True
-            #time.wait(1000)
-            #changeMap = True
-        #if changeMap:
-            #game = not game
-            #main_room = True
+        if interactable:
+            print("You interacted with the stairs")
+            game = not game
+            main_room = True
+
 
 menu = True
 while menu:
@@ -142,13 +151,17 @@ playerY_change = 0
 # Player Animation
 walkCount = 0
 # Walk Right
-walkRight = [pygame.image.load('sprites/player/playerright1.png'), pygame.image.load('sprites/player/playerright2.png'), pygame.image.load('sprites/player/playerright1.png')]
+walkRight = [pygame.image.load('sprites/player/playerright1.png'), pygame.image.load('sprites/player/playerright2.png'),
+             pygame.image.load('sprites/player/playerright1.png')]
 # Walk Left
-walkLeft = [pygame.image.load('sprites/player/playerleft1.png'), pygame.image.load('sprites/player/playerleft2.png'), pygame.image.load('sprites/player/playerleft1.png')]
+walkLeft = [pygame.image.load('sprites/player/playerleft1.png'), pygame.image.load('sprites/player/playerleft2.png'),
+            pygame.image.load('sprites/player/playerleft1.png')]
 # Walk Up
-walkUp = [pygame.image.load('sprites/player/playerup1.png'), pygame.image.load('sprites/player/playerup2.png'), pygame.image.load('sprites/player/playerup1.png')]
+walkUp = [pygame.image.load('sprites/player/playerup1.png'), pygame.image.load('sprites/player/playerup2.png'),
+          pygame.image.load('sprites/player/playerup1.png')]
 # Walk Down
-walkDown = [pygame.image.load('sprites/player/playerdown1.png'), pygame.image.load('sprites/player/playerdown2.png'), pygame.image.load('sprites/player/playerdown1.png')]
+walkDown = [pygame.image.load('sprites/player/playerdown1.png'), pygame.image.load('sprites/player/playerdown2.png'),
+            pygame.image.load('sprites/player/playerdown1.png')]
 
 left = False
 right = False
@@ -163,33 +176,19 @@ def gameWindow():
     if walkCount + 1 >= 27:
         walkCount = 0
     if left:
-        if event.key != pygame.K_z:
-            screen.blit(walkLeft[walkCount // 9], (playerX, playerY))
-            walkCount += 1
-        else:
-            pass
+        screen.blit(walkLeft[walkCount // 9], (playerX, playerY))
+        walkCount += 1
     elif right:
-        if event.key != pygame.K_z:
-            screen.blit(walkRight[walkCount // 9], (playerX, playerY))
-            walkCount += 1
-        else:
-            pass
+        screen.blit(walkRight[walkCount // 9], (playerX, playerY))
+        walkCount += 1
     elif up:
-        if event.key != pygame.K_z:
-            screen.blit(walkUp[walkCount // 9], (playerX, playerY))
-            walkCount += 1
-        else:
-            pass
+        screen.blit(walkUp[walkCount // 9], (playerX, playerY))
+        walkCount += 1
     elif down:
-        if event.key != pygame.K_z:
-            screen.blit(walkDown[walkCount // 9], (playerX, playerY))
-            walkCount += 1
-        else:
-            pass
+        screen.blit(walkDown[walkCount // 9], (playerX, playerY))
+        walkCount += 1
     else:
         screen.blit(playerImg, (playerX, playerY))
-    # IT KINDA WORKS YALLL <3
-    pygame.display.update()
 
 
 def hearts():
@@ -212,6 +211,7 @@ while game:
     screen.fill((0, 0, 0))
     # background image load
     screen.blit(background, (0, 0))
+    gameWindow()  # Player
     hearts()
 
     controls()
@@ -231,14 +231,12 @@ while game:
     elif playerY >= 410:
         playerY = 410
 
-    # Cynthia
-
     # print("X:",playerX,"Y",playerY)
     screen.blit(framerate(), (10, 0))
     screen.blit(cursor, (pygame.mouse.get_pos()))
     stairs_catalog()
     clock.tick(60)
-    gameWindow()
+    pygame.display.update()
 
 main_room_background = pygame.image.load('sprites/main_room.png')
 basement = False
@@ -246,16 +244,16 @@ while main_room:
     screen.fill((0, 0, 0))
     # background image load
     screen.blit(main_room_background, (0, 0))
+    gameWindow()  # Player
     hearts()
-
+    cynthia(350, 30, playerX, playerY)
     # Content
 
-    cynthia(350, 30, playerX, playerY)
 
 
-    #Controls
+    # Controls
     controls()
-    # Stops the player from going out of bounds
+    # Out of bounds
     if playerX <= 5:
         playerX = 5
     elif playerX >= 580:
@@ -271,25 +269,31 @@ while main_room:
     # BASEMENT or Outdoors
     if playerY >= 260 and playerY <= 340 and playerX >= 510:
         catalog_bubble("Wanna go to basement?")
-        if event.key == K_RETURN:
+        if interactable:
             main_room = not main_room
             basement = True
     elif playerY >= 370 and playerX >= 220 and playerX <= 320:
+        task1 = True
+        if task1:
+            catalog_bubble("Want to go outside?")
+        else:
+            catalog_bubble("Door is locked")
         print("You went outside")
 
     # MOVEMENT X AND Y
     playerX += playerX_change
     playerY -= playerY_change
-    #print("X:",playerX , "Y:",playerY)
+    # print("X:",playerX , "Y:",playerY)
     screen.blit(cursor, (pygame.mouse.get_pos()))
     screen.blit(framerate(), (10, 0))
     clock.tick(60)
-    gameWindow()
+    pygame.display.update()
 
 basementImg = pygame.image.load('sprites/basement.png')
 while basement:
     screen.fill((0, 0, 0))
     screen.blit(basementImg, (0, 0))
+    gameWindow()
     hearts()
 
     controls()
@@ -299,4 +303,4 @@ while basement:
     screen.blit(cursor, (pygame.mouse.get_pos()))
     screen.blit(framerate(), (10, 0))
     clock.tick(60)
-    gameWindow()
+    pygame.display.update()

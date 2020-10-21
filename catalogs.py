@@ -9,7 +9,7 @@ Pixel_font = pygame.font.Font("fonts/pixelfont.ttf", 18)
 
 
 def catalog_bubble(text):
-    global catalogImg
+    global catalogImg , interactable
 
     catalogText = Pixel_font.render(text, True, (255, 255, 255))
     screen.blit(catalogImg, (100, 340))
