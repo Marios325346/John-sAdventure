@@ -33,8 +33,8 @@ start_text = myfont.render("Press Enter/Click \n to start the game", True, black
 
 
 # Background music
-# pygame.mixer.music.load("sound/home.mp3")
-# pygame.mixer.music.play(-1)
+#pygame.mixer.music.load("sound/forest_theme.flac")
+#pygame.mixer.music.play(-1)
 
 # Controls
 def controls():
@@ -290,16 +290,30 @@ while main_room:
     pygame.display.update()
 
 basementImg = pygame.image.load('sprites/basement.png')
+playerX = 80
+playerY = 340
 while basement:
     screen.fill((0, 0, 0))
     screen.blit(basementImg, (0, 0))
     gameWindow()
     hearts()
 
+    # Furniture Collisions
+    if playerY <= 65 and playerX >= -10 and playerY <= 520 :
+        playerY = 65
+    if playerY >= 0 and playerY <= 360 and playerX >= 520:
+        playerX = 520
+    if playerY >= 350 and playerX >= -20 and playerX <= 520:
+        playerY = 350
+
+    # Out of bounds
+    if playerX <= 5 and playerY <= 400:
+        playerX = 5
     controls()
     # MOVEMENT X AND Y
     playerX += playerX_change
     playerY -= playerY_change
+    print("X:", playerX, "Y:", playerY)
     screen.blit(cursor, (pygame.mouse.get_pos()))
     screen.blit(framerate(), (10, 0))
     clock.tick(60)
