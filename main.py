@@ -37,9 +37,10 @@ quitImg = pygame.image.load("ui/quit.png").convert()
 quitButton = quitImg.get_rect()
 quitButton.center = (320, 330)
 
+
 # Background music
-#pygame.mixer.music.load("sound/forest_theme.flac")`
-#pygame.mixer.music.play(-1)
+# pygame.mixer.music.load("sound/forest_theme.flac")`
+# pygame.mixer.music.play(-1)
 
 # Controls
 def controls():
@@ -100,21 +101,6 @@ def framerate():
     return fps_text
 
 
-catalogImg = pygame.image.load('sprites/catalog.png').convert()
-def stairs_catalog():
-    global catalogImg, game, main_room
-    global interactable
-    text = Pixel_font.render("Go downstairs?", True, (255, 255, 255))
-    changeMap = False
-    if playerX >= 440 and playerX <= 530 and playerY >= 60 and playerY <= 120:
-        screen.blit(catalogImg, (100, 340))
-        screen.blit(text, (120, 350))
-        if interactable:
-            print("You interacted with the stairs")
-            game = not game
-            main_room = True
-
-
 menu = True
 while menu:
     screen.fill((0, 0, 0))
@@ -144,7 +130,6 @@ while menu:
     screen.blit(playImg, playButton)
     screen.blit(quitImg, quitButton)
 
-
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -156,15 +141,6 @@ while menu:
     screen.blit(framerate(), (10, 0))
     screen.blit(cursor, (pygame.mouse.get_pos()))
     pygame.display.update()
-
-# //- JOHNS ROOM -\\#
-background = pygame.image.load('sprites/Johns_room.png')
-# Player
-playerImg = pygame.image.load('sprites/player/playeridle.png')  # Player must be sowhere around 128pixels (maybe)
-playerX = 150
-playerY = 150
-playerX_change = 0
-playerY_change = 0
 
 # Player Animation
 walkCount = 0
@@ -224,116 +200,141 @@ def hearts():
     screen.blit(hp_text, (heartX + 87, heartY + 12))
 
 
-# BEDROOM
-while game:
-    screen.fill((0, 0, 0))
-    # background image load
-    screen.blit(background, (0, 0))
-    gatoulis(300, 120, playerX, playerY)
-    gameWindow()  # Player
-    hearts()
+# World Functions and Values
 
-    controls()
-    # MOVEMENT X AND Y
-    playerX += playerX_change
-    playerY -= playerY_change
-
-    # Stops the player from going out of bounds
-    # X Position 1200
-    if playerX <= 100:
-        playerX = 100
-    elif playerX >= 580:
-        playerX = 580
-    # Y Position 900
-    if playerY <= 40:
-        playerY = 40
-    elif playerY >= 410:
-        playerY = 410
-
-    # print("X:",playerX,"Y",playerY)
-    screen.blit(framerate(), (10, 0))
-    screen.blit(cursor, (pygame.mouse.get_pos()))
-    stairs_catalog()
-    clock.tick(60)
-    pygame.display.update()
-
-main_room_background = pygame.image.load('sprites/main_room.png')
-basement = False
-while main_room:
-    screen.fill((0, 0, 0))
-    # background image load
-    screen.blit(main_room_background, (0, 0))
-    gameWindow()  # Player
-    hearts()
-    cynthia(350, 30, playerX, playerY)
-    # Content
+world_value = 0
+catalogImg = pygame.image.load('sprites/catalog.png').convert()
 
 
-
-    # Controls
-    controls()
-    # Out of bounds
-    if playerX <= 5:
-        playerX = 5
-    elif playerX >= 580:
-        playerX = 580
-    # Y Position 900
-    if playerY <= 10:
-        playerY = 10
-    elif playerY >= 410:
-        playerY = 410
-    if playerY <= 40 and playerX <= 245:
-        playerY = 40
-
-    # BASEMENT or Outdoors
-    if playerY >= 260 and playerY <= 340 and playerX >= 510:
-        catalog_bubble("Wanna go to basement?")
+def stairs_catalog():
+    global catalogImg, game, john_room, kitchen
+    global interactable
+    text = Pixel_font.render("Go downstairs?", True, (255, 255, 255))
+    changeMap = False
+    if playerX >= 440 and playerX <= 530 and playerY >= 60 and playerY <= 120:
+        screen.blit(catalogImg, (100, 340))
+        screen.blit(text, (120, 350))
         if interactable:
-            main_room = not main_room
-            basement = True
-    elif playerY >= 370 and playerX >= 220 and playerX <= 320:
-        task1 = True
-        if task1:
-            catalog_bubble("Want to go outside?")
-        else:
-            catalog_bubble("Door is locked")
-        print("You went outside")
 
-    # MOVEMENT X AND Y
-    playerX += playerX_change
-    playerY -= playerY_change
-    # print("X:",playerX , "Y:",playerY)
-    screen.blit(cursor, (pygame.mouse.get_pos()))
-    screen.blit(framerate(), (10, 0))
-    clock.tick(60)
-    pygame.display.update()
+            john_room = False
+            kitchen = True
 
-basementImg = pygame.image.load('sprites/basement.png')
-playerX = 80
-playerY = 340
-while basement:
-    screen.fill((0, 0, 0))
-    screen.blit(basementImg, (0, 0))
-    gameWindow()
-    hearts()
+playerImg = pygame.image.load('sprites/player/playeridle.png')  # Player
+playerX = 150
+playerY = 150
+playerX_change = 0
+playerY_change = 0
 
-    # Furniture Collisions
-    if playerY <= 65 and playerX >= -10 and playerY <= 520 :
-        playerY = 65
-    if playerY >= 0 and playerY <= 360 and playerX >= 520:
-        playerX = 520
-    if playerY >= 350 and playerX >= -20 and playerX <= 520:
-        playerY = 350
+# Main loop
+john_room = True
+while game:
+    while john_room:
+        # //- JOHNS ROOM -\\#
+        background = pygame.image.load('sprites/Johns_room.png')
+        screen.blit(background, (0, 0))  # Display the background image
+        gatoulis(300, 120, playerX, playerY)
+        gameWindow()  # Player
+        stairs_catalog()  # Catalog when player gets the nearby stairs
+        hearts()  # Player UI
+        controls()  # Player Controls
 
-    # Out of bounds
-    if playerX <= 5 and playerY <= 400:
-        playerX = 5
-    controls()
-    # MOVEMENT X AND Y
-    playerX += playerX_change
-    playerY -= playerY_change
-    print("X:", playerX, "Y:", playerY)
-    screen.blit(cursor, (pygame.mouse.get_pos()))
-    screen.blit(framerate(), (10, 0))
-    clock.tick(60)
-    pygame.display.update()
+        playerX += playerX_change  # Player X movement
+        playerY -= playerY_change  # Player Y movement
+        # John's room collisions
+        if playerX <= 100:
+            playerX = 100
+        elif playerX >= 580:
+            playerX = 580
+        # Y Position 900
+        if playerY <= 40:
+            playerY = 40
+        elif playerY >= 410:
+            playerY = 410
+        screen.blit(framerate(), (10, 0))
+        screen.blit(cursor, (pygame.mouse.get_pos()))
+        clock.tick(60)
+        pygame.display.update()
+#  --------------- KITCHEN MAP   ---------------
+    while kitchen:
+        background = pygame.image.load("sprites/main_room.png")
+        screen.blit(background, (0, 0))
+        gameWindow()  # Player
+        hearts()  # Player UI
+        cynthia(350, 30, playerX, playerY)  # Cynthia NPC
+        controls()  # Player controls
+        # Content
+        if playerY >= 260 and playerY <= 340 and playerX >= 510:
+            catalog_bubble("Wanna go to basement?")
+            if interactable:
+                kitchen = not kitchen
+                basement = True
+        elif playerY >= 370 and playerX >= 220 and playerX <= 320:
+            task1 = False
+            if task1:
+                catalog_bubble("Want to go outside?")
+            else:
+                catalog_bubble("Door is locked")
+            print("You went outside")
+
+        playerX += playerX_change  # Player X movement
+        playerY -= playerY_change  # Player Y movement
+
+        # Out of bounds
+        if playerX <= 5:
+            playerX = 5
+        elif playerX >= 580:
+            playerX = 580
+        # Y Position 900
+        if playerY <= 10:
+            playerY = 10
+        elif playerY >= 410:
+            playerY = 410
+        if playerY <= 40 and playerX <= 245:
+            playerY = 40
+
+        screen.blit(framerate(), (10, 0))
+        screen.blit(cursor, (pygame.mouse.get_pos()))
+        clock.tick(60)
+        pygame.display.update()
+#  ----------------- BASEMENT  ---------------
+    playerX = 80
+    playerY = 340
+    while basement:
+        background = pygame.image.load('sprites/basement.png')
+        screen.fill((0, 0, 0))
+        screen.blit(background, (0, 0))
+        gameWindow()
+        hearts()
+        controls()
+
+        # World change
+        if playerY >= 270 and playerX <= 20:  # Collision checking
+            catalog_bubble("Go back to kitchen?")
+            if interactable:
+                basement = not basement
+                john_room = False
+                kitchen = True
+                playerX = 560
+                playerY = 360
+
+        # Furniture Collisions
+        if playerY <= 65 and playerX >= -10 and playerY <= 520:
+            playerY = 65
+        if playerY >= 0 and playerY <= 360 and playerX >= 520:
+            playerX = 520
+        if playerY >= 350 and playerX >= -20 and playerX <= 520:
+            playerY = 350
+
+        # Out of bounds
+        if playerX <= 5 and playerY <= 400:
+            playerX = 5
+
+
+        # MOVEMENT X AND Y
+        playerX += playerX_change
+        playerY -= playerY_change
+        print("X:", playerX, "Y:", playerY)
+        screen.blit(cursor, (pygame.mouse.get_pos()))
+        screen.blit(framerate(), (10, 0))
+        clock.tick(60)
+        pygame.display.update()
