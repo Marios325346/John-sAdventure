@@ -9,6 +9,7 @@ catalogImg = pygame.image.load('sprites/catalog.png')
 Pixel_font = pygame.font.Font("fonts/pixelfont.ttf", 14)
 
 cynthiaImg = pygame.image.load("npc/Cynthia.png")
+
 def cynthia(cynthiaX,cynthiaY,playerX,playerY):
     global catalogImg, cynthiaImg
     playerX = playerX

@@ -29,11 +29,16 @@ title_font = pygame.font.SysFont("Comic Sans Ms", 84)
 menu_background = pygame.image.load('sprites/mainmenu.png')
 cursor = pygame.image.load('sprites/j_g_mouse.png')
 pygame.mouse.set_visible(False)
-start_text = myfont.render("Press Enter/Click \n to start the game", True, black)
+playImg = pygame.image.load("ui/button interface.png").convert()
+playButton = playImg.get_rect()
+playButton.center = (320, 260)
 
+quitImg = pygame.image.load("ui/quit.png").convert()
+quitButton = quitImg.get_rect()
+quitButton.center = (320, 330)
 
 # Background music
-#pygame.mixer.music.load("sound/forest_theme.flac")
+#pygame.mixer.music.load("sound/forest_theme.flac")`
 #pygame.mixer.music.play(-1)
 
 # Controls
@@ -95,9 +100,7 @@ def framerate():
     return fps_text
 
 
-catalogImg = pygame.image.load('sprites/catalog.png')
-
-
+catalogImg = pygame.image.load('sprites/catalog.png').convert()
 def stairs_catalog():
     global catalogImg, game, main_room
     global interactable
@@ -117,31 +120,46 @@ while menu:
     screen.fill((0, 0, 0))
     # background image load
     screen.blit(menu_background, (1, 1))
+
+    if playButton.collidepoint(pygame.mouse.get_pos()):
+        playImg = pygame.image.load('ui/button interface hover.png')
+        for event in pygame.event.get():
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                menu = False
+                StartSound = mixer.Sound("sound/press_start_sound.wav")
+                StartSound.play()
+                game = True
+    else:
+        playImg = pygame.image.load('ui/button interface.png')
+
+    if quitButton.collidepoint(pygame.mouse.get_pos()):
+        quitImg = pygame.image.load('ui/quit_hover.png')
+        for event in pygame.event.get():
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                pygame.quit()
+                sys.exit()
+    else:
+        quitImg = pygame.image.load('ui/quit.png')
+
+    screen.blit(playImg, playButton)
+    screen.blit(quitImg, quitButton)
+
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_RETURN or event.key == pygame.MOUSEBUTTONDOWN:
-                menu = False
-                StartSound = mixer.Sound("sound/press_start_sound.wav")
-                StartSound.play()
-                game = True
-            elif event.key == pygame.K_ESCAPE:
+            if event.key == pygame.K_ESCAPE:
                 pygame.quit()
                 sys.exit()
-        elif event.type == pygame.MOUSEBUTTONDOWN:
-            menu = not menu
-            game = True
     screen.blit(framerate(), (10, 0))
     screen.blit(cursor, (pygame.mouse.get_pos()))
-    screen.blit(start_text, (100, 300))
     pygame.display.update()
 
 # //- JOHNS ROOM -\\#
 background = pygame.image.load('sprites/Johns_room.png')
 # Player
-# playerImg = pygame.image.load('playeridle.png') #Player must be sowhere around 128pixels (maybe)
 playerImg = pygame.image.load('sprites/player/playeridle.png')  # Player must be sowhere around 128pixels (maybe)
 playerX = 150
 playerY = 150
