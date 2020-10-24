@@ -2,7 +2,7 @@
 # version 0.0.3
 
 
-from engine import cynthia
+from engine import *
 import os, pygame, random, math, time, sys
 from pygame import mixer
 from pygame import *
@@ -16,7 +16,7 @@ screen = pygame.display.set_mode((640, 480))
 clock = pygame.time.Clock()
 
 # Logo
-pygame.display.set_caption("John's Adventure")
+pygame.display.set_caption("John's Adventure  v0.0.2")
 icon = pygame.image.load('items/logo.png')
 pygame.display.set_icon(icon)
 
@@ -143,8 +143,8 @@ background = pygame.image.load('sprites/Johns_room.png')
 # Player
 # playerImg = pygame.image.load('playeridle.png') #Player must be sowhere around 128pixels (maybe)
 playerImg = pygame.image.load('sprites/player/playeridle.png')  # Player must be sowhere around 128pixels (maybe)
-playerX = 100
-playerY = 100
+playerX = 150
+playerY = 150
 playerX_change = 0
 playerY_change = 0
 
@@ -211,6 +211,7 @@ while game:
     screen.fill((0, 0, 0))
     # background image load
     screen.blit(background, (0, 0))
+    gatoulis(300, 120, playerX, playerY)
     gameWindow()  # Player
     hearts()
 
@@ -221,8 +222,8 @@ while game:
 
     # Stops the player from going out of bounds
     # X Position 1200
-    if playerX <= 5:
-        playerX = 5
+    if playerX <= 100:
+        playerX = 100
     elif playerX >= 580:
         playerX = 580
     # Y Position 900
