@@ -319,7 +319,7 @@ while game:
         elif playerX >= 503 and playerY <= 45:  # Player interacts with the stairs
             catalog_bubble("Wanna go to upstairs?")
             if interactable:
-                basement, kitchen, route1, route2, route3 = False, False, False, False, False
+                basement, kitchen, route1, route2, route3, route4 = False, False, False, False, False, False
                 john_room = True
                 playerX = 555
                 playerY = 10
@@ -329,7 +329,7 @@ while game:
                 catalog_bubble("Want to go outside?")
                 print("You can go outside")
                 if interactable:
-                    kitchen, basement, john_room, route2, route3 = False, False, False, False,False
+                    kitchen, basement, john_room, route2, route3, route4 = False, False, False, False,False, False
                     route1 = True
             else:
                 catalog_bubble("Door is locked")
@@ -373,7 +373,7 @@ while game:
         if playerY >= 270 and playerX <= 20:  # Collision checking
             catalog_bubble("Go back to kitchen?")
             if interactable:
-                basement, john_room, route1, route2, route3 = False, False, False, False, False
+                basement, john_room, route1, route2, route3, route4 = False, False, False, False, False, False
                 kitchen = True
                 playerX = 560
                 playerY = 360
@@ -415,7 +415,7 @@ while game:
         if playerY <= 55 and playerX >= 270 and playerX <= 320:
             catalog_bubble("Return home?")
             if interactable:
-                john_room, kitchen, basement, route1, route2, route3 = False, True, False, False, False, False
+                john_room, kitchen, basement, route1, route2, route3, route4 = False, True, False, False, False, False, False
                 playerY = 340
                 playerX = 280
 
@@ -439,7 +439,7 @@ while game:
             playerY = 40
 
         if playerX >= 580:
-            john_room, kitchen, basement, route1, route2, route3 = False, False, False, False, True, False
+            john_room, kitchen, basement, route1, route2, route3, route4 = False, False, False, False, True, False, False
             playerX = 580
 
 
@@ -480,10 +480,10 @@ while game:
 
         if playerX >= 580:
             john_room, kitchen, basement = False, False, False
-            route1, route2, route3 = False, False, True
+            route1, route2, route3, route4 = False, False, True, False
 
         elif playerX <= 10:
-            john_room, kitchen, basement, route2, route3 = False, False, False, False, False
+            john_room, kitchen, basement, route2, route3,route4 = False, False, False, False, False, False
             route1 = True
         # MOVEMENT X AND Y
         playerX += playerX_change
@@ -516,12 +516,52 @@ while game:
         if playerY <= 40 and playerX <= 245:
             playerY = 40
 
-        #if playerX >= 580:
-            #john_room, kitchen, basement, route1, route2 = False, False, False, False, True
+        if playerY >= 400:
+            john_room, kitchen, basement, route1, route2, route3 = False, False, False, False, False, False
+            route4 = True
         elif playerX <= 10:
-            john_room, kitchen, basement, route1, route3 = False, False, False, False, False
+            john_room, kitchen, basement, route1, route3, route4 = False, False, False, False, False,False
             world_value += 1
             route2 = True
+        # MOVEMENT X AND Y
+
+        print(playerY)
+        playerX += playerX_change
+        playerY -= playerY_change
+        screen.blit(cursor, (pygame.mouse.get_pos()))
+        screen.blit(framerate(), (10, 0))
+        clock.tick(60)
+        pygame.display.update()
+
+    if route4:
+        playerY = 50
+    while route4:
+        background = pygame.image.load('data/sprites/world/route4.png')
+        screen.fill((0, 0, 0))
+        screen.blit(background, (0, 0))
+        gameWindow()
+        hearts()
+        controls()
+
+        # Out of bounds
+        if playerX <= 5:
+            playerX = 5
+        elif playerX >= 580:
+            playerX = 580
+        # Y Position 900
+        if playerY <= 10:
+            playerY = 10
+        elif playerY >= 410:
+            playerY = 410
+
+        #if playerX >= 580:
+            #john_room, kitchen, basement, route1, route2, route4 = False, False, False, False, False, False
+            #training_arc = True
+        if playerY <= 10:
+            john_room, kitchen, basement, route1, route2, route4 = False, False, False, False, False, False
+            world_value += 1
+            route3 = True
+
         # MOVEMENT X AND Y
         playerX += playerX_change
         playerY -= playerY_change
