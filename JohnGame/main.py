@@ -57,22 +57,22 @@ def controls():
         if event.type == pygame.KEYDOWN:
             # Left
             if event.key == pygame.K_LEFT:
-                playerX_change = -7
+                playerX_change = -5
                 left = True
                 right, up, down = False, False, False
             # Right
             if event.key == pygame.K_RIGHT:
-                playerX_change = 7
+                playerX_change = 5
                 right = True
                 up, left, down = False, False, False
             # Up
             if event.key == pygame.K_UP:
-                playerY_change = 7
+                playerY_change = 5
                 up = True
                 down, right, left = False, False, False
             # Down
             if event.key == pygame.K_DOWN:
-                playerY_change = -7
+                playerY_change = -5
                 down = True
                 left, right, up = False, False, False
             elif event.key == pygame.K_ESCAPE:
@@ -104,9 +104,10 @@ while menu:
     screen.fill((0, 0, 0))
     # background image load
     screen.blit(menu_background, (1, 1))
-
+    StartSound = mixer.Sound("data/sound/button_Sound.wav")
     if playButton.collidepoint(pygame.mouse.get_pos()):
         playImg = pygame.image.load('data/ui/button interface hover.png')
+        #  StartSound.set_volume(0.05)
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 menu = False
@@ -117,6 +118,8 @@ while menu:
         playImg = pygame.image.load('data/ui/button interface.png')
 
     if quitButton.collidepoint(pygame.mouse.get_pos()):
+        #  StartSound.set_volume(0.05)
+        #  StartSound.play(1)
         quitImg = pygame.image.load('data/ui/quit_hover.png')
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONDOWN:
@@ -316,7 +319,7 @@ while game:
         elif playerX >= 503 and playerY <= 45:  # Player interacts with the stairs
             catalog_bubble("Wanna go to upstairs?")
             if interactable:
-                basement, kitchen, route1 = False , False, False
+                basement, kitchen, route1, route2, route3 = False, False, False, False, False
                 john_room = True
                 playerX = 555
                 playerY = 10
@@ -326,7 +329,7 @@ while game:
                 catalog_bubble("Want to go outside?")
                 print("You can go outside")
                 if interactable:
-                    kitchen, basement, john_room = False, False, False
+                    kitchen, basement, john_room, route2, route3 = False, False, False, False,False
                     route1 = True
             else:
                 catalog_bubble("Door is locked")
@@ -370,7 +373,7 @@ while game:
         if playerY >= 270 and playerX <= 20:  # Collision checking
             catalog_bubble("Go back to kitchen?")
             if interactable:
-                basement, john_room, route1 = False, False, False
+                basement, john_room, route1, route2, route3 = False, False, False, False, False
                 kitchen = True
                 playerX = 560
                 playerY = 360
@@ -399,6 +402,7 @@ while game:
     if route1:
         playerX = 285
         playerY = 70
+        world_value = 0
 
     while route1:
         background = pygame.image.load('data/sprites/world/route1.png')
@@ -411,7 +415,7 @@ while game:
         if playerY <= 55 and playerX >= 270 and playerX <= 320:
             catalog_bubble("Return home?")
             if interactable:
-                john_room, kitchen, basement, route1 = False, True, False, False
+                john_room, kitchen, basement, route1, route2, route3 = False, True, False, False, False, False
                 playerY = 340
                 playerX = 280
 
@@ -420,7 +424,6 @@ while game:
             playerY = 65
         elif playerX <= 220 and playerY <= 65:
             playerY = 65
-        print("X:", playerX, "Y:", playerY)
 
         # Out of bounds
         if playerX <= 5:
@@ -435,6 +438,90 @@ while game:
         if playerY <= 40 and playerX <= 245:
             playerY = 40
 
+        if playerX >= 580:
+            john_room, kitchen, basement, route1, route2, route3 = False, False, False, False, True, False
+            playerX = 580
+
+
+        # MOVEMENT X AND Y
+        playerX += playerX_change
+        playerY -= playerY_change
+        screen.blit(cursor, (pygame.mouse.get_pos()))
+        screen.blit(framerate(), (10, 0))
+        clock.tick(60)
+        pygame.display.update()
+
+    if world_value == 0:
+        if route2:
+            playerX = 50
+    else:
+        playerX = 520
+
+    while route2:
+        background = pygame.image.load('data/sprites/world/route2.png')
+        screen.fill((0, 0, 0))
+        screen.blit(background, (0, 0))
+        gameWindow()
+        hearts()
+        controls()
+
+        # Out of bounds
+        if playerX <= 5:
+            playerX = 5
+        elif playerX >= 580:
+            playerX = 580
+        # Y Position 900
+        if playerY <= 10:
+            playerY = 10
+        elif playerY >= 410:
+            playerY = 410
+        if playerY <= 40 and playerX <= 245:
+            playerY = 40
+
+        if playerX >= 580:
+            john_room, kitchen, basement = False, False, False
+            route1, route2, route3 = False, False, True
+
+        elif playerX <= 10:
+            john_room, kitchen, basement, route2, route3 = False, False, False, False, False
+            route1 = True
+        # MOVEMENT X AND Y
+        playerX += playerX_change
+        playerY -= playerY_change
+        screen.blit(cursor, (pygame.mouse.get_pos()))
+        screen.blit(framerate(), (10, 0))
+        clock.tick(60)
+        pygame.display.update()
+
+    if route3:
+        playerX = 50
+    while route3:
+        background = pygame.image.load('data/sprites/world/route3.png')
+        screen.fill((0, 0, 0))
+        screen.blit(background, (0, 0))
+        gameWindow()
+        hearts()
+        controls()
+
+        # Out of bounds
+        if playerX <= 5:
+            playerX = 5
+        elif playerX >= 580:
+            playerX = 580
+        # Y Position 900
+        if playerY <= 10:
+            playerY = 10
+        elif playerY >= 410:
+            playerY = 410
+        if playerY <= 40 and playerX <= 245:
+            playerY = 40
+
+        #if playerX >= 580:
+            #john_room, kitchen, basement, route1, route2 = False, False, False, False, True
+        elif playerX <= 10:
+            john_room, kitchen, basement, route1, route3 = False, False, False, False, False
+            world_value += 1
+            route2 = True
         # MOVEMENT X AND Y
         playerX += playerX_change
         playerY -= playerY_change
