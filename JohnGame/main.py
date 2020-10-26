@@ -34,6 +34,7 @@ playButton.center = (320, 260)
 quitImg = pygame.image.load("data/ui/quit.png").convert()
 quitButton = quitImg.get_rect()
 quitButton.center = (320, 330)
+Pixel_font = pygame.font.Font("data/fonts/pixelfont.ttf", 18)
 
 # Background music
 #pygame.mixer.music.load("data/sound/forest_theme.flac")
@@ -90,7 +91,7 @@ def controls():
                 walkCount = 0
 
 
-Pixel_font = pygame.font.Font("data/fonts/pixelfont.ttf", 18)
+
 
 
 def framerate():
@@ -204,13 +205,7 @@ def hearts():
     screen.blit(heartImg, (heartX, heartY))
     screen.blit(hp_text, (heartX + 87, heartY + 12))
 
-
-# World Functions and Values
-
-world_value = 0
 catalogImg = pygame.image.load('data/sprites/catalog.png').convert()
-
-
 def stairs_catalog():
     global catalogImg, game, john_room, kitchen
     global interactable
@@ -229,10 +224,10 @@ def sword_task(posX, posY):
     sword = pygame.image.load('data/items/wooden_sword.png')
     rotate_sword = pygame.transform.rotate(sword, 90)
     sword_text = Pixel_font.render("Take sword?", True, (255, 255, 255))
-    equip_sword_text = Pixel_font.render("You equipped the wooden sword", True, (255, 255, 255))
     if sword_Task:
         screen.blit(rotate_sword, (posX, posY))
-        if playerX >= posX - 50 and playerX <= posX + 50 and playerY >= posY - 50 and playerY <= posY + 50: #  Player/Item collision checking
+        #  Player/Item collision checking
+        if playerX >= posX - 50 and playerX <= posX + 50 and playerY >= posY - 50 and playerY <= posY + 50:
             if sword_Task:
                 screen.blit(catalogImg, (100, 340))
                 screen.blit(sword_text, (120, 350))  # Text that asks if player wants to equip his sword
@@ -240,13 +235,9 @@ def sword_task(posX, posY):
                 sword_Task = False
                 #equipSound = mixer.Sound("data/sound/press_start_sound.wav")
                 #equipSound.play(1)
-                screen.blit(catalogImg, (100, 340))
-                screen.blit(equip_sword_text, (120, 350))  # Text that says players equipped his sword
                 player_equipped = True # Player has globally his equipment
 
     return posX, posY
-
-
 
 playerImg = pygame.image.load('data/sprites/player/playeridle.png')  # Player
 playerX_change = 0
@@ -258,8 +249,15 @@ john_room = True
 equip_sword = False
 
 player_equipped = False
-john_room, kitchen, basement = True, False, False
+
+# Chunks
+john_room, kitchen, basement = False, False, False
 route1, route2, route3, route4 = False, False, False, False
+
+# World Functions and Values
+world_value = 0  # Very important for place position between worlds
+john_room = True  # The world you want to start with (Pretty useful to check maps faster)
+
 while game:
     if john_room:
         playerX = 150
@@ -320,6 +318,7 @@ while game:
         elif playerX >= 503 and playerY <= 45:  # Player interacts with the stairs
             catalog_bubble("Wanna go to upstairs?")
             if interactable:
+                kitchen = False
                 john_room = True
                 playerX = 555
                 playerY = 10
@@ -328,6 +327,7 @@ while game:
             if player_equipped:  # Checks if player has done task 1 which is to get his sword
                 catalog_bubble("Want to go outside?")
                 if interactable:
+                    kitchen = False
                     route1 = True
             else:
                 catalog_bubble("Door is locked")
@@ -368,6 +368,7 @@ while game:
         if playerY >= 270 and playerX <= 20:  # Collision checking
             catalog_bubble("Go back to kitchen?")
             if interactable:
+                basement = False
                 kitchen = True
                 playerX = 560
                 playerY = 360
@@ -393,10 +394,11 @@ while game:
         clock.tick(60)
         pygame.display.update()
     # ---------- OUTSIDE WORLD ---------
-    if route1:
+    if route1 and world_value == 0:
         playerX = 285
         playerY = 70
-        world_value = 0
+    elif world_value == 1:
+        playerX = 550
 
     while route1:
         background = pygame.image.load('data/sprites/world/route1.png')
@@ -409,6 +411,7 @@ while game:
         if playerY <= 55 and playerX >= 270 and playerX <= 320:
             catalog_bubble("Return home?")
             if interactable:
+                route1 = False
                 kitchen = True
                 playerY = 340
                 playerX = 280
@@ -433,8 +436,9 @@ while game:
             playerY = 40
 
         if playerX >= 580:
+            route1 = False
             route2 = True
-            playerX = 580
+            world_value = 0
 
 
         # MOVEMENT X AND Y
@@ -445,10 +449,9 @@ while game:
         clock.tick(60)
         pygame.display.update()
 
-    if world_value == 0:
-        if route2:
-            playerX = 50
-    else:
+    if route2 and world_value == 0:
+        playerX = 50
+    elif world_value == 1:
         playerX = 520
 
     while route2:
@@ -473,9 +476,13 @@ while game:
             playerY = 40
 
         if playerX >= 580:
+            world_value = 0
+            route2 = False
             route3 = True
 
         elif playerX <= 10:
+            world_value = 1
+            route2 = False
             route1 = True
         # MOVEMENT X AND Y
         playerX += playerX_change
@@ -485,8 +492,11 @@ while game:
         clock.tick(60)
         pygame.display.update()
 
-    if route3:
+    if route3 and world_value == 0:
         playerX = 50
+    elif world_value == 2:
+        playerY = 350
+
     while route3:
         background = pygame.image.load('data/sprites/world/route3.png')
         screen.fill((0, 0, 0))
@@ -507,11 +517,12 @@ while game:
             playerY = 410
 
         if playerY >= 400:
-            john_room, kitchen, basement, route1, route2, route3 = False, False, False, False, False, False
+            route3 = False
             route4 = True
+            world_value = 0
         elif playerX <= 10:
-            john_room, kitchen, basement, route1, route3, route4 = False, False, False, False, False,False
-            world_value += 1
+            world_value = 1
+            route3 = False
             route2 = True
         # MOVEMENT X AND Y
         playerX += playerX_change
@@ -521,8 +532,11 @@ while game:
         clock.tick(60)
         pygame.display.update()
 
-    if route4:
+    if route4 and world_value == 0:
         playerY = 50
+    else:
+        pass
+
     while route4:
         background = pygame.image.load('data/sprites/world/route4.png')
         screen.fill((0, 0, 0))
@@ -546,8 +560,8 @@ while game:
             #john_room, kitchen, basement, route1, route2, route4 = False, False, False, False, False, False
             #training_arc = True
         if playerY <= 10:
-            world_value += 1
-            route3 = True
+            world_value = 2
+            route3, route4 = True, False
 
         # MOVEMENT X AND Y
         playerX += playerX_change
