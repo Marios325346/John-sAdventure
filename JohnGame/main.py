@@ -232,18 +232,17 @@ def sword_task(posX, posY):
     equip_sword_text = Pixel_font.render("You equipped the wooden sword", True, (255, 255, 255))
     if sword_Task:
         screen.blit(rotate_sword, (posX, posY))
-    if playerX >= posX - 50 and playerX <= posX + 50 and playerY >= posY - 50 and playerY <= posY + 50: #  Player/Item collision checking
-        if sword_Task:
-            screen.blit(catalogImg, (100, 340))
-            screen.blit(sword_text, (120, 350))  # Text that asks if player wants to equip his sword
-
-        if interactable:
-            sword_Task = False
-            #equipSound = mixer.Sound("data/sound/press_start_sound.wav")
-            #equipSound.play(1)
-            screen.blit(catalogImg, (100, 340))
-            screen.blit(equip_sword_text, (120, 350))  # Text that says players equipped his sword
-            player_equipped = True # Player has globally his equipment
+        if playerX >= posX - 50 and playerX <= posX + 50 and playerY >= posY - 50 and playerY <= posY + 50: #  Player/Item collision checking
+            if sword_Task:
+                screen.blit(catalogImg, (100, 340))
+                screen.blit(sword_text, (120, 350))  # Text that asks if player wants to equip his sword
+            if interactable:
+                sword_Task = False
+                #equipSound = mixer.Sound("data/sound/press_start_sound.wav")
+                #equipSound.play(1)
+                screen.blit(catalogImg, (100, 340))
+                screen.blit(equip_sword_text, (120, 350))  # Text that says players equipped his sword
+                player_equipped = True # Player has globally his equipment
 
     return posX, posY
 
@@ -259,6 +258,8 @@ john_room = True
 equip_sword = False
 
 player_equipped = False
+john_room, kitchen, basement = True, False, False
+route1, route2, route3, route4 = False, False, False, False
 while game:
     if john_room:
         playerX = 150
@@ -319,7 +320,6 @@ while game:
         elif playerX >= 503 and playerY <= 45:  # Player interacts with the stairs
             catalog_bubble("Wanna go to upstairs?")
             if interactable:
-                basement, kitchen, route1, route2, route3, route4 = False, False, False, False, False, False
                 john_room = True
                 playerX = 555
                 playerY = 10
@@ -328,14 +328,10 @@ while game:
             if player_equipped:  # Checks if player has done task 1 which is to get his sword
                 catalog_bubble("Want to go outside?")
                 if interactable:
-                    kitchen, basement, john_room, route2, route3, route4 = False, False, False, False,False, False
                     route1 = True
             else:
                 catalog_bubble("Door is locked")
-               
 
-        playerX += playerX_change  # Player X movement
-        playerY -= playerY_change  # Player Y movement
         # Out of bounds
         if playerX <= 5:
             playerX = 5
@@ -348,6 +344,8 @@ while game:
             playerY = 410
         if playerY <= 40 and playerX <= 245:
             playerY = 40
+        playerX += playerX_change  # Player X movement
+        playerY -= playerY_change  # Player Y movement
         screen.blit(framerate(), (10, 0))
         screen.blit(cursor, (pygame.mouse.get_pos()))
         clock.tick(60)
@@ -370,7 +368,6 @@ while game:
         if playerY >= 270 and playerX <= 20:  # Collision checking
             catalog_bubble("Go back to kitchen?")
             if interactable:
-                basement, john_room, route1, route2, route3, route4 = False, False, False, False, False, False
                 kitchen = True
                 playerX = 560
                 playerY = 360
@@ -412,7 +409,7 @@ while game:
         if playerY <= 55 and playerX >= 270 and playerX <= 320:
             catalog_bubble("Return home?")
             if interactable:
-                john_room, kitchen, basement, route1, route2, route3, route4 = False, True, False, False, False, False, False
+                kitchen = True
                 playerY = 340
                 playerX = 280
 
@@ -436,7 +433,7 @@ while game:
             playerY = 40
 
         if playerX >= 580:
-            john_room, kitchen, basement, route1, route2, route3, route4 = False, False, False, False, True, False, False
+            route2 = True
             playerX = 580
 
 
@@ -472,15 +469,13 @@ while game:
             playerY = 10
         elif playerY >= 410:
             playerY = 410
-        if playerY <= 40 and playerX <= 245:
+        if playerY <= 40 and playerX <= 105:
             playerY = 40
 
         if playerX >= 580:
-            john_room, kitchen, basement = False, False, False
-            route1, route2, route3, route4 = False, False, True, False
+            route3 = True
 
         elif playerX <= 10:
-            john_room, kitchen, basement, route2, route3,route4 = False, False, False, False, False, False
             route1 = True
         # MOVEMENT X AND Y
         playerX += playerX_change
@@ -510,8 +505,6 @@ while game:
             playerY = 10
         elif playerY >= 410:
             playerY = 410
-        if playerY <= 40 and playerX <= 245:
-            playerY = 40
 
         if playerY >= 400:
             john_room, kitchen, basement, route1, route2, route3 = False, False, False, False, False, False
@@ -553,7 +546,6 @@ while game:
             #john_room, kitchen, basement, route1, route2, route4 = False, False, False, False, False, False
             #training_arc = True
         if playerY <= 10:
-            john_room, kitchen, basement, route1, route2, route4 = False, False, False, False, False, False
             world_value += 1
             route3 = True
 

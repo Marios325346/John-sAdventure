@@ -241,15 +241,4 @@
     </state>
     <state x="-7" y="0" width="1294" height="1417" key="dock-window-4/0.0.2560.1410/-1080.0.1080.1890@0.0.2560.1410" timestamp="1603559334682" />
   </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/JohnGame/main.py</url>
-          <line>102</line>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
-  </component>
 </project>
