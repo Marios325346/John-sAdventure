@@ -327,17 +327,15 @@ while game:
         elif playerY >= 370 and playerX >= 220 and playerX <= 320:  # Player interacts with the exit door
             if player_equipped:  # Checks if player has done task 1 which is to get his sword
                 catalog_bubble("Want to go outside?")
-                print("You can go outside")
                 if interactable:
                     kitchen, basement, john_room, route2, route3, route4 = False, False, False, False,False, False
                     route1 = True
             else:
                 catalog_bubble("Door is locked")
-                print("Door is locked")
+               
 
         playerX += playerX_change  # Player X movement
         playerY -= playerY_change  # Player Y movement
-        print("X:", playerX, "Y:", playerY)
         # Out of bounds
         if playerX <= 5:
             playerX = 5
@@ -350,7 +348,6 @@ while game:
             playerY = 410
         if playerY <= 40 and playerX <= 245:
             playerY = 40
-        print("X:", playerX, "Y:", playerY)
         screen.blit(framerate(), (10, 0))
         screen.blit(cursor, (pygame.mouse.get_pos()))
         clock.tick(60)
@@ -524,8 +521,6 @@ while game:
             world_value += 1
             route2 = True
         # MOVEMENT X AND Y
-
-        print(playerY)
         playerX += playerX_change
         playerY -= playerY_change
         screen.blit(cursor, (pygame.mouse.get_pos()))
