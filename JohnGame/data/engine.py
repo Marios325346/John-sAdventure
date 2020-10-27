@@ -30,20 +30,18 @@ def cynthia(cynthiaX, cynthiaY, playerX, playerY):
     return cynthiaX, cynthiaY
 
 
-gatoulisImg = pygame.image.load("data/npc/gatoulis.png")
+gatoulisImg = pygame.image.load("data/npc/candy.png")
 
 
-def gatoulis(catX, catY, playerX, playerY):
+def candy(catX, catY, playerX, playerY):
     global catalogImg, gatoulisImg
     playerX = playerX
     playerY = playerY
     screen.blit(gatoulisImg, (catX, catY))
     gatoulis_text = Pixel_font.render("Meow meow meow", True, (255, 255, 255))
-    gatoulis_text2 = Pixel_font.render("-Gatoulis", True, (255, 255, 255))
+    gatoulis_text2 = Pixel_font.render("-Candy", True, (255, 255, 255))
     if playerX >= catX - 50 and playerX <= catX + 50 and playerY >= catY - 50 and playerY <= catY + 50:
         screen.blit(catalogImg, (100, 340))
         screen.blit(gatoulis_text, (120, 350))
         screen.blit(gatoulis_text2, (430, 430))
     return catX, catY
-
-

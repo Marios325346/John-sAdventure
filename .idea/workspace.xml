@@ -7,45 +7,114 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectId" id="1jS0z90prvFTGRizHnIupJlrvrB" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+  </component>
+  <component name="RunManager" selected="Python.main">
+    <configuration name="engine" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/JohnGame/data" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/JohnGame/data/engine.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="main" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="C:\Python38\python3.exe" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/JohnGame" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/JohnGame/main.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.main" />
+        <item itemvalue="Python.engine" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="f7911d9f-2289-442d-bdb1-2fce6152bd9d" name="Default Changelist" comment="" />
+      <created>1603782455070</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1603782455070</updated>
+    </task>
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="WindowStateProjectService">
-    <state width="2539" height="495" key="GridCell.Tab.0.bottom" timestamp="1603751988096">
+    <state width="2539" height="496" key="GridCell.Tab.0.bottom" timestamp="1603809025067">
       <screen x="0" y="0" width="2560" height="1410" />
     </state>
-    <state width="2539" height="495" key="GridCell.Tab.0.bottom/0.0.2560.1410/-1080.0.1080.1890@0.0.2560.1410" timestamp="1603751988096" />
-    <state width="2539" height="495" key="GridCell.Tab.0.center" timestamp="1603751988096">
+    <state width="2539" height="496" key="GridCell.Tab.0.bottom/0.0.2560.1410/-1080.0.1080.1890@0.0.2560.1410" timestamp="1603809025067" />
+    <state width="2539" height="496" key="GridCell.Tab.0.center" timestamp="1603809025067">
       <screen x="0" y="0" width="2560" height="1410" />
     </state>
-    <state width="2539" height="495" key="GridCell.Tab.0.center/0.0.2560.1410/-1080.0.1080.1890@0.0.2560.1410" timestamp="1603751988096" />
-    <state width="2539" height="495" key="GridCell.Tab.0.left" timestamp="1603751988096">
+    <state width="2539" height="496" key="GridCell.Tab.0.center/0.0.2560.1410/-1080.0.1080.1890@0.0.2560.1410" timestamp="1603809025067" />
+    <state width="2539" height="496" key="GridCell.Tab.0.left" timestamp="1603809025067">
       <screen x="0" y="0" width="2560" height="1410" />
     </state>
-    <state width="2539" height="495" key="GridCell.Tab.0.left/0.0.2560.1410/-1080.0.1080.1890@0.0.2560.1410" timestamp="1603751988096" />
-    <state width="2539" height="495" key="GridCell.Tab.0.right" timestamp="1603751988096">
+    <state width="2539" height="496" key="GridCell.Tab.0.left/0.0.2560.1410/-1080.0.1080.1890@0.0.2560.1410" timestamp="1603809025067" />
+    <state width="2539" height="496" key="GridCell.Tab.0.right" timestamp="1603809025067">
       <screen x="0" y="0" width="2560" height="1410" />
     </state>
-    <state width="2539" height="495" key="GridCell.Tab.0.right/0.0.2560.1410/-1080.0.1080.1890@0.0.2560.1410" timestamp="1603751988096" />
-    <state width="2539" height="495" key="GridCell.Tab.1.bottom" timestamp="1603751988096">
+    <state width="2539" height="496" key="GridCell.Tab.0.right/0.0.2560.1410/-1080.0.1080.1890@0.0.2560.1410" timestamp="1603809025067" />
+    <state width="2539" height="496" key="GridCell.Tab.1.bottom" timestamp="1603809025067">
       <screen x="0" y="0" width="2560" height="1410" />
     </state>
-    <state width="2539" height="495" key="GridCell.Tab.1.bottom/0.0.2560.1410/-1080.0.1080.1890@0.0.2560.1410" timestamp="1603751988096" />
-    <state width="2539" height="495" key="GridCell.Tab.1.center" timestamp="1603751988096">
+    <state width="2539" height="496" key="GridCell.Tab.1.bottom/0.0.2560.1410/-1080.0.1080.1890@0.0.2560.1410" timestamp="1603809025067" />
+    <state width="2539" height="496" key="GridCell.Tab.1.center" timestamp="1603809025067">
       <screen x="0" y="0" width="2560" height="1410" />
     </state>
-    <state width="2539" height="495" key="GridCell.Tab.1.center/0.0.2560.1410/-1080.0.1080.1890@0.0.2560.1410" timestamp="1603751988096" />
-    <state width="2539" height="495" key="GridCell.Tab.1.left" timestamp="1603751988096">
+    <state width="2539" height="496" key="GridCell.Tab.1.center/0.0.2560.1410/-1080.0.1080.1890@0.0.2560.1410" timestamp="1603809025067" />
+    <state width="2539" height="496" key="GridCell.Tab.1.left" timestamp="1603809025067">
       <screen x="0" y="0" width="2560" height="1410" />
     </state>
-    <state width="2539" height="495" key="GridCell.Tab.1.left/0.0.2560.1410/-1080.0.1080.1890@0.0.2560.1410" timestamp="1603751988096" />
-    <state width="2539" height="495" key="GridCell.Tab.1.right" timestamp="1603751988096">
+    <state width="2539" height="496" key="GridCell.Tab.1.left/0.0.2560.1410/-1080.0.1080.1890@0.0.2560.1410" timestamp="1603809025067" />
+    <state width="2539" height="496" key="GridCell.Tab.1.right" timestamp="1603809025067">
       <screen x="0" y="0" width="2560" height="1410" />
     </state>
-    <state width="2539" height="495" key="GridCell.Tab.1.right/0.0.2560.1410/-1080.0.1080.1890@0.0.2560.1410" timestamp="1603751988096" />
+    <state width="2539" height="496" key="GridCell.Tab.1.right/0.0.2560.1410/-1080.0.1080.1890@0.0.2560.1410" timestamp="1603809025067" />
   </component>
 </project>

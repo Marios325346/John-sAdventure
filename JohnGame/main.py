@@ -14,7 +14,7 @@ screen = pygame.display.set_mode((640, 480))
 clock = pygame.time.Clock()
 
 # Logo
-pygame.display.set_caption("John's Adventure  v0.0.2")
+pygame.display.set_caption("John's Adventure  v0.0.3")
 icon = pygame.image.load('data/ui/logo.ico')
 pygame.display.set_icon(icon)
 
@@ -37,8 +37,8 @@ quitButton.center = (320, 330)
 Pixel_font = pygame.font.Font("data/fonts/pixelfont.ttf", 18)
 
 # Background music
-#pygame.mixer.music.load("data/sound/forest_theme.flac")
-#pygame.mixer.music.play(-1)
+pygame.mixer.music.load("data/sound/forest_theme.flac")
+pygame.mixer.music.play(-1)
 
 
 # Controls
@@ -252,21 +252,23 @@ player_equipped = False
 
 # Chunks
 john_room, kitchen, basement = False, False, False
-route1, route2, route3, route4 = False, False, False, False
+route1, route2, route3, route4, training_field = False, False, False, False, False
 
 # World Functions and Values
 world_value = 0  # Very important for place position between worlds
 john_room = True  # The world you want to start with (Pretty useful to check maps faster)
 
 while game:
-    if john_room:
+    if john_room and world_value == 0:
         playerX = 150
         playerY = 150
+    elif john_room and world_value == 1:
+        playerX = 380
+        playerY = 120
     while john_room:
         # //- JOHNS ROOM -\\#
         background = pygame.image.load('data/sprites/Johns_room.png')
         screen.blit(background, (0, 0))  # Display the background image
-        gatoulis(300, 120, playerX, playerY)  # Cat npc
         gameWindow()  # Player
         hearts()  # Player UI
         stairs_catalog()  # Catalog when player gets the nearby stairs
@@ -320,8 +322,8 @@ while game:
             if interactable:
                 kitchen = False
                 john_room = True
-                playerX = 555
-                playerY = 10
+                basement = False
+                world_value = 1
 
         elif playerY >= 370 and playerX >= 220 and playerX <= 320:  # Player interacts with the exit door
             if player_equipped:  # Checks if player has done task 1 which is to get his sword
@@ -329,6 +331,8 @@ while game:
                 if interactable:
                     kitchen = False
                     route1 = True
+                    basement = False
+                    world_value = 0
             else:
                 catalog_bubble("Door is locked")
 
@@ -413,6 +417,7 @@ while game:
             if interactable:
                 route1 = False
                 kitchen = True
+                basement = False
                 playerY = 340
                 playerX = 280
 
@@ -494,7 +499,7 @@ while game:
 
     if route3 and world_value == 0:
         playerX = 50
-    elif world_value == 2:
+    elif route3 and world_value == 2:
         playerY = 350
 
     while route3:
@@ -534,8 +539,8 @@ while game:
 
     if route4 and world_value == 0:
         playerY = 50
-    else:
-        pass
+    elif world_value == 2:
+        playerX = 520
 
     while route4:
         background = pygame.image.load('data/sprites/world/route4.png')
@@ -556,13 +561,48 @@ while game:
         elif playerY >= 410:
             playerY = 410
 
-        #if playerX >= 580:
-            #john_room, kitchen, basement, route1, route2, route4 = False, False, False, False, False, False
-            #training_arc = True
+        if playerX >= 580:
+            route4, training_field = False, True
+            world_value = 0
         if playerY <= 10:
             world_value = 2
             route3, route4 = True, False
 
+        # MOVEMENT X AND Y
+        playerX += playerX_change
+        playerY -= playerY_change
+        screen.blit(cursor, (pygame.mouse.get_pos()))
+        screen.blit(framerate(), (10, 0))
+        clock.tick(60)
+        pygame.display.update()
+
+    if training_field and world_value == 0:
+        playerX = 50
+
+    #elif world_value == 2:
+       #pass
+    while training_field:
+        background = pygame.image.load('data/sprites/world/training_field.png')
+        screen.fill((0, 0, 0))
+        screen.blit(background, (0, 0))
+        gameWindow()
+        hearts()
+        controls()
+        candy(480, 120, playerX, playerY)  # Cat npc
+        # Out of bounds
+        if playerX <= 5:
+            playerX = 5
+        elif playerX >= 580:
+            playerX = 580
+        # Y Position 900
+        if playerY <= 10:
+            playerY = 10
+        elif playerY >= 410:
+            playerY = 410
+
+        if playerX <= 10:
+            world_value = 2
+            route4, training_field = True, False
         # MOVEMENT X AND Y
         playerX += playerX_change
         playerY -= playerY_change
