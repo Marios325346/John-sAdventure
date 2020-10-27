@@ -293,6 +293,13 @@ while game:
         pygame.display.update()
     #  --------------- KITCHEN MAP   ---------------
 
+    if kitchen and world_value == 3:
+        playerX = 280
+        playerY = 350
+    elif kitchen and world_value == 5:
+        playerX = 480
+        playerY = 320
+
     while kitchen:
         background = pygame.image.load("data/sprites/main_room.png")
         screen.blit(background, (0, 0))
@@ -348,6 +355,7 @@ while game:
             playerY = 410
         if playerY <= 40 and playerX <= 245:
             playerY = 40
+
         playerX += playerX_change  # Player X movement
         playerY -= playerY_change  # Player Y movement
         screen.blit(framerate(), (10, 0))
@@ -374,9 +382,7 @@ while game:
             if interactable:
                 basement = False
                 kitchen = True
-                playerX = 560
-                playerY = 360
-
+                world_value = 5
         # Furniture Collisions
         if playerY <= 65 and playerX >= -10 and playerY <= 520:
             playerY = 65
@@ -401,7 +407,7 @@ while game:
     if route1 and world_value == 0:
         playerX = 285
         playerY = 70
-    elif world_value == 1:
+    elif route1 and world_value == 1:
         playerX = 550
 
     while route1:
@@ -415,11 +421,10 @@ while game:
         if playerY <= 55 and playerX >= 270 and playerX <= 320:
             catalog_bubble("Return home?")
             if interactable:
+                world_value = 3
                 route1 = False
                 kitchen = True
                 basement = False
-                playerY = 340
-                playerX = 280
 
         #  Fence collision
         if playerX >= 360 and playerY <= 65:
@@ -443,6 +448,7 @@ while game:
         if playerX >= 580:
             route1 = False
             route2 = True
+            basement = False
             world_value = 0
 
 
@@ -610,3 +616,4 @@ while game:
         screen.blit(framerate(), (10, 0))
         clock.tick(60)
         pygame.display.update()
+

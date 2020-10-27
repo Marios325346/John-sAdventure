@@ -26,7 +26,7 @@
       <envs>
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
-      <option name="SDK_HOME" value="" />
+      <option name="SDK_HOME" value="C:\Python38\python3.exe" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/JohnGame/data" />
       <option name="IS_MODULE_SDK" value="false" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
@@ -84,22 +84,26 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="WindowStateProjectService">
-    <state width="2539" height="496" key="GridCell.Tab.0.bottom" timestamp="1603809025067">
-      <screen x="0" y="0" width="2560" height="1410" />
+    <state width="1059" height="559" key="GridCell.Tab.0.bottom" timestamp="1603819050746">
+      <screen x="-1080" y="0" width="1080" height="1890" />
     </state>
-    <state width="2539" height="496" key="GridCell.Tab.0.bottom/0.0.2560.1410/-1080.0.1080.1890@0.0.2560.1410" timestamp="1603809025067" />
-    <state width="2539" height="496" key="GridCell.Tab.0.center" timestamp="1603809025067">
-      <screen x="0" y="0" width="2560" height="1410" />
+    <state width="1059" height="559" key="GridCell.Tab.0.bottom/0.0.2560.1410/-1080.0.1080.1890@-1080.0.1080.1890" timestamp="1603819050746" />
+    <state width="1133" height="197" key="GridCell.Tab.0.bottom/0.0.2560.1410/-1080.0.1080.1890@0.0.2560.1410" timestamp="1603809992954" />
+    <state width="1059" height="559" key="GridCell.Tab.0.center" timestamp="1603819050746">
+      <screen x="-1080" y="0" width="1080" height="1890" />
     </state>
-    <state width="2539" height="496" key="GridCell.Tab.0.center/0.0.2560.1410/-1080.0.1080.1890@0.0.2560.1410" timestamp="1603809025067" />
-    <state width="2539" height="496" key="GridCell.Tab.0.left" timestamp="1603809025067">
-      <screen x="0" y="0" width="2560" height="1410" />
+    <state width="1059" height="559" key="GridCell.Tab.0.center/0.0.2560.1410/-1080.0.1080.1890@-1080.0.1080.1890" timestamp="1603819050746" />
+    <state width="1133" height="197" key="GridCell.Tab.0.center/0.0.2560.1410/-1080.0.1080.1890@0.0.2560.1410" timestamp="1603809992954" />
+    <state width="1059" height="559" key="GridCell.Tab.0.left" timestamp="1603819050746">
+      <screen x="-1080" y="0" width="1080" height="1890" />
     </state>
-    <state width="2539" height="496" key="GridCell.Tab.0.left/0.0.2560.1410/-1080.0.1080.1890@0.0.2560.1410" timestamp="1603809025067" />
-    <state width="2539" height="496" key="GridCell.Tab.0.right" timestamp="1603809025067">
-      <screen x="0" y="0" width="2560" height="1410" />
+    <state width="1059" height="559" key="GridCell.Tab.0.left/0.0.2560.1410/-1080.0.1080.1890@-1080.0.1080.1890" timestamp="1603819050746" />
+    <state width="1133" height="197" key="GridCell.Tab.0.left/0.0.2560.1410/-1080.0.1080.1890@0.0.2560.1410" timestamp="1603809992954" />
+    <state width="1059" height="559" key="GridCell.Tab.0.right" timestamp="1603819050746">
+      <screen x="-1080" y="0" width="1080" height="1890" />
     </state>
-    <state width="2539" height="496" key="GridCell.Tab.0.right/0.0.2560.1410/-1080.0.1080.1890@0.0.2560.1410" timestamp="1603809025067" />
+    <state width="1059" height="559" key="GridCell.Tab.0.right/0.0.2560.1410/-1080.0.1080.1890@-1080.0.1080.1890" timestamp="1603819050746" />
+    <state width="1133" height="197" key="GridCell.Tab.0.right/0.0.2560.1410/-1080.0.1080.1890@0.0.2560.1410" timestamp="1603809992954" />
     <state width="2539" height="496" key="GridCell.Tab.1.bottom" timestamp="1603809025067">
       <screen x="0" y="0" width="2560" height="1410" />
     </state>
