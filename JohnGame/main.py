@@ -14,7 +14,7 @@ screen = pygame.display.set_mode((640, 480))
 clock = pygame.time.Clock()
 
 # Logo
-pygame.display.set_caption("John's Adventure  v0.0.3")
+pygame.display.set_caption("John's Adventure  v0.0.326")
 icon = pygame.image.load('data/ui/logo.ico')
 pygame.display.set_icon(icon)
 
@@ -131,6 +131,24 @@ def framerate():
     return fps_text
 
 
+exitImg = pygame.image.load('data/ui/exit_button.png')
+
+def exit_button():
+    global exitImg, canChange
+    exitBtn = exitImg.get_rect()
+    exitBtn.center = (522, 138)
+    if exitBtn.collidepoint(pygame.mouse.get_pos()):
+        exitImg = pygame.image.load('data/ui/exit_button_hover.png')
+        for event in pygame.event.get():
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                canChange = False
+    else:
+        exitImg = pygame.image.load('data/ui/exit_button.png')
+
+    screen.blit(exitImg, exitBtn)
+
+
+canChange = False
 menu = True
 while menu:
     screen.fill((0, 0, 0))
@@ -152,12 +170,11 @@ while menu:
         playImg = pygame.image.load('data/ui/button interface.png')
 
     # Settings
-
     if settingsButton.collidepoint(pygame.mouse.get_pos()):
         settingsImg = pygame.image.load('data/ui/settings_hover.png')
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONDOWN:
-                print("You clicked on the settings button")
+                canChange = True
     else:
         settingsImg = pygame.image.load('data/ui/settings.png')
 
@@ -176,6 +193,12 @@ while menu:
     screen.blit(playImg, playButton)
     screen.blit(quitImg, quitButton)
     screen.blit(settingsImg, settingsButton)
+
+    # When player clicks settings
+    if canChange:
+        settings_catalog()
+        exit_button()
+
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -304,8 +327,6 @@ playerX_change = 0
 playerY_change = 0
 
 # Main loop
-john_room = True
-
 equip_sword = False
 
 player_equipped = False
@@ -316,7 +337,7 @@ route1, route2, route3, route4, training_field = False, False, False, False, Fal
 
 # World Functions and Values
 world_value = 0  # Very important for place position between worlds
-route1 = True  # The world you want to start with (Pretty useful to check maps faster)
+john_room = True  # The world you want to start with (Pretty useful to check maps faster)
 
 while game:
     if john_room and world_value == 0:

@@ -4,13 +4,23 @@ from pygame import *
 screen = pygame.display.set_mode((640, 480))
 pygame.init()
 
-catalogImg = pygame.image.load('data/sprites/catalog.png')
 Pixel_font = pygame.font.Font("data/fonts/pixelfont.ttf", 14)
 
+# Settings UI
+settingsUI = pygame.image.load('data/ui/settings_screen.png')
+setUIRect = settingsUI.get_rect()
+setUIRect.center = (320, 250)
+
+def settings_catalog():
+    global settingsUI, setUIRect
+    screen.blit(settingsUI, setUIRect)
+
+# ----------- NON PLAYER CHARACTERS (NPC) ------------
+
+catalogImg = pygame.image.load('data/sprites/catalog.png')
 cynthiaImg = pygame.image.load("data/npc/Cynthia.png")
 
 
-# ----------- NON PLAYER CHARACTERS (NPC) ------------
 def cynthia(cynthiaX, cynthiaY, playerX, playerY):
     global catalogImg, cynthiaImg
     cynthia_x = cynthiaX
@@ -66,10 +76,10 @@ def manos():
     screen.blit(manosImg, manosRect)
 
 
-
 traning_dummieImg = pygame.image.load('data/npc/training_dummie.png')
 traning_dummieRect = traning_dummieImg.get_rect()
 traning_dummieRect.center = (385, 290)
+
 
 def training_dummie():
     global catalogImg, traning_dummieImg
@@ -78,7 +88,8 @@ def training_dummie():
 
 blacksmithImg = pygame.image.load('data/npc/blacksmith_shop.png')
 blacksmithRect = blacksmithImg.get_rect()
-blacksmithRect.center = (400,  80)
+blacksmithRect.center = (400, 80)
+
 
 def blacksmith_shop():
     global catalogImg, blacksmithImg
