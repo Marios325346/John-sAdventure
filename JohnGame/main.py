@@ -46,6 +46,9 @@ Pixel_font = pygame.font.Font("data/fonts/pixelfont.ttf", 18)
 pygame.mixer.music.load("data/sound/forest_theme.flac")
 pygame.mixer.music.play(-1)
 
+LeftIdle, RightIdle, UpIdle, DownIdle = False, False, False, False
+
+
 
 # Controls
 def controls():
@@ -53,14 +56,16 @@ def controls():
     global playerX_change, playerY_change
     global walkCount
     global left, right, up, down
+    global LeftIdle, RightIdle, UpIdle, DownIdle
     global interactable
 
     for event in pygame.event.get():
+        LeftIdle, RightIdle, UpIdle, DownIdle = False, False, False, False
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
 
-            # if keystroke is pressed check whether its right or left
+        # Detect Key inputs
         if event.type == pygame.KEYDOWN:
             # Left
             if event.key == pygame.K_LEFT:
@@ -89,12 +94,37 @@ def controls():
                 interactable = True
             else:
                 interactable = False
+
+        # When user stops doing a key input
         if event.type == pygame.KEYUP:
-            if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT or event.key == pygame.K_UP or event.key == pygame.K_DOWN:
+            if event.key == pygame.K_LEFT:
                 playerX_change = 0
                 playerY_change = 0
                 left, right, up, down = False, False, False, False
+                LeftIdle = True
                 walkCount = 0
+
+            elif event.key == pygame.K_RIGHT:
+                playerX_change = 0
+                playerY_change = 0
+                left, right, up, down = False, False, False, False
+                RightIdle = True
+                walkCount = 0
+
+            elif event.key == pygame.K_UP:
+                playerX_change = 0
+                playerY_change = 0
+                left, right, up, down = False, False, False, False
+                UpIdle = True
+                walkCount = 0
+            elif event.key == pygame.K_DOWN:
+                playerX_change = 0
+                playerY_change = 0
+                left, right, up, down = False, False, False, False
+                DownIdle = True
+                walkCount = 0
+
+
 def framerate():
     fps = str(int(clock.get_fps()))
     fps_text = Pixel_font.render(fps, 1, pygame.Color("yellow"))
@@ -121,7 +151,7 @@ while menu:
     else:
         playImg = pygame.image.load('data/ui/button interface.png')
 
-    #Settings
+    # Settings
 
     if settingsButton.collidepoint(pygame.mouse.get_pos()):
         settingsImg = pygame.image.load('data/ui/settings_hover.png')
@@ -184,6 +214,8 @@ up = False
 down = False
 
 
+
+
 # This function is responsible for player's animation
 def gameWindow():
     global walkCount
@@ -203,8 +235,14 @@ def gameWindow():
         screen.blit(walkDown[walkCount // 9], (playerX, playerY))
         walkCount += 1
     else:
-        screen.blit(playerImg, (playerX, playerY))
-
+        if LeftIdle:
+            screen.blit(walkLeft[0], (playerX, playerY))
+        elif RightIdle:
+            screen.blit(walkRight[0], (playerX, playerY))
+        elif UpIdle:
+            screen.blit(walkUp[0], (playerX, playerY))
+        else:
+            screen.blit(playerImg, (playerX, playerY))
 
 def hearts():
     global myfont
@@ -220,7 +258,10 @@ def hearts():
     screen.blit(heartImg, (heartX, heartY))
     screen.blit(hp_text, (heartX + 87, heartY + 12))
 
+
 catalogImg = pygame.image.load('data/sprites/catalog.png').convert()
+
+
 def stairs_catalog():
     global catalogImg, game, john_room, kitchen
     global interactable
@@ -233,9 +274,12 @@ def stairs_catalog():
             john_room = False
             kitchen = True
 
+
 sword_Task = True
+
+
 def sword_task(posX, posY):
-    global catalogImg, playerY, playerX , interactable, sword_Task, player_equipped
+    global catalogImg, playerY, playerX, interactable, sword_Task, player_equipped
     sword = pygame.image.load('data/items/wooden_sword.png')
     rotate_sword = pygame.transform.rotate(sword, 90)
     sword_text = Pixel_font.render("Take sword?", True, (255, 255, 255))
@@ -248,11 +292,12 @@ def sword_task(posX, posY):
                 screen.blit(sword_text, (120, 350))  # Text that asks if player wants to equip his sword
             if interactable:
                 sword_Task = False
-                #equipSound = mixer.Sound("data/sound/press_start_sound.wav")
-                #equipSound.play(1)
-                player_equipped = True # Player has globally his equipment
+                # equipSound = mixer.Sound("data/sound/press_start_sound.wav")
+                # equipSound.play(1)
+                player_equipped = True  # Player has globally his equipment
 
     return posX, posY
+
 
 playerImg = pygame.image.load('data/sprites/player/playeridle.png')  # Player
 playerX_change = 0
@@ -331,7 +376,6 @@ while game:
             playerY = 90
         if playerX <= 290 and playerX >= 280 and playerY <= 50:
             playerX = 280
-
 
         if playerY >= 260 and playerY <= 340 and playerX >= 510:  # Player interacts with basement's door
             catalog_bubble("Wanna go to basement?")
@@ -432,7 +476,7 @@ while game:
         gameWindow()
         hearts()
         controls()
-        #Return to john's house
+        # Return to john's house
         if playerY <= 55 and playerX >= 270 and playerX <= 320:
             catalog_bubble("Return home?")
             if interactable:
@@ -465,7 +509,6 @@ while game:
             route2 = True
             basement = False
             world_value = 0
-
 
         # MOVEMENT X AND Y
         playerX += playerX_change
@@ -600,8 +643,8 @@ while game:
     if training_field and world_value == 0:
         playerX = 50
 
-    #elif world_value == 2:
-       #pass
+    # elif world_value == 2:
+    # pass
     while training_field:
         background = pygame.image.load('data/sprites/world/training_field.png')
         screen.fill((0, 0, 0))
@@ -635,4 +678,3 @@ while game:
         screen.blit(framerate(), (10, 0))
         clock.tick(60)
         pygame.display.update()
-
