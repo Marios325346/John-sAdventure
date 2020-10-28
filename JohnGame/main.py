@@ -27,13 +27,19 @@ title_font = pygame.font.SysFont("Comic Sans Ms", 84)
 menu_background = pygame.image.load('data/sprites/mainmenu.png')
 cursor = pygame.image.load('data/sprites/j_g_mouse.png')
 pygame.mouse.set_visible(False)
+# Button UI
 playImg = pygame.image.load("data/ui/button interface.png").convert()
 playButton = playImg.get_rect()
-playButton.center = (320, 260)
+playButton.center = (320, 305)
 
 quitImg = pygame.image.load("data/ui/quit.png").convert()
 quitButton = quitImg.get_rect()
-quitButton.center = (320, 330)
+quitButton.center = (320, 445)
+
+settingsImg = pygame.image.load('data/ui/settings.png').convert()
+settingsButton = settingsImg.get_rect()
+settingsButton.center = (320, 375)
+
 Pixel_font = pygame.font.Font("data/fonts/pixelfont.ttf", 18)
 
 # Background music
@@ -89,11 +95,6 @@ def controls():
                 playerY_change = 0
                 left, right, up, down = False, False, False, False
                 walkCount = 0
-
-
-
-
-
 def framerate():
     fps = str(int(clock.get_fps()))
     fps_text = Pixel_font.render(fps, 1, pygame.Color("yellow"))
@@ -106,6 +107,8 @@ while menu:
     # background image load
     screen.blit(menu_background, (1, 1))
     StartSound = mixer.Sound("data/sound/button_Sound.wav")
+
+    # Play Button
     if playButton.collidepoint(pygame.mouse.get_pos()):
         playImg = pygame.image.load('data/ui/button interface hover.png')
         #  StartSound.set_volume(0.05)
@@ -118,6 +121,17 @@ while menu:
     else:
         playImg = pygame.image.load('data/ui/button interface.png')
 
+    #Settings
+
+    if settingsButton.collidepoint(pygame.mouse.get_pos()):
+        settingsImg = pygame.image.load('data/ui/settings_hover.png')
+        for event in pygame.event.get():
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                print("You clicked on the settings button")
+    else:
+        settingsImg = pygame.image.load('data/ui/settings.png')
+
+    # Quit
     if quitButton.collidepoint(pygame.mouse.get_pos()):
         #  StartSound.set_volume(0.05)
         #  StartSound.play(1)
@@ -131,6 +145,7 @@ while menu:
 
     screen.blit(playImg, playButton)
     screen.blit(quitImg, quitButton)
+    screen.blit(settingsImg, settingsButton)
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -256,7 +271,7 @@ route1, route2, route3, route4, training_field = False, False, False, False, Fal
 
 # World Functions and Values
 world_value = 0  # Very important for place position between worlds
-john_room = True  # The world you want to start with (Pretty useful to check maps faster)
+route1 = True  # The world you want to start with (Pretty useful to check maps faster)
 
 while game:
     if john_room and world_value == 0:
@@ -273,7 +288,7 @@ while game:
         hearts()  # Player UI
         stairs_catalog()  # Catalog when player gets the nearby stairs
         controls()  # Player Controls
-
+        mau()  # Spawn Mau the grey cat
 
         playerX += playerX_change  # Player X movement
         playerY -= playerY_change  # Player Y movement
@@ -591,10 +606,14 @@ while game:
         background = pygame.image.load('data/sprites/world/training_field.png')
         screen.fill((0, 0, 0))
         screen.blit(background, (0, 0))
+        manos()  # Spawn Manos young master npc
+        blacksmith_shop()  # Blacksmith shop
+        training_dummie()  # Training Dummie
         gameWindow()
         hearts()
         controls()
-        candy(480, 120, playerX, playerY)  # Cat npc
+        candy(290, 190, playerX, playerY)  # Cat npc
+
         # Out of bounds
         if playerX <= 5:
             playerX = 5

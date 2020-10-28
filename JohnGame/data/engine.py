@@ -10,6 +10,7 @@ Pixel_font = pygame.font.Font("data/fonts/pixelfont.ttf", 14)
 cynthiaImg = pygame.image.load("data/npc/Cynthia.png")
 
 
+# ----------- NON PLAYER CHARACTERS (NPC) ------------
 def cynthia(cynthiaX, cynthiaY, playerX, playerY):
     global catalogImg, cynthiaImg
     cynthia_x = cynthiaX
@@ -35,8 +36,6 @@ gatoulisImg = pygame.image.load("data/npc/candy.png")
 
 def candy(catX, catY, playerX, playerY):
     global catalogImg, gatoulisImg
-    playerX = playerX
-    playerY = playerY
     screen.blit(gatoulisImg, (catX, catY))
     gatoulis_text = Pixel_font.render("Meow meow meow", True, (255, 255, 255))
     gatoulis_text2 = Pixel_font.render("-Candy", True, (255, 255, 255))
@@ -45,3 +44,42 @@ def candy(catX, catY, playerX, playerY):
         screen.blit(gatoulis_text, (120, 350))
         screen.blit(gatoulis_text2, (430, 430))
     return catX, catY
+
+
+mauImg = pygame.image.load("data/npc/Mau.png")
+mauRect = mauImg.get_rect()
+mauRect.center = (250, 450)
+
+
+def mau():
+    global catalogImg, mauImg
+    screen.blit(mauImg, mauRect)
+
+
+manosImg = pygame.image.load("data/npc/manos.png")
+manosRect = manosImg.get_rect()
+manosRect.center = (240, 200)
+
+
+def manos():
+    global catalogImg, manosImg
+    screen.blit(manosImg, manosRect)
+
+
+
+traning_dummieImg = pygame.image.load('data/npc/training_dummie.png')
+traning_dummieRect = traning_dummieImg.get_rect()
+traning_dummieRect.center = (385, 290)
+
+def training_dummie():
+    global catalogImg, traning_dummieImg
+    screen.blit(traning_dummieImg, traning_dummieRect)
+
+
+blacksmithImg = pygame.image.load('data/npc/blacksmith_shop.png')
+blacksmithRect = blacksmithImg.get_rect()
+blacksmithRect.center = (400,  80)
+
+def blacksmith_shop():
+    global catalogImg, blacksmithImg
+    screen.blit(blacksmithImg, blacksmithRect)
