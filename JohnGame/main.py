@@ -48,8 +48,6 @@ pygame.mixer.music.play(-1)
 
 LeftIdle, RightIdle, UpIdle, DownIdle = False, False, False, False
 
-
-
 # Controls
 def controls():
     global playerX, playerY
@@ -57,7 +55,7 @@ def controls():
     global walkCount
     global left, right, up, down
     global LeftIdle, RightIdle, UpIdle, DownIdle
-    global interactable
+    global interactable, currency
 
     for event in pygame.event.get():
         LeftIdle, RightIdle, UpIdle, DownIdle = False, False, False, False
@@ -90,10 +88,13 @@ def controls():
             elif event.key == pygame.K_ESCAPE:
                 pygame.quit()
                 sys.exit()
+
+
             if event.key == pygame.K_RETURN:
                 interactable = True
             else:
                 interactable = False
+
 
         # When user stops doing a key input
         if event.type == pygame.KEYUP:
@@ -267,19 +268,6 @@ def gameWindow():
         else:
             screen.blit(playerImg, (playerX, playerY))
 
-def hearts():
-    global myfont
-    myfont = pygame.font.SysFont("Comic Sans Ms", 18)
-    global heartX
-    global heartY
-    health = 10
-    max_health = 10
-    heartX = 20
-    heartY = 400
-    heartImg = pygame.image.load('data/sprites/player/john_ui.png')
-    hp_text = myfont.render(str(health) + "  " + str(max_health), True, (255, 0, 0))
-    screen.blit(heartImg, (heartX, heartY))
-    screen.blit(hp_text, (heartX + 87, heartY + 12))
 
 
 catalogImg = pygame.image.load('data/sprites/catalog.png').convert()
@@ -339,6 +327,10 @@ route1, route2, route3, route4, training_field = False, False, False, False, Fal
 world_value = 0  # Very important for place position between worlds
 john_room = True  # The world you want to start with (Pretty useful to check maps faster)
 
+open_chest = True
+counter = 0
+currency = 0
+
 while game:
     if john_room and world_value == 0:
         playerX = 150
@@ -350,11 +342,23 @@ while game:
         # //- JOHNS ROOM -\\#
         background = pygame.image.load('data/sprites/Johns_room.png')
         screen.blit(background, (0, 0))  # Display the background image
+        chest()  # Spawns chest
         gameWindow()  # Player
         hearts()  # Player UI
         stairs_catalog()  # Catalog when player gets the nearby stairs
         controls()  # Player Controls
+        player_pocket(currency)
         mau()  # Spawn Mau the grey cat
+
+        if playerX >= 360 and playerX <= 420 and playerY <= 105:
+            playerY = 105
+            if interactable:
+                catalog_bubble("You opened the chest,")
+                if open_chest:
+                    while counter < 1:
+                        currency += 70
+                        counter += 1
+
 
         playerX += playerX_change  # Player X movement
         playerY -= playerY_change  # Player Y movement
@@ -368,12 +372,13 @@ while game:
             playerY = 40
         elif playerY >= 410:
             playerY = 410
+        print(playerX, playerY)
         screen.blit(framerate(), (10, 0))
         screen.blit(cursor, (pygame.mouse.get_pos()))
         clock.tick(60)
         pygame.display.update()
-    #  --------------- KITCHEN MAP   ---------------
 
+    #  --------------- KITCHEN MAP   ---------------
     if kitchen and world_value == 3:
         playerX = 280
         playerY = 350
@@ -388,6 +393,7 @@ while game:
         hearts()  # Player UI
         cynthia(350, 30, playerX, playerY)  # Cynthia NPC
         controls()  # Player controls
+        player_pocket(currency)
         # ----------------- CONTENT --------------------
 
         if playerY <= 50 and playerX >= 310 and playerX <= 400:
@@ -454,6 +460,7 @@ while game:
         gameWindow()
         hearts()
         controls()
+        player_pocket(currency)
         sword_task(135, 25)
 
         # World change
@@ -497,6 +504,7 @@ while game:
         gameWindow()
         hearts()
         controls()
+        player_pocket(currency)
         # Return to john's house
         if playerY <= 55 and playerX >= 270 and playerX <= 320:
             catalog_bubble("Return home?")
@@ -551,6 +559,7 @@ while game:
         gameWindow()
         hearts()
         controls()
+        player_pocket(currency)
 
         # Out of bounds
         if playerX <= 5:
@@ -594,6 +603,7 @@ while game:
         gameWindow()
         hearts()
         controls()
+        player_pocket(currency)
 
         # Out of bounds
         if playerX <= 5:
@@ -634,6 +644,7 @@ while game:
         gameWindow()
         hearts()
         controls()
+        player_pocket(currency)
 
         # Out of bounds
         if playerX <= 5:
@@ -676,6 +687,7 @@ while game:
         gameWindow()
         hearts()
         controls()
+        player_pocket(currency)
         candy(290, 190, playerX, playerY)  # Cat npc
 
         # Out of bounds

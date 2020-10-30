@@ -4,16 +4,39 @@ from pygame import *
 screen = pygame.display.set_mode((640, 480))
 pygame.init()
 
+# Colors
+black = (0, 0, 0)
+
 Pixel_font = pygame.font.Font("data/fonts/pixelfont.ttf", 14)
+
+
+
+
+
+def hearts():
+    health = 100
+    max_health = 100
+    heartX = 20
+    heartY = 400
+    heartImg = pygame.image.load('data/sprites/player/john_ui.png')
+    hp_text = Pixel_font.render(str(health), True, (255, 0, 0))
+    screen.blit(heartImg, (heartX, heartY))
+    screen.blit(hp_text, (heartX + 87, heartY + 12))
 
 # Settings UI
 settingsUI = pygame.image.load('data/ui/settings_screen.png')
 setUIRect = settingsUI.get_rect()
 setUIRect.center = (320, 250)
 
+muteImg = pygame.image.load('data/ui/unmuted.png')
+muteRect = muteImg.get_rect()
+muteRect.center = (140,150)
+
 def settings_catalog():
     global settingsUI, setUIRect
+
     screen.blit(settingsUI, setUIRect)
+    screen.blit(muteImg, muteRect)
 
 # ----------- NON PLAYER CHARACTERS (NPC) ------------
 
@@ -21,10 +44,27 @@ catalogImg = pygame.image.load('data/sprites/catalog.png')
 cynthiaImg = pygame.image.load("data/npc/Cynthia.png")
 
 
+
+def player_pocket(currency):
+    money = Pixel_font.render(str(currency) + "€", True, black)
+    screen.blit(money, (105, 443))
+
+
+chestImg = pygame.image.load('data/sprites/chest.png')
+chestRect = chestImg.get_rect()
+chestRect.center = (400, 105)
+
+def chest():
+    global catalogImg
+    screen.blit(chestImg, chestRect)
+
+
+
+
+
+
 def cynthia(cynthiaX, cynthiaY, playerX, playerY):
     global catalogImg, cynthiaImg
-    cynthia_x = cynthiaX
-    cynthia_y = cynthiaY
 
     screen.blit(cynthiaImg, (cynthiaX, cynthiaY))
     cynthia_text = Pixel_font.render("Good morning brother, your sword", True, (255, 255, 255))
