@@ -23,20 +23,6 @@ def hearts():
     screen.blit(heartImg, (heartX, heartY))
     screen.blit(hp_text, (heartX + 87, heartY + 12))
 
-# Settings UI
-settingsUI = pygame.image.load('data/ui/settings_screen.png')
-setUIRect = settingsUI.get_rect()
-setUIRect.center = (320, 250)
-
-muteImg = pygame.image.load('data/ui/unmuted.png')
-muteRect = muteImg.get_rect()
-muteRect.center = (140,150)
-
-def settings_catalog():
-    global settingsUI, setUIRect
-
-    screen.blit(settingsUI, setUIRect)
-    screen.blit(muteImg, muteRect)
 
 # ----------- NON PLAYER CHARACTERS (NPC) ------------
 
@@ -115,15 +101,6 @@ def manos():
     global catalogImg, manosImg
     screen.blit(manosImg, manosRect)
 
-
-traning_dummieImg = pygame.image.load('data/npc/training_dummie.png')
-traning_dummieRect = traning_dummieImg.get_rect()
-traning_dummieRect.center = (385, 290)
-
-
-def training_dummie():
-    global catalogImg, traning_dummieImg
-    screen.blit(traning_dummieImg, traning_dummieRect)
 
 
 blacksmithImg = pygame.image.load('data/npc/blacksmith_shop.png')

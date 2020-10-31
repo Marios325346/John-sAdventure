@@ -43,10 +43,11 @@ settingsButton.center = (320, 375)
 Pixel_font = pygame.font.Font("data/fonts/pixelfont.ttf", 18)
 
 # Background music
-pygame.mixer.music.load("data/sound/forest_theme.flac")
-pygame.mixer.music.play(-1)
+#main_theme = mixer.Sound("data/sound/forest_theme.flac")
+#main_theme.play(-1)
 
-LeftIdle, RightIdle, UpIdle, DownIdle = False, False, False, False
+LeftIdle, RightIdle, UpIdle, DownIdle = False, False, False, True
+
 
 # Controls
 def controls():
@@ -55,10 +56,9 @@ def controls():
     global walkCount
     global left, right, up, down
     global LeftIdle, RightIdle, UpIdle, DownIdle
-    global interactable, currency
+    global interactable, currency, attackEnemy
 
     for event in pygame.event.get():
-        LeftIdle, RightIdle, UpIdle, DownIdle = False, False, False, False
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
@@ -71,29 +71,34 @@ def controls():
                 left = True
                 right, up, down = False, False, False
             # Right
-            if event.key == pygame.K_RIGHT:
+            elif event.key == pygame.K_RIGHT:
                 playerX_change = 5
                 right = True
                 up, left, down = False, False, False
             # Up
-            if event.key == pygame.K_UP:
+            elif event.key == pygame.K_UP:
                 playerY_change = 5
                 up = True
                 down, right, left = False, False, False
             # Down
-            if event.key == pygame.K_DOWN:
+            elif event.key == pygame.K_DOWN:
                 playerY_change = -5
                 down = True
                 left, right, up = False, False, False
             elif event.key == pygame.K_ESCAPE:
                 pygame.quit()
                 sys.exit()
-
-
+            #  Player Interact
             if event.key == pygame.K_RETURN:
                 interactable = True
             else:
                 interactable = False
+
+            #  Player attack
+            if event.key == pygame.K_LSHIFT:
+                attackEnemy = True
+            else:
+                attackEnemy = False
 
 
         # When user stops doing a key input
@@ -103,27 +108,52 @@ def controls():
                 playerY_change = 0
                 left, right, up, down = False, False, False, False
                 LeftIdle = True
+                DownIdle, RightIdle, UpIdle = False, False, False
                 walkCount = 0
 
-            elif event.key == pygame.K_RIGHT:
+            if event.key == pygame.K_RIGHT:
                 playerX_change = 0
                 playerY_change = 0
                 left, right, up, down = False, False, False, False
                 RightIdle = True
+                DownIdle, LeftIdle, UpIdle = False, False, False
                 walkCount = 0
 
-            elif event.key == pygame.K_UP:
+            if event.key == pygame.K_UP:
                 playerX_change = 0
                 playerY_change = 0
                 left, right, up, down = False, False, False, False
                 UpIdle = True
+                DownIdle, RightIdle, LeftIdle = False, False, False
                 walkCount = 0
-            elif event.key == pygame.K_DOWN:
+            if event.key == pygame.K_DOWN:
                 playerX_change = 0
                 playerY_change = 0
                 left, right, up, down = False, False, False, False
                 DownIdle = True
+                LeftIdle, RightIdle, UpIdle = False, False, False
                 walkCount = 0
+
+
+def hitbox():
+    global up, down, left, right, playerX, playerY
+    sword_Image = pygame.image.load("data/items/hitbox.png")
+    swordRect = sword_Image.get_rect()
+    swordRect.center = ((playerX + 32), (playerY + 30))
+
+    if left or LeftIdle:
+        screen.blit(sword_Image, swordRect)
+    elif right or RightIdle:
+        screen.blit(sword_Image, swordRect)
+    elif down or DownIdle:
+        screen.blit(sword_Image, swordRect)
+    elif up or UpIdle:
+        screen.blit(sword_Image, swordRect)
+
+    return swordRect
+
+
+
 
 
 def framerate():
@@ -133,6 +163,7 @@ def framerate():
 
 
 exitImg = pygame.image.load('data/ui/exit_button.png')
+
 
 def exit_button():
     global exitImg, canChange
@@ -147,6 +178,36 @@ def exit_button():
         exitImg = pygame.image.load('data/ui/exit_button.png')
 
     screen.blit(exitImg, exitBtn)
+
+
+# Settings UI
+settingsUI = pygame.image.load('data/ui/settings_screen.png')
+setUIRect = settingsUI.get_rect()
+setUIRect.center = (320, 250)
+
+muteImg = [pygame.image.load('data/ui/unmuted.png'), pygame.image.load('data/ui/muted.png')]
+muteRect = muteImg[0].get_rect()
+muteRect.center = (140, 150)
+unmuted = False
+
+
+def settings_catalog():
+    global settingsUI, setUIRect, unmuted, counter
+
+    if muteRect.collidepoint(pygame.mouse.get_pos()):
+        counter = 0
+        for event in pygame.event.get():
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                while counter <= 1 and not unmuted:
+                    unmuted = True
+                    counter += 1
+                    main_theme.stop()
+
+    screen.blit(settingsUI, setUIRect)
+    if unmuted:
+        screen.blit(muteImg[1], muteRect)
+    else:
+        screen.blit(muteImg[0], muteRect)
 
 
 canChange = False
@@ -200,7 +261,6 @@ while menu:
         settings_catalog()
         exit_button()
 
-
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -232,18 +292,19 @@ walkDown = [pygame.image.load('data/sprites/player/playerdown1.png'),
             pygame.image.load('data/sprites/player/playerdown2.png'),
             pygame.image.load('data/sprites/player/playerdown1.png')]
 
+
+
 left = False
 right = False
 up = False
 down = False
 
 
-
-
 # This function is responsible for player's animation
 def gameWindow():
     global walkCount
     global left, right, up, down
+    global upAttack,downAttack, leftAttack, rightAttack
     if walkCount + 1 >= 27:
         walkCount = 0
     if left:
@@ -265,10 +326,8 @@ def gameWindow():
             screen.blit(walkRight[0], (playerX, playerY))
         elif UpIdle:
             screen.blit(walkUp[0], (playerX, playerY))
-        else:
+        elif DownIdle:
             screen.blit(playerImg, (playerX, playerY))
-
-
 
 catalogImg = pygame.image.load('data/sprites/catalog.png').convert()
 
@@ -303,8 +362,6 @@ def sword_task(posX, posY):
                 screen.blit(sword_text, (120, 350))  # Text that asks if player wants to equip his sword
             if interactable:
                 sword_Task = False
-                # equipSound = mixer.Sound("data/sound/press_start_sound.wav")
-                # equipSound.play(1)
                 player_equipped = True  # Player has globally his equipment
 
     return posX, posY
@@ -313,11 +370,42 @@ def sword_task(posX, posY):
 playerImg = pygame.image.load('data/sprites/player/playeridle.png')  # Player
 playerX_change = 0
 playerY_change = 0
+playerX = 0
+playerY = 0
 
 # Main loop
-equip_sword = False
-
 player_equipped = False
+attackEnemy = False
+
+traning_dummieImg = pygame.image.load('data/npc/training_dummie.png')
+traning_dummieRect = traning_dummieImg.get_rect()
+traning_dummieRect.center = (385, 290)
+
+
+dummieHP = 100
+
+
+def training_dummie():
+    global catalogImg, traning_dummieImg, dummieHP, swordRect, interactable
+    swordRect = hitbox()
+    StartSound = mixer.Sound("data/sound/button_Sound.wav")
+    counter = 0
+    if traning_dummieRect.collidepoint(swordRect[0], swordRect[1]):
+        if attackEnemy:
+            while counter < 1 and dummieHP >= 0:
+                dummieHP -= 50
+                counter += 1
+            print("Dummie HP:", dummieHP)
+        else:
+            counter = 0
+
+    if dummieHP <= 0:
+        traning_dummieImg = pygame.image.load('data/npc/broken_dummie.png')
+    else:
+        traning_dummieImg = pygame.image.load('data/npc/training_dummie.png')
+    screen.blit(traning_dummieImg, traning_dummieRect)
+
+
 
 # Chunks
 john_room, kitchen, basement = False, False, False
@@ -325,8 +413,7 @@ route1, route2, route3, route4, training_field = False, False, False, False, Fal
 
 # World Functions and Values
 world_value = 0  # Very important for place position between worlds
-john_room = True  # The world you want to start with (Pretty useful to check maps faster)
-
+route1 = True  # The world you want to start with (Pretty useful to check maps faster)
 open_chest = True
 counter = 0
 currency = 0
@@ -359,7 +446,6 @@ while game:
                         currency += 70
                         counter += 1
 
-
         playerX += playerX_change  # Player X movement
         playerY -= playerY_change  # Player Y movement
         # John's room collisions
@@ -372,7 +458,6 @@ while game:
             playerY = 40
         elif playerY >= 410:
             playerY = 410
-        print(playerX, playerY)
         screen.blit(framerate(), (10, 0))
         screen.blit(cursor, (pygame.mouse.get_pos()))
         clock.tick(60)
@@ -684,11 +769,12 @@ while game:
         manos()  # Spawn Manos young master npc
         blacksmith_shop()  # Blacksmith shop
         training_dummie()  # Training Dummie
+        candy(290, 190, playerX, playerY)  # Cat npc
         gameWindow()
         hearts()
+        hitbox()
         controls()
         player_pocket(currency)
-        candy(290, 190, playerX, playerY)  # Cat npc
 
         # Out of bounds
         if playerX <= 5:
