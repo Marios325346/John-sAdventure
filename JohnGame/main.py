@@ -767,7 +767,6 @@ while game:
         screen.fill((0, 0, 0))
         screen.blit(background, (0, 0))
         manos()  # Spawn Manos young master npc
-        blacksmith_shop()  # Blacksmith shop
         training_dummie()  # Training Dummie
         candy(290, 190, playerX, playerY)  # Cat npc
         gameWindow()
