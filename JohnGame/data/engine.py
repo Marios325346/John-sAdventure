@@ -45,10 +45,6 @@ def chest():
     screen.blit(chestImg, chestRect)
 
 
-
-
-
-
 def cynthia(cynthiaX, cynthiaY, playerX, playerY):
     global catalogImg, cynthiaImg
 

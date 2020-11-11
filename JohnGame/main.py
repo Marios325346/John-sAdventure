@@ -71,21 +71,21 @@ def controls():
                 left = True
                 right, up, down = False, False, False
             # Right
-            elif event.key == pygame.K_RIGHT:
+            if event.key == pygame.K_RIGHT:
                 playerX_change = 5
                 right = True
                 up, left, down = False, False, False
             # Up
-            elif event.key == pygame.K_UP:
+            if event.key == pygame.K_UP:
                 playerY_change = 5
                 up = True
                 down, right, left = False, False, False
             # Down
-            elif event.key == pygame.K_DOWN:
+            if event.key == pygame.K_DOWN:
                 playerY_change = -5
                 down = True
                 left, right, up = False, False, False
-            elif event.key == pygame.K_ESCAPE:
+            if event.key == pygame.K_ESCAPE:
                 pygame.quit()
                 sys.exit()
             #  Player Interact
