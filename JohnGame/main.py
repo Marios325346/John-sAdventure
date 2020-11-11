@@ -784,11 +784,7 @@ while game:
         background = pygame.image.load('data/sprites/world/training_field.png')
         screen.fill((0, 0, 0))
         screen.blit(background, (0, 0))
-<<<<<<< HEAD
         blacksmith_shop()  # Blacksmith shop
-=======
-        manos()  # Spawn Manos young master npc
->>>>>>> e2eb7184114d72e0f830da6132bc31b7b0a0e2d5
         training_dummie()  # Training Dummie
         hearts()
         candy(350, 120, playerX, playerY)  # Cat npc
