@@ -10,9 +10,6 @@ black = (0, 0, 0)
 Pixel_font = pygame.font.Font("data/fonts/pixelfont.ttf", 14)
 
 
-
-
-
 def hearts():
     health = 100
     max_health = 100
@@ -30,7 +27,6 @@ catalogImg = pygame.image.load('data/sprites/catalog.png')
 cynthiaImg = pygame.image.load("data/npc/Cynthia.png")
 
 
-
 def player_pocket(currency):
     money = Pixel_font.render(str(currency) + "€", True, black)
     screen.blit(money, (105, 443))
@@ -40,13 +36,10 @@ chestImg = pygame.image.load('data/sprites/chest.png')
 chestRect = chestImg.get_rect()
 chestRect.center = (400, 105)
 
+
 def chest():
     global catalogImg
     screen.blit(chestImg, chestRect)
-
-
-
-
 
 
 def cynthia(cynthiaX, cynthiaY, playerX, playerY):
@@ -93,14 +86,26 @@ def mau():
 
 
 manosImg = pygame.image.load("data/npc/manos.png")
-manosRect = manosImg.get_rect()
-manosRect.center = (240, 200)
-
-
-def manos():
+def manos(mx, my,playerX, playerY, bool):
     global catalogImg, manosImg
-    screen.blit(manosImg, manosRect)
+    Pixel_font2 = pygame.font.Font("data/fonts/pixelfont.ttf", 12)
+    dummieTask_Text = Pixel_font.render("hey man what's up? here for", True, (255, 255, 255))
+    dummieTask_Text2 = Pixel_font.render("your daily training? good.", True, (255, 255, 255))
+    dummieTask_Text3 = Pixel_font.render("start by showing me what you got", True, (255, 255, 255))
+    controls_guide = Pixel_font2.render("(Press left shift to attack)", True, (255, 255, 255))
+    taskText = Pixel_font.render("Well done", True, (255, 255, 255))
 
+    screen.blit(manosImg, (mx, my))
+    if playerX >= mx - 50 and playerX <= mx + 50 and playerY >= my - 50 and playerY <= my + 50:
+        screen.blit(catalogImg, (100, 340))
+        if not bool:
+            screen.blit(dummieTask_Text, (120, 355))
+            screen.blit(dummieTask_Text2, (120, 380))
+            screen.blit(dummieTask_Text3, (120, 405))
+            screen.blit(controls_guide, (180, 435))
+        else:
+            screen.blit(taskText, (120, 355))
+    return mx, my
 
 
 blacksmithImg = pygame.image.load('data/npc/blacksmith_shop.png')

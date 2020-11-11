@@ -14,7 +14,7 @@ screen = pygame.display.set_mode((640, 480))
 clock = pygame.time.Clock()
 
 # Logo
-pygame.display.set_caption("John's Adventure  v0.0.326")
+pygame.display.set_caption("John's Adventure  v0.0.352")
 icon = pygame.image.load('data/ui/logo.ico')
 pygame.display.set_icon(icon)
 
@@ -71,21 +71,21 @@ def controls():
                 left = True
                 right, up, down = False, False, False
             # Right
-            elif event.key == pygame.K_RIGHT:
+            if event.key == pygame.K_RIGHT:
                 playerX_change = 5
                 right = True
                 up, left, down = False, False, False
             # Up
-            elif event.key == pygame.K_UP:
+            if event.key == pygame.K_UP:
                 playerY_change = 5
                 up = True
                 down, right, left = False, False, False
             # Down
-            elif event.key == pygame.K_DOWN:
+            if event.key == pygame.K_DOWN:
                 playerY_change = -5
                 down = True
                 left, right, up = False, False, False
-            elif event.key == pygame.K_ESCAPE:
+            if event.key == pygame.K_ESCAPE:
                 pygame.quit()
                 sys.exit()
             #  Player Interact
@@ -386,7 +386,7 @@ dummieHP = 100
 
 
 def training_dummie():
-    global catalogImg, traning_dummieImg, dummieHP, swordRect, interactable
+    global catalogImg, traning_dummieImg, dummieHP, swordRect, interactable, dummie_task
     swordRect = hitbox()
     StartSound = mixer.Sound("data/sound/button_Sound.wav")
     counter = 0
@@ -401,9 +401,23 @@ def training_dummie():
 
     if dummieHP <= 0:
         traning_dummieImg = pygame.image.load('data/npc/broken_dummie.png')
+        dummie_task = True
     else:
         traning_dummieImg = pygame.image.load('data/npc/training_dummie.png')
     screen.blit(traning_dummieImg, traning_dummieRect)
+
+
+def status():
+    print('___________________W O R L D S___________________')
+    print('| Johns room:' + str(john_room), '       Route 1:' + str(route1), '         |')
+    print('| Kitchen:' + str(kitchen), '          Route 2:' + str(route2), '        |')
+    print('| Basement:' + str(basement), '         Route 3:' + str(route3), '        |')
+    print('| Training Field:' + str(training_field), '   Route 4:' + str(route4), '        |')
+    print('|_____________________TASKS_____________________|')
+    print('|  Tutorial:' + str(player_equipped) + '          Dummie: False        |')
+    print('|  Cynthia note: None      Manos Hut: None      |')
+    print('|  Credits: None                                |')
+    print('|_______________________________________________|')
 
 
 
@@ -418,7 +432,11 @@ open_chest = True
 counter = 0
 currency = 0
 
+# Tasks
+dummie_task = False
+
 while game:
+    status()
     if john_room and world_value == 0:
         playerX = 150
         playerY = 150
@@ -766,16 +784,24 @@ while game:
         background = pygame.image.load('data/sprites/world/training_field.png')
         screen.fill((0, 0, 0))
         screen.blit(background, (0, 0))
-        manos()  # Spawn Manos young master npc
+<<<<<<< HEAD
         blacksmith_shop()  # Blacksmith shop
+=======
+        manos()  # Spawn Manos young master npc
+>>>>>>> e2eb7184114d72e0f830da6132bc31b7b0a0e2d5
         training_dummie()  # Training Dummie
-        candy(290, 190, playerX, playerY)  # Cat npc
-        gameWindow()
         hearts()
+        candy(350, 120, playerX, playerY)  # Cat npc
+        manos(240, 100, playerX, playerY, dummie_task)  # Spawn Manos young master npc
+        if dummie_task:
+            while counter < 1:
+                currency += 10
+                counter += 1
+
+        gameWindow()
         hitbox()
         controls()
         player_pocket(currency)
-
         # Out of bounds
         if playerX <= 5:
             playerX = 5
