@@ -458,7 +458,7 @@ while game:
         if playerX >= 360 and playerX <= 420 and playerY <= 105:
             playerY = 105
             if interactable:
-                catalog_bubble("You opened the chest,")
+                catalog_bubble("You opened the chest.")
                 if open_chest:
                     while counter < 1:
                         currency += 70
@@ -789,6 +789,18 @@ while game:
         hearts()
         candy(350, 120, playerX, playerY)  # Cat npc
         manos(240, 100, playerX, playerY, dummie_task)  # Spawn Manos young master npc
+
+        #Manos collisions
+        if playerX >= 195 and playerX <= 200 and playerY >= 70 and playerY <= 120: # Left collision
+            playerX = 195
+        if playerY > 120 and playerY < 130 and playerX > 195 and playerX <= 270: # Bottom collision
+            playerY = 130
+        if playerX > 270 and playerX <= 285 and playerY >= 70 and playerY <= 120: # Right collision
+            playerX = 285
+        if playerX > 195 and playerX <= 270 and playerY >= 50 and playerY < 70:
+            playerY = 50
+
+
         if dummie_task:
             while counter < 1:
                 currency += 10
