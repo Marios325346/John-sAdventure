@@ -10,7 +10,7 @@ pygame.init()
 screen = pygame.display.set_mode((640, 480))  # Setup screen
 clock = pygame.time.Clock()
 # Logo
-pygame.display.set_caption("John's Adventure  v0.0.352")
+pygame.display.set_caption("John's Adventure  v0.0.378")
 icon = pygame.image.load('data/ui/logo.ico')
 pygame.display.set_icon(icon)
 black = (0, 0, 0)  # Color black
@@ -185,7 +185,7 @@ def settings_catalog():
                 while counter <= 1 and not unmuted:
                     unmuted = True
                     counter += 1
-                    main_theme.stop()
+                    #main_theme.stop()
 
     screen.blit(settingsUI, setUIRect)
     if unmuted:
@@ -311,8 +311,7 @@ catalogImg = pygame.image.load('data/sprites/catalog.png').convert()
 
 
 def stairs_catalog():
-    global catalogImg, game, john_room, kitchen
-    global interactable
+    global catalogImg, game, john_room, kitchen, interactable
     text = Pixel_font.render("Go downstairs?", True, (255, 255, 255))
     changeMap = False
     if playerX >= 440 and playerX <= 530 and playerY >= 60 and playerY <= 120:
@@ -324,7 +323,7 @@ def stairs_catalog():
 
 
 def manos_hut():
-    global playerX, playerY
+    global playerX, playerY, interactable, route3, manosHut, world_value
     if playerX >= 80 and playerX <= 470 and playerY >= 80 and playerY <= 85:
         playerY = 85
     if playerX >= 70 and playerX < 80 and playerY < 85:
@@ -333,8 +332,11 @@ def manos_hut():
         playerX = 490
 
     if playerY < 90 and playerX > 255 and playerX < 305:
-        if dummie_task and not task_3:
+        if dummie_task and task_3:
             catalog_bubble('Get inside?')
+            if interactable:
+                route3, manosHut = False, True
+                world_value = 0
         else:
             catalog_bubble('This place is locked')
 
@@ -435,7 +437,7 @@ def out_of_bounds():
 
 # Chunks
 john_room, kitchen, basement = False, False, False
-route1, route2, route3, route4, training_field = False, False, False, False, False
+route1, route2, route3, route4, training_field, manosHut = False, False, False, False, False, False
 
 # World Functions and Values
 world_value = 0  # Very important for place position between worlds
@@ -446,7 +448,7 @@ currency = 0
 
 # Tasks
 dummie_task = False
-task_3 = True
+task_3 = False
 
 while game:
     if john_room and world_value == 0:
@@ -687,6 +689,11 @@ while game:
         playerX = 50
     elif route3 and world_value == 2:
         playerY = 350
+        if dummie_task:
+            task_3 = True
+    elif route3 and world_value == 3:
+        playerY = 110
+        playerX = 285
 
     while route3:
         background = pygame.image.load('data/sprites/world/route3.png')
@@ -699,7 +706,6 @@ while game:
         manos_hut()  # Manos hut with collisions and interfaces
         # Out of bounds
         out_of_bounds()
-
         if playerY >= 400:
             route3 = False
             route4 = True
@@ -715,6 +721,59 @@ while game:
         screen.blit(framerate(), (10, 0))
         clock.tick(60)
         pygame.display.update()
+
+    if manosHut and world_value == 0:  # Player spawn in manos hut
+        playerY = 360
+
+    while manosHut:
+        background = pygame.image.load('data/sprites/world/manos_hut.png')
+        screen.fill((0, 0, 0))
+        screen.blit(background, (0, 0))
+
+        hearts()
+        candy(90, 240, playerX, playerY, 1)  # Cat npc
+        manos(280, 160, playerX, playerY, dummie_task, 1)  # Spawn Manos young master npc
+        gameWindow()
+        controls()
+
+
+        player_pocket(currency)
+
+        if playerX >= 250 and playerX <= 365 and playerY > 380:
+            catalog_bubble('Go outside?')
+            if interactable:
+                route3, manosHut = True, False
+                world_value = 3
+        # Room limits
+        if playerY < 150 and playerX < 590:
+            playerY = 150
+        if playerX < 60:
+            playerX = 60
+        # Bed
+        if playerX >= 480 and playerY < 240:
+            playerX = 480
+        if playerX > 480 and playerY > 240 and playerY < 260:
+            playerY = 260
+
+        # Sofa
+        if playerY <= 320 and playerX > 200 and playerX < 210:
+            playerX = 210
+        if playerY <= 330 and playerX > 120 and playerX < 200:
+            playerY = 330
+        if playerY < 330 and playerX >= 110 and playerX < 120:
+            playerX = 110
+
+
+        #print(playerX, playerY)
+        out_of_bounds()  # Out of bounds
+        # MOVEMENT X AND Y
+        playerX += playerX_change
+        playerY -= playerY_change
+        screen.blit(cursor, (pygame.mouse.get_pos()))
+        screen.blit(framerate(), (10, 0))
+        clock.tick(60)
+        pygame.display.update()
+
 
     if route4 and world_value == 0:
         playerY = 50
@@ -749,10 +808,9 @@ while game:
         clock.tick(60)
         pygame.display.update()
 
-    if training_field and world_value == 0:
-        playerX = 50
-        if dummie_task:
-            task_3 = False
+    if training_field:
+        if world_value == 0:
+            playerX = 50
 
     while training_field:
         background = pygame.image.load('data/sprites/world/training_field.png')
@@ -762,9 +820,9 @@ while game:
         training_dummie()  # Training Dummie
         hearts()
 
-        if task_3:
-            candy(350, 120, playerX, playerY)  # Cat npc
-            manos(240, 100, playerX, playerY, dummie_task)  # Spawn Manos young master npc
+        if not task_3:
+            candy(350, 120, playerX, playerY, 0)  # Cat npc
+            manos(240, 100, playerX, playerY, dummie_task, 0)  # Spawn Manos young master npc
             # Manos collisions
             if playerX >= 195 and playerX <= 200 and playerY >= 70 and playerY <= 120:  # Left collision
                 playerX = 195
