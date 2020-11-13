@@ -5,16 +5,15 @@ import pygame, sys, random, math, time, os
 from pygame import mixer
 from data.catalogs import *
 from data.engine import *
-from pygame.locals import *
 
 pygame.init()
-screen = pygame.display.set_mode((640, 480)) # Setup screen
+screen = pygame.display.set_mode((640, 480))  # Setup screen
 clock = pygame.time.Clock()
 # Logo
 pygame.display.set_caption("John's Adventure  v0.0.352")
 icon = pygame.image.load('data/ui/logo.ico')
 pygame.display.set_icon(icon)
-black = (0, 0, 0) # Color black
+black = (0, 0, 0)  # Color black
 # Main menu
 myfont = pygame.font.SysFont("Comic Sans Ms", 24)
 title_font = pygame.font.SysFont("Comic Sans Ms", 84)
@@ -37,19 +36,16 @@ settingsButton.center = (320, 375)
 Pixel_font = pygame.font.Font("data/fonts/pixelfont.ttf", 18)
 
 # Background music
-#main_theme = mixer.Sound("data/sound/forest_theme.flac")
-#main_theme.play(-1)
+# main_theme = mixer.Sound("data/sound/forest_theme.flac")
+# main_theme.play(-1)
 
 LeftIdle, RightIdle, UpIdle, DownIdle = False, False, False, True
 
 
 # Controls
 def controls():
-    global playerX, playerY
-    global playerX_change, playerY_change
-    global walkCount                                                                                                                        
-    global left, right, up, down
-    global LeftIdle, RightIdle, UpIdle, DownIdle
+    global playerX, playerY, playerX_change, playerY_change, walkCount
+    global LeftIdle, RightIdle, UpIdle, DownIdle, left, right, up, down
     global interactable, currency, attackEnemy
 
     for event in pygame.event.get():
@@ -93,7 +89,6 @@ def controls():
                 attackEnemy = True
             else:
                 attackEnemy = False
-
 
         # When user stops doing a key input
         if event.type == pygame.KEYUP:
@@ -146,6 +141,7 @@ def hitbox():
 
     return swordRect
 
+
 def framerate():
     fps = str(int(clock.get_fps()))
     fps_text = Pixel_font.render(fps, 1, pygame.Color("yellow"))
@@ -153,8 +149,6 @@ def framerate():
 
 
 exitImg = pygame.image.load('data/ui/exit_button.png')
-
-
 def exit_button():
     global exitImg, canChange
     exitBtn = exitImg.get_rect()
@@ -282,19 +276,12 @@ walkDown = [pygame.image.load('data/sprites/player/playerdown1.png'),
             pygame.image.load('data/sprites/player/playerdown2.png'),
             pygame.image.load('data/sprites/player/playerdown1.png')]
 
+left, right, down, up = False, False, False, False
 
-
-left = False
-right = False
-up = False
-down = False
-
-
-# This function is responsible for player's animation
-def gameWindow():
+def gameWindow():  # This function is responsible for player's animation
     global walkCount
     global left, right, up, down
-    global upAttack,downAttack, leftAttack, rightAttack
+    global upAttack, downAttack, leftAttack, rightAttack
     if walkCount + 1 >= 27:
         walkCount = 0
     if left:
@@ -318,6 +305,7 @@ def gameWindow():
             screen.blit(walkUp[0], (playerX, playerY))
         elif DownIdle:
             screen.blit(playerImg, (playerX, playerY))
+
 
 catalogImg = pygame.image.load('data/sprites/catalog.png').convert()
 
@@ -351,8 +339,9 @@ def manos_hut():
             catalog_bubble('This place is locked')
 
 
-
 sword_Task = True
+
+
 def sword_task(posX, posY):
     global catalogImg, playerY, playerX, interactable, sword_Task, player_equipped
     sword = pygame.image.load('data/items/wooden_sword.png')
@@ -372,7 +361,7 @@ def sword_task(posX, posY):
     return posX, posY
 
 
-def blacksmith_col(): # Blacksmith collisions
+def blacksmith_col():  # Blacksmith collisions
     global playerX, playerY
     if playerY <= 70 and playerX >= 320:
         playerX = 320
@@ -394,7 +383,6 @@ attackEnemy = False
 traning_dummieImg = pygame.image.load('data/npc/training_dummie.png')
 traning_dummieRect = traning_dummieImg.get_rect()
 traning_dummieRect.center = (385, 290)
-
 
 dummieHP = 100
 
@@ -434,6 +422,16 @@ def status():
     print('|_______________________________________________|')
 
 
+def out_of_bounds():
+    global playerX, playerY
+    if playerX <= 5:
+        playerX = 5
+    elif playerX >= 580:
+        playerX = 580
+    if playerY <= 10:
+        playerY = 10
+    elif playerY >= 410:
+        playerY = 410
 
 # Chunks
 john_room, kitchen, basement = False, False, False
@@ -451,7 +449,6 @@ dummie_task = False
 task_3 = True
 
 while game:
-    status()
     if john_room and world_value == 0:
         playerX = 150
         playerY = 150
@@ -548,15 +545,7 @@ while game:
                 catalog_bubble("Door is locked")
 
         # Out of bounds
-        if playerX <= 5:
-            playerX = 5
-        elif playerX >= 580:
-            playerX = 580
-        # Y Position 900
-        if playerY <= 10:
-            playerY = 10
-        elif playerY >= 410:
-            playerY = 410
+        out_of_bounds()
         if playerY <= 40 and playerX <= 245:
             playerY = 40
 
@@ -638,16 +627,9 @@ while game:
         elif playerX <= 220 and playerY <= 65:
             playerY = 65
 
-        # Out of bounds
-        if playerX <= 5:
-            playerX = 5
-        elif playerX >= 580:
-            playerX = 580
-        # Y Position 900
-        if playerY <= 10:
-            playerY = 10
-        elif playerY >= 410:
-            playerY = 410
+
+        out_of_bounds()
+        
         if playerY <= 40 and playerX <= 245:
             playerY = 40
 
@@ -680,15 +662,7 @@ while game:
         player_pocket(currency)
 
         # Out of bounds
-        if playerX <= 5:
-            playerX = 5
-        elif playerX >= 580:
-            playerX = 580
-        # Y Position 900
-        if playerY <= 10:
-            playerY = 10
-        elif playerY >= 410:
-            playerY = 410
+        out_of_bounds()
         if playerY <= 40 and playerX <= 105:
             playerY = 40
 
@@ -722,17 +696,9 @@ while game:
         hearts()
         controls()
         player_pocket(currency)
-        manos_hut() # Manos hut with collisions and interfaces
+        manos_hut()  # Manos hut with collisions and interfaces
         # Out of bounds
-        if playerX <= 5:
-            playerX = 5
-        elif playerX >= 580:
-            playerX = 580
-        # Y Position 900
-        if playerY <= 10:
-            playerY = 10
-        elif playerY >= 410:
-            playerY = 410
+        out_of_bounds()
 
         if playerY >= 400:
             route3 = False
@@ -765,15 +731,7 @@ while game:
         player_pocket(currency)
 
         # Out of bounds
-        if playerX <= 5:
-            playerX = 5
-        elif playerX >= 580:
-            playerX = 580
-        # Y Position 900
-        if playerY <= 10:
-            playerY = 10
-        elif playerY >= 410:
-            playerY = 410
+        out_of_bounds()
 
         if playerX >= 580:
             route4, training_field = False, True
@@ -782,8 +740,7 @@ while game:
             world_value = 2
             route3, route4 = True, False
 
-        if dummie_task:
-            task_3 = False
+        
         # MOVEMENT X AND Y
         playerX += playerX_change
         playerY -= playerY_change
@@ -794,9 +751,9 @@ while game:
 
     if training_field and world_value == 0:
         playerX = 50
+        if dummie_task:
+            task_3 = False
 
-    # elif world_value == 2:
-    # pass
     while training_field:
         background = pygame.image.load('data/sprites/world/training_field.png')
         screen.fill((0, 0, 0))
@@ -808,17 +765,15 @@ while game:
         if task_3:
             candy(350, 120, playerX, playerY)  # Cat npc
             manos(240, 100, playerX, playerY, dummie_task)  # Spawn Manos young master npc
-
-        # Manos collisions
-        if playerX >= 195 and playerX <= 200 and playerY >= 70 and playerY <= 120: # Left collision
-            playerX = 195
-        if playerY > 120 and playerY < 130 and playerX > 195 and playerX <= 270: # Bottom collision
-            playerY = 130
-        if playerX > 270 and playerX <= 285 and playerY >= 70 and playerY <= 120: # Right collision
-            playerX = 285
-        if playerX > 195 and playerX <= 270 and playerY >= 50 and playerY < 70:
-            playerY = 50
-
+            # Manos collisions
+            if playerX >= 195 and playerX <= 200 and playerY >= 70 and playerY <= 120:  # Left collision
+                playerX = 195
+            if playerY > 120 and playerY < 130 and playerX > 195 and playerX <= 270:  # Bottom collision
+                playerY = 130
+            if playerX > 270 and playerX <= 285 and playerY >= 70 and playerY <= 120:  # Right collision
+                playerX = 285
+            if playerX > 195 and playerX <= 270 and playerY >= 50 and playerY < 70:
+                playerY = 50
 
         blacksmith_col()
         if dummie_task:
@@ -830,16 +785,8 @@ while game:
         hitbox()
         controls()
         player_pocket(currency)
-        # Out of bounds
-        if playerX <= 5:
-            playerX = 5
-        elif playerX >= 580:
-            playerX = 580
-        # Y Position 900
-        if playerY <= 10:
-            playerY = 10
-        elif playerY >= 410:
-            playerY = 410
+        
+        out_of_bounds()
 
         if playerX <= 10:
             world_value = 2
