@@ -93,7 +93,7 @@ def manos(mx, my,playerX, playerY, bool):
     dummieTask_Text2 = Pixel_font.render("your daily training? good.", True, (255, 255, 255))
     dummieTask_Text3 = Pixel_font.render("start by showing me what you got", True, (255, 255, 255))
     controls_guide = Pixel_font2.render("(Press left shift to attack)", True, (255, 255, 255))
-    taskText = Pixel_font.render("Well done", True, (255, 255, 255))
+    taskText = Pixel_font.render("Well done, i gotta go now see ya", True, (255, 255, 255))
 
     screen.blit(manosImg, (mx, my))
     if playerX >= mx - 50 and playerX <= mx + 50 and playerY >= my - 50 and playerY <= my + 50:
@@ -110,7 +110,7 @@ def manos(mx, my,playerX, playerY, bool):
 
 blacksmithImg = pygame.image.load('data/npc/blacksmith_shop.png')
 blacksmithRect = blacksmithImg.get_rect()
-blacksmithRect.center = (400, 80)
+blacksmithRect.center = (500, 60)
 
 
 def blacksmith_shop():

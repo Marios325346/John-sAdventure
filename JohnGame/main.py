@@ -8,19 +8,13 @@ from data.engine import *
 from pygame.locals import *
 
 pygame.init()
-
-# screen
-screen = pygame.display.set_mode((640, 480))
+screen = pygame.display.set_mode((640, 480)) # Setup screen
 clock = pygame.time.Clock()
-
 # Logo
 pygame.display.set_caption("John's Adventure  v0.0.352")
 icon = pygame.image.load('data/ui/logo.ico')
 pygame.display.set_icon(icon)
-
-# Colors
-black = (0, 0, 0)
-
+black = (0, 0, 0) # Color black
 # Main menu
 myfont = pygame.font.SysFont("Comic Sans Ms", 24)
 title_font = pygame.font.SysFont("Comic Sans Ms", 84)
@@ -53,7 +47,7 @@ LeftIdle, RightIdle, UpIdle, DownIdle = False, False, False, True
 def controls():
     global playerX, playerY
     global playerX_change, playerY_change
-    global walkCount
+    global walkCount                                                                                                                        
     global left, right, up, down
     global LeftIdle, RightIdle, UpIdle, DownIdle
     global interactable, currency, attackEnemy
@@ -151,10 +145,6 @@ def hitbox():
         screen.blit(sword_Image, swordRect)
 
     return swordRect
-
-
-
-
 
 def framerate():
     fps = str(int(clock.get_fps()))
@@ -345,9 +335,24 @@ def stairs_catalog():
             kitchen = True
 
 
+def manos_hut():
+    global playerX, playerY
+    if playerX >= 80 and playerX <= 470 and playerY >= 80 and playerY <= 85:
+        playerY = 85
+    if playerX >= 70 and playerX < 80 and playerY < 85:
+        playerX = 70
+    if playerY < 85 and playerX > 470 and playerX <= 490:
+        playerX = 490
+
+    if playerY < 90 and playerX > 255 and playerX < 305:
+        if dummie_task and not task_3:
+            catalog_bubble('Get inside?')
+        else:
+            catalog_bubble('This place is locked')
+
+
+
 sword_Task = True
-
-
 def sword_task(posX, posY):
     global catalogImg, playerY, playerX, interactable, sword_Task, player_equipped
     sword = pygame.image.load('data/items/wooden_sword.png')
@@ -365,6 +370,15 @@ def sword_task(posX, posY):
                 player_equipped = True  # Player has globally his equipment
 
     return posX, posY
+
+
+def blacksmith_col(): # Blacksmith collisions
+    global playerX, playerY
+    if playerY <= 70 and playerX >= 320:
+        playerX = 320
+    if playerY > 70 and playerY <= 80 and playerX > 320:
+        playerY = 80
+        catalog_bubble('Shop is currently closed')
 
 
 playerImg = pygame.image.load('data/sprites/player/playeridle.png')  # Player
@@ -434,6 +448,7 @@ currency = 0
 
 # Tasks
 dummie_task = False
+task_3 = True
 
 while game:
     status()
@@ -707,7 +722,7 @@ while game:
         hearts()
         controls()
         player_pocket(currency)
-
+        manos_hut() # Manos hut with collisions and interfaces
         # Out of bounds
         if playerX <= 5:
             playerX = 5
@@ -767,6 +782,8 @@ while game:
             world_value = 2
             route3, route4 = True, False
 
+        if dummie_task:
+            task_3 = False
         # MOVEMENT X AND Y
         playerX += playerX_change
         playerY -= playerY_change
@@ -787,10 +804,12 @@ while game:
         blacksmith_shop()  # Blacksmith shop
         training_dummie()  # Training Dummie
         hearts()
-        candy(350, 120, playerX, playerY)  # Cat npc
-        manos(240, 100, playerX, playerY, dummie_task)  # Spawn Manos young master npc
 
-        #Manos collisions
+        if task_3:
+            candy(350, 120, playerX, playerY)  # Cat npc
+            manos(240, 100, playerX, playerY, dummie_task)  # Spawn Manos young master npc
+
+        # Manos collisions
         if playerX >= 195 and playerX <= 200 and playerY >= 70 and playerY <= 120: # Left collision
             playerX = 195
         if playerY > 120 and playerY < 130 and playerX > 195 and playerX <= 270: # Bottom collision
@@ -801,6 +820,7 @@ while game:
             playerY = 50
 
 
+        blacksmith_col()
         if dummie_task:
             while counter < 1:
                 currency += 10
