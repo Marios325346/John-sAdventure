@@ -1,15 +1,9 @@
 import pygame, random
-from pygame import *
-
 screen = pygame.display.set_mode((640, 480))
 pygame.init()
 
-# Colors
-black = (0, 0, 0)
-
+black = (0, 0, 0) # Colors
 Pixel_font = pygame.font.Font("data/fonts/pixelfont.ttf", 14)
-
-
 def hearts():
     health = 100
     max_health = 100
@@ -20,28 +14,28 @@ def hearts():
     screen.blit(heartImg, (heartX, heartY))
     screen.blit(hp_text, (heartX + 87, heartY + 12))
 
-
 # ----------- NON PLAYER CHARACTERS (NPC) ------------
-
 catalogImg = pygame.image.load('data/sprites/catalog.png')
-cynthiaImg = pygame.image.load("data/npc/Cynthia.png")
-
-
-def player_pocket(currency):
-    money = Pixel_font.render(str(currency) + "€", True, black)
-    screen.blit(money, (105, 443))
-
-
 chestImg = pygame.image.load('data/sprites/chest.png')
 chestRect = chestImg.get_rect()
-chestRect.center = (400, 105)
+def player_pocket(x):
+    money = Pixel_font.render(str(x) + "€", True, black)
+    screen.blit(money, (105, 443))
 
-
-def chest():
+def chest(x, y, playerX, playerY, bool):
     global catalogImg
+    chestRect.center = (x, y)
     screen.blit(chestImg, chestRect)
+    text = Pixel_font.render("You opened the chest and found ", True, (255, 255, 255))
+    text2 = Pixel_font.render("some coins. Now it's empty.", True, (255, 255, 255))
+    if playerX >= x - 150 and playerX <= x + 150 and playerY <= y + 100:
+        if bool:
+            screen.blit(catalogImg, (100, 340))
+            screen.blit(text, (120, 350))
+            screen.blit(text2, (120, 380))
+    return x, y
 
-
+cynthiaImg = pygame.image.load("data/npc/Cynthia.png")
 def cynthia(cynthiaX, cynthiaY, playerX, playerY):
     global catalogImg, cynthiaImg
 
@@ -59,10 +53,8 @@ def cynthia(cynthiaX, cynthiaY, playerX, playerY):
 
     return cynthiaX, cynthiaY
 
-
 candyImg = pygame.image.load("data/npc/candy.png")
 candySleeping = pygame.image.load("data/npc/candy_sleeping.png")
-
 def candy(catX, catY, playerX, playerY, count):
     global catalogImg, candyImg
     gatoulis_text = Pixel_font.render("Meow meow meow", True, (255, 255, 255))
@@ -86,19 +78,15 @@ def candy(catX, catY, playerX, playerY, count):
         screen.blit(candySleeping, (catX, catY))
     return catX, catY
 
-
 mauImg = pygame.image.load("data/npc/Mau.png")
 mauRect = mauImg.get_rect()
 mauRect.center = (250, 450)
-
-
 def mau():
     global catalogImg, mauImg
     screen.blit(mauImg, mauRect)
 
-
 manosImg = pygame.image.load("data/npc/manos.png")
-def manos(mx, my,playerX, playerY, bool, count):
+def manos(mx, my, playerX, playerY, bool, count):
     global catalogImg, manosImg
     Pixel_font2 = pygame.font.Font("data/fonts/pixelfont.ttf", 12)
     dummieTask_Text = Pixel_font.render("hey man what's up? here for", True, (255, 255, 255))
@@ -124,12 +112,32 @@ def manos(mx, my,playerX, playerY, bool, count):
 
     return mx, my
 
+transparent_black = pygame.image.load("data/ui/black_overlay.png")
+note = pygame.image.load('data/items/note.png')
+cynthias_Note = pygame.image.load('data/items/cynthias_note.png')
+def cynthia_Note(playerX, playerY, bool):
+    screen.blit(note, (120, 180))
+    if playerX < 190 and playerY > 130 and playerY < 190:
+        if bool:
+            screen.blit(transparent_black, (0, 0))
+            screen.blit(cynthias_Note, (220, 110))
 
 blacksmithImg = pygame.image.load('data/npc/blacksmith_shop.png')
 blacksmithRect = blacksmithImg.get_rect()
 blacksmithRect.center = (500, 60)
-
-
 def blacksmith_shop():
     global catalogImg, blacksmithImg
     screen.blit(blacksmithImg, blacksmithRect)
+
+def catalog_bubble(text):
+    global catalogImg
+
+    catalogText = Pixel_font.render(text, True, (255, 255, 255))
+    screen.blit(catalogImg, (100, 340))
+    screen.blit(catalogText, (120, 350))
+    return text
+
+def catalog_bubble2(text):
+    catalogText = Pixel_font.render(text, True, (255, 255, 255))
+    screen.blit(catalogText, (120, 380))
+    return text
