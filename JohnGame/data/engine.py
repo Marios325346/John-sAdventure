@@ -141,3 +141,37 @@ def catalog_bubble2(text):
     catalogText = Pixel_font.render(text, True, (255, 255, 255))
     screen.blit(catalogText, (120, 380))
     return text
+
+
+def controller(bool):
+    controllerImg = pygame.image.load('data/ui/controller.png')
+    if bool:
+        screen.blit(controllerImg, (550, 430))
+
+
+y = 0
+def credits_text():
+    global y
+    john_logo = pygame.image.load('data/ui/logo.png')
+    text0 = Pixel_font.render("JOHN'S ADVENTURE CHAPTER 1", True, (255, 255, 255))
+    text1 = Pixel_font.render('Thank you for playing the game!', True, (255, 255, 255))
+    text2 = Pixel_font.render('Credits', True, (255, 255, 255))
+    text3 = Pixel_font.render('Story writer Manos Dazenis', True, (255, 255, 255))
+    text4 = Pixel_font.render('Assistant Marios Papazogloy', True, (255, 255, 255))
+    text5 = Pixel_font.render('__Programming Team__', True, (255, 255, 255))
+    text6 = Pixel_font.render('Programmer Leader Marios Papazogloy', True, (255, 255, 255))
+    text7 = Pixel_font.render('Level/ Art Design Marios Papazogloy', True, (255, 255, 255))
+    text8 = Pixel_font.render('Music Design Thanos Pallis', True, (255, 255, 255))
+
+    for i in range(1):
+        y += 0.2
+    screen.blit(text0, (140, 250-y))
+    screen.blit(text1, (140, 350-y))
+    screen.blit(john_logo, (140, 530))
+    screen.blit(text2, (140, 500-y))
+    screen.blit(text3, (140, 550-y))
+    screen.blit(text4, (140, 570 - y))
+    screen.blit(text5, (140, 670 - y))
+    screen.blit(text6, (140, 690 - y))
+    screen.blit(text7, (140, 770 - y))
+    screen.blit(text8, (140, 810 - y))
