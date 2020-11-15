@@ -9,6 +9,8 @@ pygame.display.set_caption("John's Adventure  v0.0.378")
 icon = pygame.image.load('data/ui/logo.ico')
 pygame.display.set_icon(icon)
 black = (0, 0, 0)  # Color black
+red = (255, 0, 0)
+lime = (0, 255, 0)
 myfont = pygame.font.SysFont("Comic Sans Ms", 24)
 title_font = pygame.font.SysFont("Comic Sans Ms", 84)
 menu_background = pygame.image.load('data/sprites/mainmenu.png')
@@ -184,6 +186,7 @@ def controls(): # Player Controls
             #  Player attack
             if event.key == pygame.K_LSHIFT:
                 attackEnemy = True
+                hitbox()
                 counter = 0
             else:
                 attackEnemy = False
@@ -226,16 +229,18 @@ sword_Image = pygame.image.load("data/items/hitbox.png")
 swordRect = sword_Image.get_rect()
 def hitbox():
     global up, down, left, right, playerX, playerY
-    swordRect.center = (playerX + 30, playerY + 35)
     if left or LeftIdle:
+        swordRect.center = (playerX - 16, playerY + 35)
         screen.blit(sword_Image, swordRect)
     elif right or RightIdle:
+        swordRect.center = (playerX + 80, playerY + 35)
         screen.blit(sword_Image, swordRect)
     elif down or DownIdle:
+        swordRect.center = (playerX + 30, playerY + 80)
         screen.blit(sword_Image, swordRect)
     elif up or UpIdle:
+        swordRect.center = (playerX + 30, playerY - 25)
         screen.blit(sword_Image, swordRect)
-
     return swordRect
 
 def gameWindow():  # This function is responsible for player's animation
@@ -326,14 +331,22 @@ dummieImg = pygame.image.load('data/npc/training_dummie.png')
 dummieRect = dummieImg.get_rect()
 counter = 0
 health = 100
+showHp = False
 def training_dummie(x, y):
-    global catalogImg, dummieImg, dummie_task, counter, health
+    global catalogImg, dummieImg, dummie_task, counter, health, showHp
     dummieRect.center = (x, y)
+
+    if showHp:
+        pygame.draw.rect(screen, black, (x - 49, y - 60, 102, 10))  # black bar
+        pygame.draw.rect(screen, red, (x - 49, y - 59, 100, 8))  # red bar
+        pygame.draw.rect(screen, lime, (x - 49, y - 59, health, 8))  # lime bar
+
     if dummieRect.collidepoint(swordRect[0], swordRect[1]):
         if attackEnemy:
-            while counter < 1 and health > 0:
+            while counter < 1 and health > 0:  # Play a sound on hit, decrease hp, and hit vfx
                 health -= 10
                 counter += 1
+            showHp = True
             print("Dummie HP:", health)
     if health <= 0:
         dummieImg = pygame.image.load('data/npc/broken_dummie.png')
@@ -748,7 +761,6 @@ while game:
         blacksmith_col()
 
         gameWindow()
-        hitbox()
         controls()
         player_pocket(currency)
 
