@@ -152,7 +152,6 @@ def controller(bool):
 y = 0
 def credits_text():
     global y
-    john_logo = pygame.image.load('data/ui/logo.png')
     text0 = Pixel_font.render("JOHN'S ADVENTURE CHAPTER 1", True, (255, 255, 255))
     text1 = Pixel_font.render('Thank you for playing the game!', True, (255, 255, 255))
     text2 = Pixel_font.render('Credits', True, (255, 255, 255))
@@ -167,7 +166,6 @@ def credits_text():
         y += 0.2
     screen.blit(text0, (140, 250-y))
     screen.blit(text1, (140, 350-y))
-    screen.blit(john_logo, (140, 530))
     screen.blit(text2, (140, 500-y))
     screen.blit(text3, (140, 550-y))
     screen.blit(text4, (140, 570 - y))

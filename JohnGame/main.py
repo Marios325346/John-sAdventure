@@ -5,7 +5,7 @@ from data.engine import *
 pygame.init()
 screen = pygame.display.set_mode((640, 480))  # Setup screen
 clock = pygame.time.Clock()
-pygame.display.set_caption("John's Adventure  v0.0.378")
+pygame.display.set_caption("John's Adventure  v0.0.4")
 icon = pygame.image.load('data/ui/logo.ico')
 pygame.display.set_icon(icon)
 black = (0, 0, 0)  # Color black
@@ -23,9 +23,9 @@ playButton.center = (320, 305)
 quitImg = pygame.image.load("data/ui/quit.png").convert()
 quitButton = quitImg.get_rect()
 quitButton.center = (320, 445)
-settingsImg = pygame.image.load('data/ui/settings.png').convert()
-settingsButton = settingsImg.get_rect()
-settingsButton.center = (320, 375)
+aboutImg = pygame.image.load('data/ui/about.png').convert()
+aboutButton = aboutImg.get_rect()
+aboutButton.center = (320, 375)
 Pixel_font = pygame.font.Font("data/fonts/pixelfont.ttf", 18)
 controller_value = pygame.joystick.get_init()
 #Initialize controller
@@ -35,7 +35,6 @@ for i in range(pygame.joystick.get_count()):
 for joystick in joysticks:
     joystick.init()
 
-
 with open(os.path.join("data/ps4_keys.json"), 'r+') as file:
     button_keys = json.load(file)
 
@@ -43,8 +42,6 @@ with open(os.path.join("data/ps4_keys.json"), 'r+') as file:
 # 3: Right Analog Vertical 4: Left Trigger, 5: Right Trigger
 analog_keys = {0:0, 1:0, 2:0, 3:0, 4:-1, 5: -1 }
 
-# main_theme = mixer.Sound("data/sound/forest_theme.flac") # Background music
-# main_theme.play(-1)
 def framerate():
     fps = str(int(clock.get_fps()))
     fps_text = Pixel_font.render(fps, 1, pygame.Color("yellow"))
@@ -64,32 +61,40 @@ def exit_button():
 
     screen.blit(exitImg, exitBtn)
 
-settingsUI = pygame.image.load('data/ui/settings_screen.png')
-setUIRect = settingsUI.get_rect()
-setUIRect.center = (320, 250)
-muteImg = [pygame.image.load('data/ui/unmuted.png'), pygame.image.load('data/ui/muted.png')]
-muteRect = muteImg[0].get_rect()
-muteRect.center = (140, 150)
+aboutUI = pygame.image.load('data/ui/about_screen.png')
+aboutRect = aboutUI.get_rect()
+aboutRect.center = (320, 250)
+
 unmuted = False
 def settings_catalog():
     global settingsUI, setUIRect, unmuted, counter
+    text = Pixel_font.render("Welcome to John's Adventure!", True, (0, 0, 0))
 
-    if muteRect.collidepoint(pygame.mouse.get_pos()):
-        counter = 0
-        for event in pygame.event.get():
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                while counter <= 1 and not unmuted:
-                    unmuted = True
-                    counter += 1
-                    # main_theme.stop()
+    text2 = Pixel_font.render("Controls:", True, (0, 0, 0))
+    controls = Pixel_font.render("UP/Down/Left/Right/Enter/Shift", True, (0, 0, 0))
+    controller_guide = pygame.image.load('data/ui/controller_guide.png')
 
-    screen.blit(settingsUI, setUIRect)
-    if unmuted:
-        screen.blit(muteImg[1], muteRect)
-    else:
-        screen.blit(muteImg[0], muteRect)
+    screen.blit(aboutUI, aboutRect)
+    screen.blit(text, (116, 190))
+    screen.blit(text2, (250, 225))
+    screen.blit(controls, (100, 260))
+    screen.blit(controller_guide, (150, 300))
+
+
+
+
 canChange = False
 menu = True
+
+# MUSIC & SOUND
+
+music_list = [mixer.Sound("data/sound/forest_theme_part1.flac"), mixer.Sound("data/sound/home_theme.flac"),mixer.Sound("data/sound/forest_theme.flac"), mixer.Sound("data/sound/press_start_sound.wav")]
+
+for i in range(len(music_list)):
+    music_list[i].set_volume(0.3)
+
+if menu:
+    music_list[0].play()
 while menu:
     screen.fill((0, 0, 0))
     # background image load
@@ -102,19 +107,19 @@ while menu:
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 menu = False
-                #StartSound = mixer.Sound("data/sound/press_start_sound.wav")
+                music_list[0].stop()
                 #StartSound.play()
                 game = True
     else:
         playImg = pygame.image.load('data/ui/button interface.png')
     # Settings
-    if settingsButton.collidepoint(pygame.mouse.get_pos()):
-        settingsImg = pygame.image.load('data/ui/settings_hover.png')
+    if aboutButton.collidepoint(pygame.mouse.get_pos()):
+        aboutImg = pygame.image.load('data/ui/about_hover.png')
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 canChange = True
     else:
-        settingsImg = pygame.image.load('data/ui/settings.png')
+        aboutImg = pygame.image.load('data/ui/about.png')
 
     # Quit
     if quitButton.collidepoint(pygame.mouse.get_pos()):
@@ -130,7 +135,7 @@ while menu:
 
     screen.blit(playImg, playButton)
     screen.blit(quitImg, quitButton)
-    screen.blit(settingsImg, settingsButton)
+    screen.blit(aboutImg, aboutButton)
 
     # When player clicks settings
     if canChange:
@@ -458,7 +463,7 @@ attackEnemy = False
 john_room, kitchen, basement = False, False, False  # Chunks & World Values
 route1, route2, route3, route4, training_field, manosHut, credits_screen = False, False, False, False, False, False, False
 world_value = 0  # Very important for place position between worlds
-route1 = True  # The world you want to start with (Pretty useful to check maps faster)
+john_room = True  # The world you want to start with (Pretty useful to check maps faster)
 counter = 0
 currency = 0  # Player's bank  pls dont hack it brooo :((((((((((((((((
 i = 0
@@ -467,24 +472,28 @@ paused = False
 dummie_task = False  # Tasks
 task_3 = False
 readNote = False
+interactable = False
 while game:
     if john_room and world_value == 0:
         playerX = 150
         playerY = 150
+        music_list[1].play(-1)
 
     elif john_room and world_value == 1:
         playerX = 380
         playerY = 120
     while john_room:
+
+
         background = pygame.image.load('data/sprites/Johns_room.png')
         screen.blit(background, (0, 0))  # Display the background image
+        chest(400, 105, playerX, playerY, interactable)
         gameWindow()  # Player
         hearts()  # Player UI
         stairs_catalog()  # Catalog when player gets the nearby stairs
         controls()  # Player Controls
         player_pocket(currency)
         mau()  # Spawn Mau the grey cat
-        chest(400, 105, playerX, playerY, interactable)
         if playerX >= 360 and playerX <= 420 and playerY <= 105:
             playerY = 105
             if interactable:
@@ -554,6 +563,7 @@ while game:
                     route1 = True
                     basement = False
                     world_value = 0
+                    music_list[1].stop()
             else:
                 catalog_bubble("Door is locked")
         out_of_bounds()  # Out of bounds
@@ -608,6 +618,7 @@ while game:
     if route1 and world_value == 0:
         playerX = 285
         playerY = 70
+        music_list[2].play(-1)
     elif route1 and world_value == 1:
         playerX = 550
     while route1:
@@ -626,6 +637,7 @@ while game:
                 route1 = False
                 kitchen = True
                 basement = False
+                music_list[2].stop()
         #  Fence collision
         if playerX >= 360 and playerY <= 65:
             playerY = 65
@@ -727,23 +739,17 @@ while game:
                 while j < 1:
                     currency += 40
                     j += 1
-
         candy(90, 240, playerX, playerY, 1)  # Cat npc
         manos(280, 160, playerX, playerY, dummie_task, 1)  # Spawn Manos young master npc
         gameWindow()
         controls()
         player_pocket(currency)
-
-        # print (playerX, playerY)
-
         if playerX >= 250 and playerX <= 365 and playerY > 380:
             catalog_bubble('Go outside?')
             if interactable:
                 credits_screen, manosHut = True, False
                 world_value = 3
-
-        # Room limits
-        if playerY < 150 and playerX < 590:
+        if playerY < 150 and playerX < 590: # Room limits
             playerY = 150
         if playerX < 60:
             playerX = 60
@@ -759,7 +765,6 @@ while game:
             playerY = 330
         if playerY < 330 and playerX >= 110 and playerX < 120:
             playerX = 110
-
         out_of_bounds()  # Out of bounds
         # MOVEMENT X AND Y
         playerX += playerX_change
@@ -782,17 +787,14 @@ while game:
         hearts()
         controls()
         player_pocket(currency)
-
         # Out of bounds
         out_of_bounds()
-
         if playerX >= 580:
             route4, training_field = False, True
             world_value = 0
         if playerY <= 10:
             world_value = 2
             route3, route4 = True, False
-
         # MOVEMENT X AND Y
         playerX += playerX_change
         playerY -= playerY_change
