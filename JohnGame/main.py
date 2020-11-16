@@ -40,12 +40,12 @@ for i in range(pygame.joystick.get_count()):
 for joystick in joysticks:
     joystick.init()
 
-with open(os.path.join("data/ps4_keys.json"), 'r+') as file:
+with open(os.path.join("data/controller_keys.json"), 'r+') as file:
     button_keys = json.load(file)
 
 # 0: Left analog horizonal, 1: Left Analog Vertical, 2: Right Analog Horizontal
 # 3: Right Analog Vertical 4: Left Trigger, 5: Right Trigger
-analog_keys = {0:0, 1:0, 2:0, 3:0, 4:-1, 5: -1 }
+analog_keys = {0:0, 1:0, 2:0, 3:0, 4:-1, 5: -1}
 
 def framerate():
     fps = str(int(clock.get_fps()))
@@ -70,11 +70,9 @@ unmuted = False
 def settings_catalog():
     global settingsUI, setUIRect, unmuted, counter
     text = Pixel_font.render("Welcome to John's Adventure!", True, (0, 0, 0))
-
     text2 = Pixel_font.render("Controls:", True, (0, 0, 0))
     controls = Pixel_font.render("UP/Down/Left/Right/Enter/Shift", True, (0, 0, 0))
     controller_guide = pygame.image.load('data/ui/controller_guide.png')
-
     screen.blit(aboutUI, aboutRect)
     screen.blit(text, (116, 190))
     screen.blit(text2, (250, 225))
@@ -218,6 +216,7 @@ def controls(): # Player Controls
                 walkCount = 0
             if event.button == button_keys["options"]:
                 paused = True
+                # HANDLES ANALOG INPUTS
 
         # KEYBOARD INPUT
         if event.type == pygame.KEYDOWN:
@@ -245,7 +244,12 @@ def controls(): # Player Controls
             #  Player Interact
             if event.key == pygame.K_RETURN:
                 interactable = True
-                interact_value += 1
+
+                if interact_value != 3:
+                    interact_value += 1
+                else:
+                    interact_value = 1
+                print(interact_value)
             else:
                 interactable = False
 
@@ -466,6 +470,7 @@ interactable = False
 interact_value = 0
 while game:
     interact_value = 0
+    pl = 0
     if john_room and world_value == 0:
         playerX = 150
         playerY = 150
@@ -530,7 +535,10 @@ while game:
             if playerX < 190 and playerY > 130 and playerY < 190:
                 readNote = True
         else:
-            cynthia(350, 30, playerX, playerY, interactable)  # Cynthia NPC
+            while pl < 1:
+                interact_value = 0
+                pl += 1
+            cynthia(350, 30, playerX, playerY, interactable, interact_value)  # Cynthia NPC
         if playerY <= 50 and playerX >= 310 and playerX <= 400:
             playerX = 400
         if playerY >= 41 and playerY <= 90 and playerX >= 300 and playerX <= 380:
@@ -578,6 +586,7 @@ while game:
     if basement:
         playerX = 80
         playerY = 340
+        pl = 0
     while basement:
         background = pygame.image.load('data/sprites/basement.png')
         screen.fill((0, 0, 0))
@@ -727,6 +736,8 @@ while game:
 
     if manosHut and world_value == 0:  # Player spawn in manos hut
         playerY = 360
+        interact_value = 0
+        pl = 0
     while manosHut:
         background = pygame.image.load('data/sprites/world/manos_hut.png')
         screen.fill((0, 0, 0))
@@ -737,11 +748,11 @@ while game:
                 while j < 1:
                     currency += 40
                     j += 1
+        hearts()
         candy(90, 240, playerX, playerY, 1)  # Cat npc
-        manos(280, 160, playerX, playerY, dummie_task, 1)  # Spawn Manos young master npc
+        manos(280, 160, playerX, playerY, dummie_task, 1, interact_value)  # Spawn Manos young master npc
         gameWindow()
         controls()
-        hearts()
         player_pocket(currency)
         pause_menu()
         if playerX >= 250 and playerX <= 365 and playerY > 380:
@@ -804,8 +815,11 @@ while game:
         pygame.display.update()
 
     if training_field:
+        pl = 0
+        interact_value = 0
         if world_value == 0:
             playerX = 50
+
     while training_field:
         background = pygame.image.load('data/sprites/world/training_field.png')
         screen.fill((0, 0, 0))
@@ -814,7 +828,7 @@ while game:
         hearts()
         if not task_3:
             candy(350, 120, playerX, playerY, 0)  # Cat npc
-            manos(240, 100, playerX, playerY, dummie_task, 0)  # Spawn Manos young master npc
+            manos(240, 100, playerX, playerY, dummie_task, 0, interact_value)  # Spawn Manos young master npc
             training_dummie(385, 290)  # Training Dummie
             # Manos collisions
             if playerX >= 195 and playerX <= 200 and playerY >= 70 and playerY <= 120:  # Left collision

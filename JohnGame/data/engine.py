@@ -20,7 +20,9 @@ transparent_black = pygame.image.load("data/ui/black_overlay.png")
 note = pygame.image.load('data/items/note.png')
 cynthias_Note = pygame.image.load('data/items/cynthias_note.png')
 manosImg = pygame.image.load("data/npc/manos.png")
+showCatalog = True
 y = 0
+pl = 0
 
 def hearts():
     health = 100
@@ -49,20 +51,28 @@ def chest(x, y, playerX, playerY, bool):
             screen.blit(text2, (120, 380))
     return x, y
 
-def cynthia(cynthiaX, cynthiaY, playerX, playerY, bool):
-    global catalogImg, cynthiaImg
+
+def cynthia(cynthiaX, cynthiaY, playerX, playerY, bool, interact_value):
+    global catalogImg, cynthiaImg, showCatalog
     screen.blit(cynthiaImg, (cynthiaX, cynthiaY))
-    cynthia_text = Pixel_font.render("Good morning brother, your sword", True, (255, 255, 255))
-    cynthia_text2 = Pixel_font.render("is in the basement, your teacher", True, (255, 255, 255))
-    cynthia_text3 = Pixel_font.render("is waiting for you in the training", True, (255, 255, 255))
-    cynthia_text4 = Pixel_font.render("field.   -Cynthia", True, (255, 255, 255))
+    cynthia_text = Pixel_font.render("Good morning brother.", True, (255, 255, 255))
+    cynthia_text2 = Pixel_font.render("your sword is in the basement", True, (255, 255, 255))
+    cynthia_text3 = Pixel_font.render("your teacher is waiting for you ", True, (255, 255, 255))
+    cynthia_text4 = Pixel_font.render("in the training field. -Cynthia", True, (255, 255, 255))
     if playerX >= cynthiaX - 50 and playerX <= cynthiaX + 50 and playerY >= cynthiaY + 10 and playerY <= cynthiaY + 60:
         if bool:
-            screen.blit(catalogImg, (100, 340))
-            screen.blit(cynthia_text, (120, 350))
-            screen.blit(cynthia_text2, (120, 370))
-            screen.blit(cynthia_text3, (120, 390))
-            screen.blit(cynthia_text4, (120, 410))
+            showCatalog = True
+            if showCatalog:
+                if interact_value == 1:
+                    screen.blit(catalogImg, (100, 340))
+                    screen.blit(cynthia_text, (120, 370))
+                    screen.blit(cynthia_text2, (120, 390))
+                elif interact_value == 2:
+                    screen.blit(catalogImg, (100, 340))
+                    screen.blit(cynthia_text3, (120, 370))
+                    screen.blit(cynthia_text4, (120, 390))
+                else:
+                    showCatalog = False
     return cynthiaX, cynthiaY
 
 def candy(catX, catY, playerX, playerY, count):
@@ -90,27 +100,50 @@ def mau():
     global catalogImg, mauImg
     screen.blit(mauImg, mauRect)
 
-def manos(mx, my, playerX, playerY, bool, count):
+def manos(mx, my, playerX, playerY, bool, count, interact_value):
     global catalogImg, manosImg
-    Pixel_font2 = pygame.font.Font("data/fonts/pixelfont.ttf", 12)
-    dummieTask_Text = Pixel_font.render("hey man what's up? here for", True, (255, 255, 255))
-    dummieTask_Text2 = Pixel_font.render("your daily training? good.", True, (255, 255, 255))
+    Pixel_font = pygame.font.Font("data/fonts/pixelfont.ttf", 12)
+    Pixel_font2 = pygame.font.Font("data/fonts/pixelfont.ttf", 13)
+    dummieTask_Text = Pixel_font.render("hey man what's up?", True, (255, 255, 255))
+    dummieTask_Text2 = Pixel_font.render("here for your daily training? good.", True, (255, 255, 255))
     dummieTask_Text3 = Pixel_font.render("start by showing me what you got", True, (255, 255, 255))
-    controls_guide = Pixel_font2.render("(Press left shift to attack)", True, (255, 255, 255))
-    taskText = Pixel_font.render("Well done, i gotta go now see ya", True, (255, 255, 255))
-    hutText1 = Pixel_font.render("Hey John what happened?", True, (255, 255, 255))
+    controls_guide = Pixel_font2.render("(Press left shift or [] to attack)", True, (255, 255, 255))
+    taskText = Pixel_font.render("not bad, we'll practice tomorrow.", True, (255, 255, 255))
     screen.blit(manosImg, (mx, my))
     if playerX >= mx - 50 and playerX <= mx + 50 and playerY >= my - 50 and playerY <= my + 50:
         screen.blit(catalogImg, (100, 340))
-        if not bool and count == 0:
-            screen.blit(dummieTask_Text, (120, 355))
-            screen.blit(dummieTask_Text2, (120, 380))
-            screen.blit(dummieTask_Text3, (120, 405))
-            screen.blit(controls_guide, (180, 435))
-        elif bool and count == 0:
+        if not bool and count == 0:  # Text before you defeat the dummy
+            if interact_value == 0 or interact_value == 1:
+                screen.blit(dummieTask_Text, (120, 355))
+            elif interact_value == 2:
+                screen.blit(dummieTask_Text2, (120, 380))
+                screen.blit(dummieTask_Text3, (120, 405))
+            else:
+                screen.blit(controls_guide, (130, 390))
+        elif bool and count == 0:  # Text when you defeat the dummy
             screen.blit(taskText, (120, 355))
-        elif bool and count == 1:
-            screen.blit(hutText1, (120, 355))
+            task1 = Pixel_font.render("if you wanna hang out,", True, (255, 255, 255))
+            task2 = Pixel_font.render("come by my house later.", True, (255, 255, 255))
+            screen.blit(task1, (120, 375))
+            screen.blit(task2, (120, 395))
+        elif bool and count == 1:  # Text when you talk at him in the hut
+            manos1 = Pixel_font.render('hey John why did you come by so early?', True, (255, 255, 255))
+            john1 = Pixel_font.render('"I found a letter at my house and"', True, (255, 255, 255))
+            john2 = Pixel_font.render('my sister was missing.', True, (255, 255, 255))
+            john3 = Pixel_font.render('Know anything about it?"', True, (255, 255, 255))
+            manos2 = Pixel_font.render("I might have an idea what happened", True, (255, 255, 255))
+            manos3 = Pixel_font.render("to your sister. Meet me outside.", True, (255, 255, 255))
+            manos4 = Pixel_font.render("I'll explain everything later.", True, (255, 255, 255))
+            if interact_value == 0 or interact_value == 1:
+                screen.blit(manos1, (120, 355))
+            elif interact_value == 2:
+                screen.blit(john1, (120, 355))
+                screen.blit(john2, (120, 375))
+                screen.blit(john3, (120, 395))
+            else:
+                screen.blit(manos2, (120, 355))
+                screen.blit(manos3, (120, 375))
+                screen.blit(manos4, (120, 395))
     return mx, my
 
 def cynthia_Note(playerX, playerY, bool):
