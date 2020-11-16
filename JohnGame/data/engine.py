@@ -49,7 +49,7 @@ def chest(x, y, playerX, playerY, bool):
             screen.blit(text2, (120, 380))
     return x, y
 
-def cynthia(cynthiaX, cynthiaY, playerX, playerY):
+def cynthia(cynthiaX, cynthiaY, playerX, playerY, bool):
     global catalogImg, cynthiaImg
     screen.blit(cynthiaImg, (cynthiaX, cynthiaY))
     cynthia_text = Pixel_font.render("Good morning brother, your sword", True, (255, 255, 255))
@@ -57,11 +57,12 @@ def cynthia(cynthiaX, cynthiaY, playerX, playerY):
     cynthia_text3 = Pixel_font.render("is waiting for you in the training", True, (255, 255, 255))
     cynthia_text4 = Pixel_font.render("field.   -Cynthia", True, (255, 255, 255))
     if playerX >= cynthiaX - 50 and playerX <= cynthiaX + 50 and playerY >= cynthiaY + 10 and playerY <= cynthiaY + 60:
-        screen.blit(catalogImg, (100, 340))
-        screen.blit(cynthia_text, (120, 350))
-        screen.blit(cynthia_text2, (120, 370))
-        screen.blit(cynthia_text3, (120, 390))
-        screen.blit(cynthia_text4, (120, 410))
+        if bool:
+            screen.blit(catalogImg, (100, 340))
+            screen.blit(cynthia_text, (120, 350))
+            screen.blit(cynthia_text2, (120, 370))
+            screen.blit(cynthia_text3, (120, 390))
+            screen.blit(cynthia_text4, (120, 410))
     return cynthiaX, cynthiaY
 
 def candy(catX, catY, playerX, playerY, count):
@@ -148,11 +149,12 @@ def credits_text():
     text0 = Pixel_font.render("JOHN'S ADVENTURE CHAPTER 1", True, (255, 255, 255))
     text1 = Pixel_font.render('Thank you for playing the game!', True, (255, 255, 255))
     text2 = Pixel_font.render('Credits', True, (255, 255, 255))
-    text3 = Pixel_font.render('Story writer Manos Dazenis', True, (255, 255, 255))
+    text3 = Pixel_font.render('Story writer Manos Danezis', True, (255, 255, 255))
     text5 = Pixel_font.render('__Programming Team__', True, (255, 255, 255))
     text6 = Pixel_font.render('Programmer Leader Marios Papazogloy', True, (255, 255, 255))
     text7 = Pixel_font.render('Level/ Art Design Marios Papazogloy', True, (255, 255, 255))
     text8 = Pixel_font.render('Music Design Thanos Pallis', True, (255, 255, 255))
+    text9 = Pixel_font.render('Manos Danezis', True, (255, 255, 255))
     for i in range(1):
         y += 0.2
     screen.blit(text0, (140, 250-y))
@@ -161,5 +163,6 @@ def credits_text():
     screen.blit(text3, (140, 550-y))
     screen.blit(text5, (140, 670 - y))
     screen.blit(text6, (140, 690 - y))
-    screen.blit(text7, (140, 770 - y))
+    screen.blit(text7, (140, 740 - y))
+    screen.blit(text9, (140, 760 - y))
     screen.blit(text8, (140, 810 - y))

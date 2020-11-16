@@ -152,7 +152,7 @@ left, right, down, up = False, False, False, False
 def controls(): # Player Controls
     global playerX, playerY, playerX_change, playerY_change, walkCount
     global LeftIdle, RightIdle, UpIdle, DownIdle, left, right, up, down
-    global interactable, currency, attackEnemy, counter, paused
+    global interactable, currency, attackEnemy, counter, paused, interact_value
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -161,19 +161,19 @@ def controls(): # Player Controls
         # CONTROLLER INPUT
         if event.type == pygame.JOYBUTTONDOWN:
             if event.button == button_keys['left_arrow']:
-                playerX_change = -5
+                playerX_change = -3
                 left = True
                 right, up, down = False, False, False
             if event.button == button_keys['right_arrow']:
-                playerX_change = 5
+                playerX_change = 3
                 right = True
                 up, left, down = False, False, False
             if event.button == button_keys['down_arrow']:
-                playerY_change = -5
+                playerY_change = -3
                 down = True
                 left, right, up = False, False, False
             if event.button == button_keys['up_arrow']:
-                playerY_change = 5
+                playerY_change = 3
                 up = True
                 down, right, left = False, False, False
             if event.button == button_keys['square']:
@@ -222,22 +222,22 @@ def controls(): # Player Controls
         # KEYBOARD INPUT
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
-                playerX_change = -5
+                playerX_change = -3
                 left = True
                 right, up, down = False, False, False
             # Right
             if event.key == pygame.K_RIGHT:
-                playerX_change = 5
+                playerX_change = 3
                 right = True
                 up, left, down = False, False, False
             # Up
             if event.key == pygame.K_UP:
-                playerY_change = 5
+                playerY_change = 3
                 up = True
                 down, right, left = False, False, False
             # Down
             if event.key == pygame.K_DOWN:
-                playerY_change = -5
+                playerY_change = -3
                 down = True
                 left, right, up = False, False, False
             if event.key == pygame.K_ESCAPE:
@@ -245,6 +245,7 @@ def controls(): # Player Controls
             #  Player Interact
             if event.key == pygame.K_RETURN:
                 interactable = True
+                interact_value += 1
             else:
                 interactable = False
 
@@ -355,7 +356,6 @@ def manos_hut():
         playerX = 70
     if playerY < 85 and playerX > 470 and playerX <= 490:
         playerX = 490
-
     if playerY < 90 and playerX > 255 and playerX < 305:
         if dummie_task and task_3 and readNote:
             catalog_bubble('Get inside?')
@@ -367,23 +367,27 @@ def manos_hut():
 
 sword_Task = True
 def sword_task(posX, posY):
-    global catalogImg, playerY, playerX, interactable, sword_Task, player_equipped
+    global catalogImg, playerY, playerX, interactable, sword_Task, player_equipped, interact_value, pl
     sword = pygame.image.load('data/items/wooden_sword_item.png')
     rotate_sword = pygame.transform.rotate(sword, 90)
     sword_text = Pixel_font.render("Take sword?", True, (255, 255, 255))
     if sword_Task:
         screen.blit(rotate_sword, (posX, posY))
-        #  Player/Item collision checking
-        if playerX >= posX - 50 and playerX <= posX + 50 and playerY >= posY - 50 and playerY <= posY + 50:
-            if sword_Task:
-                screen.blit(catalogImg, (100, 340))
+    if playerX >= posX - 50 and playerX <= posX + 50 and playerY >= posY - 50 and playerY <= posY + 50:
+        if interactable:
+            screen.blit(catalogImg, (100, 340))
+            while pl < 1:
+                interact_value = 0
+                pl += 1
+            if interact_value < 1:
                 screen.blit(sword_text, (120, 350))  # Text that asks if player wants to equip his sword
-            if interactable:
-                sword_Task = False
+            else:
+                sword_text = Pixel_font.render("You took the sword.", True, (255, 255, 255))
                 player_equipped = True  # Player has globally his equipment
-
+                sword_Task = False
+                screen.blit(sword_text, (120, 350))
+                print(interact_value)
     return posX, posY
-
 
 def blacksmith_col():  # Blacksmith collisions
     global playerX, playerY
@@ -401,7 +405,6 @@ showHp = False
 def training_dummie(x, y):
     global catalogImg, dummieImg, dummie_task, counter, health, showHp
     dummieRect.center = (x, y)
-
     if showHp:
         pygame.draw.rect(screen, black, (x - 49, y - 60, 102, 10))  # black bar
         pygame.draw.rect(screen, red, (x - 49, y - 59, 100, 8))  # red bar
@@ -454,13 +457,15 @@ john_room, kitchen, basement = False, False, False  # Chunks & World Values
 route1, route2, route3, route4, training_field, manosHut, credits_screen = False, False, False, False, False, False, False
 john_room = True  # The world you want to start with (Pretty useful to check maps faster)
 world_value, counter, currency = 0, 0, 0  # Player's bank  pls dont hack it brooo :(((((((((((((((( # Very important for place position between worlds
-i, j = 0, 0
+i, j, pl = 0, 0, 0
 paused = False
 dummie_task = False  # Tasks
 task_3 = False
 readNote = False
 interactable = False
+interact_value = 0
 while game:
+    interact_value = 0
     if john_room and world_value == 0:
         playerX = 150
         playerY = 150
@@ -525,7 +530,7 @@ while game:
             if playerX < 190 and playerY > 130 and playerY < 190:
                 readNote = True
         else:
-            cynthia(350, 30, playerX, playerY)  # Cynthia NPC
+            cynthia(350, 30, playerX, playerY, interactable)  # Cynthia NPC
         if playerY <= 50 and playerX >= 310 and playerX <= 400:
             playerX = 400
         if playerY >= 41 and playerY <= 90 and playerX >= 300 and playerX <= 380:
@@ -619,6 +624,9 @@ while game:
         controls()
         player_pocket(currency)
         pause_menu()
+
+        if playerX <= 20:
+            catalog_bubble('You have no access to this route')
         if playerY <= 55 and playerX >= 270 and playerX <= 320:  # Return to john's house
             catalog_bubble("Return home?")
             if interactable:
