@@ -31,7 +31,7 @@ aboutRect.center = (320, 250)
 controller_value = pygame.joystick.get_init()
 
 # MUSIC & SOUND
-music_list = [mixer.Sound("data/sound/forest_theme_part1.flac"), mixer.Sound("data/sound/home_theme.flac"),mixer.Sound("data/sound/forest_theme.flac"), mixer.Sound("data/sound/press_start_sound.wav")]
+music_list = [mixer.Sound("data/sound/forest_theme_part1.flac"), mixer.Sound("data/sound/home_theme.flac"), mixer.Sound("data/sound/forest_theme.flac"), mixer.Sound("data/sound/press_start_sound.wav")]
 
 #Initialize controller
 joysticks = []
@@ -182,6 +182,11 @@ def controls(): # Player Controls
                 attackEnemy = False
             if event.button == button_keys['x']:
                 interactable = True
+                if interact_value != 3:
+                    interact_value += 1
+                else:
+                    interact_value = 1
+                print(interact_value)
             else:
                 interactable = False
 
