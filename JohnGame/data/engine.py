@@ -110,7 +110,7 @@ def manos(mx, my, playerX, playerY, bool, count, interact_value):
     controls_guide = Pixel_font2.render("(Press left shift or [] to attack)", True, (255, 255, 255))
     taskText = Pixel_font.render("not bad, we'll practice tomorrow.", True, (255, 255, 255))
     screen.blit(manosImg, (mx, my))
-    if playerX >= mx - 50 and playerX <= mx + 50 and playerY >= my - 50 and playerY <= my + 50:
+    if playerX >= mx - 50 and playerX <= mx + 50 and playerY >= my - 50 and playerY <= my + 30:
         screen.blit(catalogImg, (100, 340))
         if not bool and count == 0:  # Text before you defeat the dummy
             if interact_value == 0 or interact_value == 1:

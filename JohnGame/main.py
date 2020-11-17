@@ -1,7 +1,8 @@
 # COPYRIGHT 2020-2021 version 0.0.378
-import pygame, sys, os, json# Libraries
+import pygame, sys, os, json  # Libraries
 from pygame import mixer
 from data.engine import *
+
 pygame.init()
 screen = pygame.display.set_mode((640, 480))  # Setup screen
 clock = pygame.time.Clock()
@@ -31,9 +32,10 @@ aboutRect.center = (320, 250)
 controller_value = pygame.joystick.get_init()
 
 # MUSIC & SOUND
-music_list = [mixer.Sound("data/sound/forest_theme_part1.flac"), mixer.Sound("data/sound/home_theme.flac"), mixer.Sound("data/sound/forest_theme.flac"), mixer.Sound("data/sound/press_start_sound.wav")]
+music_list = [mixer.Sound("data/sound/forest_theme_part1.flac"), mixer.Sound("data/sound/home_theme.flac"),
+              mixer.Sound("data/sound/forest_theme.flac"), mixer.Sound("data/sound/press_start_sound.wav")]
 
-#Initialize controller
+# Initialize controller
 joysticks = []
 for i in range(pygame.joystick.get_count()):
     joysticks.append(pygame.joystick.Joystick(i))
@@ -45,13 +47,18 @@ with open(os.path.join("data/controller_keys.json"), 'r+') as file:
 
 # 0: Left analog horizonal, 1: Left Analog Vertical, 2: Right Analog Horizontal
 # 3: Right Analog Vertical 4: Left Trigger, 5: Right Trigger
-analog_keys = {0:0, 1:0, 2:0, 3:0, 4:-1, 5: -1}
+analog_keys = {0: 0, 1: 0, 2: 0, 3: 0, 4: -1, 5: -1}
+
 
 def framerate():
     fps = str(int(clock.get_fps()))
     fps_text = Pixel_font.render(fps, 1, pygame.Color("yellow"))
     return fps_text
+
+
 exitImg = pygame.image.load('data/ui/exit_button.png')
+
+
 def exit_button():
     global exitImg, canChange
     exitBtn = exitImg.get_rect()
@@ -66,7 +73,10 @@ def exit_button():
 
     screen.blit(exitImg, exitBtn)
 
+
 unmuted = False
+
+
 def settings_catalog():
     global settingsUI, setUIRect, unmuted, counter
     text = Pixel_font.render("Welcome to John's Adventure!", True, (0, 0, 0))
@@ -78,6 +88,7 @@ def settings_catalog():
     screen.blit(text2, (250, 225))
     screen.blit(controls, (100, 260))
     screen.blit(controller_guide, (150, 300))
+
 
 canChange = False
 menu = True
@@ -99,7 +110,7 @@ while menu:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 menu = False
                 music_list[0].stop()
-                #StartSound.play()
+                # StartSound.play()
                 game = True
     else:
         playImg = pygame.image.load('data/ui/button interface.png')
@@ -141,13 +152,23 @@ while menu:
     pygame.display.update()
 
 walkCount = 0  # Player Animation Counter
-walkRight = [pygame.image.load('data/sprites/player/playerright1.png'), pygame.image.load('data/sprites/player/playerright2.png'), pygame.image.load('data/sprites/player/playerright1.png')]  # Walk Right
-walkLeft = [pygame.image.load('data/sprites/player/playerleft1.png'), pygame.image.load('data/sprites/player/playerleft2.png'), pygame.image.load('data/sprites/player/playerleft1.png')]  # Walk Left
-walkUp = [pygame.image.load('data/sprites/player/playerup1.png'),pygame.image.load('data/sprites/player/playerup2.png'), pygame.image.load('data/sprites/player/playerup1.png')]  # Walk Up
-walkDown = [pygame.image.load('data/sprites/player/playerdown1.png'),pygame.image.load('data/sprites/player/playerdown2.png'), pygame.image.load('data/sprites/player/playerdown1.png')]  # Walk Down
+walkRight = [pygame.image.load('data/sprites/player/playerright1.png'),
+             pygame.image.load('data/sprites/player/playerright2.png'),
+             pygame.image.load('data/sprites/player/playerright1.png')]  # Walk Right
+walkLeft = [pygame.image.load('data/sprites/player/playerleft1.png'),
+            pygame.image.load('data/sprites/player/playerleft2.png'),
+            pygame.image.load('data/sprites/player/playerleft1.png')]  # Walk Left
+walkUp = [pygame.image.load('data/sprites/player/playerup1.png'),
+          pygame.image.load('data/sprites/player/playerup2.png'),
+          pygame.image.load('data/sprites/player/playerup1.png')]  # Walk Up
+walkDown = [pygame.image.load('data/sprites/player/playerdown1.png'),
+            pygame.image.load('data/sprites/player/playerdown2.png'),
+            pygame.image.load('data/sprites/player/playerdown1.png')]  # Walk Down
 LeftIdle, RightIdle, UpIdle, DownIdle = False, False, False, True
 left, right, down, up = False, False, False, False
-def controls(): # Player Controls
+
+
+def controls():  # Player Controls
     global playerX, playerY, playerX_change, playerY_change, walkCount
     global LeftIdle, RightIdle, UpIdle, DownIdle, left, right, up, down
     global interactable, currency, attackEnemy, counter, paused, interact_value
@@ -298,6 +319,7 @@ def controls(): # Player Controls
                 LeftIdle, RightIdle, UpIdle = False, False, False
                 walkCount = 0
 
+
 sword_Image = pygame.image.load("data/items/hitbox.png")
 swordRect = sword_Image.get_rect()
 wooden_sword = [
@@ -306,6 +328,8 @@ wooden_sword = [
     pygame.image.load('data/items/wooden_sword_left.png'),
     pygame.image.load('data/items/wooden_sword_right.png')
 ]
+
+
 def hitbox():
     global up, down, left, right, playerX, playerY, player_equipped
     if left or LeftIdle:
@@ -357,6 +381,7 @@ def gameWindow():  # This function is responsible for player's animation
         elif DownIdle:
             screen.blit(playerImg, (playerX, playerY))
 
+
 def manos_hut():
     global playerX, playerY, interactable, route3, manosHut, world_value, readNote
     if playerX >= 80 and playerX <= 470 and playerY >= 80 and playerY <= 85:
@@ -374,7 +399,10 @@ def manos_hut():
         else:
             catalog_bubble('This place is locked')
 
+
 sword_Task = True
+
+
 def sword_task(posX, posY):
     global catalogImg, playerY, playerX, interactable, sword_Task, player_equipped, interact_value, pl
     sword = pygame.image.load('data/items/wooden_sword_item.png')
@@ -398,6 +426,7 @@ def sword_task(posX, posY):
                 print(interact_value)
     return posX, posY
 
+
 def blacksmith_col():  # Blacksmith collisions
     global playerX, playerY
     if playerY <= 70 and playerX >= 320:
@@ -406,11 +435,13 @@ def blacksmith_col():  # Blacksmith collisions
         playerY = 80
         catalog_bubble('Shop is currently closed')
 
+
 dummieImg = pygame.image.load('data/npc/training_dummie.png')
 dummieRect = dummieImg.get_rect()
 counter = 0
 health = 100
 showHp = False
+
 def training_dummie(x, y):
     global catalogImg, dummieImg, dummie_task, counter, health, showHp
     dummieRect.center = (x, y)
@@ -433,6 +464,7 @@ def training_dummie(x, y):
         dummieImg = pygame.image.load('data/npc/training_dummie.png')
     screen.blit(dummieImg, dummieRect)
 
+
 def out_of_bounds():
     global playerX, playerY
     if playerX <= 5:
@@ -444,18 +476,20 @@ def out_of_bounds():
     elif playerY >= 410:
         playerY = 410
 
+
 def pause_menu():
     global transparent_black, paused, playerX_change, playerY_change, interactable
     Pixel_fontL = pygame.font.Font("data/fonts/pixelfont.ttf", 36)
-    text = Pixel_fontL.render('PAUSED', True, (255,255,255))
-    text2 = Pixel_font.render('To continue press Enter or (X)', True, (255,255,255))
+    text = Pixel_fontL.render('PAUSED', True, (255, 255, 255))
+    text2 = Pixel_font.render('To continue press Enter or (X)', True, (255, 255, 255))
     if paused:
-        playerX_change , playerY_change = 0, 0
+        playerX_change, playerY_change = 0, 0
         screen.blit(transparent_black, (0, 0))
         screen.blit(text, (220, 150))
         screen.blit(text2, (100, 300))
         if interactable:
             paused = False
+
 
 playerImg = pygame.image.load('data/sprites/player/playeridle.png')  # Player
 playerX, playerX_change = 0, 0
@@ -464,11 +498,11 @@ playerY, playerY_change = 0, 0
 attackEnemy, player_equipped = False, False
 john_room, kitchen, basement = False, False, False  # Chunks & World Values
 route1, route2, route3, route4, training_field, manosHut, credits_screen = False, False, False, False, False, False, False
-john_room = True  # The world you want to start with (Pretty useful to check maps faster)
-world_value, counter, currency = 0, 0, 0  # Player's bank  pls dont hack it brooo :(((((((((((((((( # Very important for place position between worlds
+route1 = True  # The world you want to start with (Pretty useful to check maps faster)
+world_value, counter, currency = 0, 0, 0  # spawn points, counter, player currency
 i, j, pl = 0, 0, 0
 paused = False
-dummie_task = False  # Tasks
+dummie_task = False
 task_3 = False
 readNote = False
 interactable = False
@@ -638,7 +672,6 @@ while game:
         controls()
         player_pocket(currency)
         pause_menu()
-
         if playerX <= 20:
             catalog_bubble('You have no access to this route')
         if playerY <= 55 and playerX >= 270 and playerX <= 320:  # Return to john's house
@@ -657,7 +690,7 @@ while game:
         out_of_bounds()
         if playerY <= 40 and playerX <= 245:
             playerY = 40
-        if playerX >= 580:
+        if playerX >= 580 and playerY < 290:
             route1 = False
             route2 = True
             basement = False
@@ -676,6 +709,7 @@ while game:
         playerX = 520
     while route2:
         background = pygame.image.load('data/sprites/world/route2.png')
+        print(playerX,playerY)
         screen.fill((0, 0, 0))
         screen.blit(background, (0, 0))
         gameWindow()
@@ -684,13 +718,14 @@ while game:
         player_pocket(currency)
         pause_menu()
         out_of_bounds()  # Out of bounds
+        chest(530, 410, playerX, playerY, interactable)
         if playerY <= 40 and playerX <= 105:
             playerY = 40
-        if playerX >= 580:
+        if playerX >= 580 and playerY < 290:
             world_value = 0
             route2 = False
             route3 = True
-        elif playerX <= 10:
+        elif playerX <= 10 and playerY < 290:
             world_value = 1
             route2 = False
             route1 = True
@@ -713,6 +748,7 @@ while game:
         playerX = 285
     while route3:
         background = pygame.image.load('data/sprites/world/route3.png')
+        print(playerX, playerY)
         screen.fill((0, 0, 0))
         screen.blit(background, (0, 0))
         gameWindow()
@@ -756,6 +792,9 @@ while game:
         hearts()
         candy(90, 240, playerX, playerY, 1)  # Cat npc
         manos(280, 160, playerX, playerY, dummie_task, 1, interact_value)  # Spawn Manos young master npc
+        if playerX > 260 and playerX <= 300 and playerY >= 170 and playerY <= 180:
+            interact_value = 0
+            playerY = 181
         gameWindow()
         controls()
         player_pocket(currency)
@@ -765,7 +804,7 @@ while game:
             if interactable:
                 credits_screen, manosHut = True, False
                 world_value = 3
-        if playerY < 150 and playerX < 590: # Room limits
+        if playerY < 150 and playerX < 590:  # Room limits
             playerY = 150
         if playerX < 60:
             playerX = 60
@@ -840,6 +879,7 @@ while game:
                 playerX = 195
             if playerY > 120 and playerY < 130 and playerX > 195 and playerX <= 270:  # Bottom collision
                 playerY = 130
+                interact_value = 0
             if playerX > 270 and playerX <= 285 and playerY >= 70 and playerY <= 120:  # Right collision
                 playerX = 285
             if playerX > 195 and playerX <= 270 and playerY >= 50 and playerY < 70:
