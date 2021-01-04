@@ -1,0 +1,127 @@
+# CONTROLLER INPUT
+        if event.type == pygame.JOYBUTTONDOWN:
+            if event.button == button_keys['left_arrow']:
+                playerX_change = -3
+                left = True
+                right, up, down = False, False, False
+            if event.button == button_keys['right_arrow']:
+                playerX_change = 3
+                right = True
+                up, left, down = False, False, False
+            if event.button == button_keys['down_arrow']:
+                playerY_change = -3
+                down = True
+                left, right, up = False, False, False
+            if event.button == button_keys['up_arrow']:
+                playerY_change = 3
+                up = True
+                down, right, left = False, False, False
+            if event.button == button_keys['square']:
+                attackEnemy = True
+                hitbox()
+                counter = 0
+            else:
+                attackEnemy = False
+            if event.button == button_keys['x']:
+                interactable = True
+                if interact_value != 3:
+                    interact_value += 1
+                else:
+                    interact_value = 1
+            else:
+                interactable = False
+        if event.type == pygame.JOYBUTTONUP:
+            if event.button == button_keys['left_arrow']:
+                playerX_change = 0
+                playerY_change = 0
+                left, right, up, down = False, False, False, False
+                LeftIdle = True
+                DownIdle, RightIdle, UpIdle = False, False, False
+                walkCount = 0
+            if event.button == button_keys['right_arrow']:
+                playerX_change = 0
+                playerY_change = 0
+                left, right, up, down = False, False, False, False
+                RightIdle = True
+                DownIdle, LeftIdle, UpIdle = False, False, False
+                walkCount = 0
+            if event.button == button_keys['down_arrow']:
+                playerX_change = 0
+                playerY_change = 0
+                left, right, up, down = False, False, False, False
+                DownIdle = True
+                LeftIdle, RightIdle, UpIdle = False, False, False
+                walkCount = 0
+            if event.button == button_keys['up_arrow']:
+                playerX_change = 0
+                playerY_change = 0
+                left, right, up, down = False, False, False, False
+                UpIdle = True
+                DownIdle, RightIdle, LeftIdle = False, False, False
+                walkCount = 0
+            if event.button == button_keys["options"]:
+                paused = True
+                # HANDLES ANALOG INPUTS# CONTROLLER INPUT
+        if event.type == pygame.JOYBUTTONDOWN:
+            if event.button == button_keys['left_arrow']:
+                playerX_change = -3
+                left = True
+                right, up, down = False, False, False
+            if event.button == button_keys['right_arrow']:
+                playerX_change = 3
+                right = True
+                up, left, down = False, False, False
+            if event.button == button_keys['down_arrow']:
+                playerY_change = -3
+                down = True
+                left, right, up = False, False, False
+            if event.button == button_keys['up_arrow']:
+                playerY_change = 3
+                up = True
+                down, right, left = False, False, False
+            if event.button == button_keys['square']:
+                attackEnemy = True
+                hitbox()
+                counter = 0
+            else:
+                attackEnemy = False
+            if event.button == button_keys['x']:
+                interactable = True
+                if interact_value != 3:
+                    interact_value += 1
+                else:
+                    interact_value = 1
+            else:
+                interactable = False
+        if event.type == pygame.JOYBUTTONUP:
+            if event.button == button_keys['left_arrow']:
+                playerX_change = 0
+                playerY_change = 0
+                left, right, up, down = False, False, False, False
+                LeftIdle = True
+                DownIdle, RightIdle, UpIdle = False, False, False
+                walkCount = 0
+            if event.button == button_keys['right_arrow']:
+                playerX_change = 0
+                playerY_change = 0
+                left, right, up, down = False, False, False, False
+                RightIdle = True
+                DownIdle, LeftIdle, UpIdle = False, False, False
+                walkCount = 0
+            if event.button == button_keys['down_arrow']:
+                playerX_change = 0
+                playerY_change = 0
+                left, right, up, down = False, False, False, False
+                DownIdle = True
+                LeftIdle, RightIdle, UpIdle = False, False, False
+                walkCount = 0
+            if event.button == button_keys['up_arrow']:
+                playerX_change = 0
+                playerY_change = 0
+                left, right, up, down = False, False, False, False
+                UpIdle = True
+                DownIdle, RightIdle, LeftIdle = False, False, False
+                walkCount = 0
+            if event.button == button_keys["options"]:
+                paused = True
+                # HANDLES ANALOG INPUTS
