@@ -33,6 +33,7 @@ for i in range(pygame.joystick.get_count()):
     joysticks.append(pygame.joystick.Joystick(i))
 for joystick in joysticks:
     joystick.init()
+
 # 0: Left analog horizontal, 1: Left Analog Vertical, 2: Right Analog Horizontal
 # 3: Right Analog Vertical 4: Left Trigger, 5: Right Trigger
 analog_keys = {0: 0, 1: 0, 2: 0, 3: 0, 4: -1, 5: -1}
@@ -329,7 +330,7 @@ def sword_task(posX, posY):
             if interact_value < 1:
                 screen.blit(sword_text, (120, 350))  # Text that asks if player wants to equip his sword
             else:
-                sword_text = Pixel_font.render("You took the sword.", True, (255, 255, 255))
+                sword_text = Pixel_font.render("You took the sword.", True, (0,0,0))
                 player_equipped = True  # Player has globally his equipment
                 sword_Task = False
                 screen.blit(sword_text, (120, 350))
@@ -404,41 +405,28 @@ class dummy(object):
                 ranX = random.randint(self.x - 30, self.x + 30) # Random number around dummy's x
                 ranY = random.randint(self.y - 30, self.y + 30) # Random number around dummy's y
                 coin_storage.append(coin_system(ranX, ranY)) # append the positions     
-            coin_storage[0].update(player_rect)
-            coin_storage[1].update(player_rect)
-            coin_storage[2].update(player_rect)
+            coin_storage[0].update(player_rect) # Spawn coin.
+            coin_storage[1].update(player_rect) # Spawn coin.
+            coin_storage[2].update(player_rect) # Spawn coin.
             dummie_task = True # Completed your first mission
            
         else: # Dummy is stil alive  
              screen.blit(dummyImg, dummyRect)
-                
-                
+                              
         if self.showHPbar:
                 pygame.draw.rect(screen, ( 0, 0, 0), (self.x - 49,self.y - 60, 102, 10))  # black bar
                 pygame.draw.rect(screen, (255, 0, 0), (self.x - 49,self.y - 59, 100, 8))  # red bar
-                pygame.draw.rect(screen, (0, 255, 0), (self.x - 49,self.y - 59, self.hp, 8))  # lime bar
+                pygame.draw.rect(screen, (0, 255, 0), (self.x - 49,self.y - 59, self.hp, 8))  # lime bar    
 
-class catalog(object): # Creates a catalog bubble 
-    def __init__(self, x, y): # and text
-        global interactable
-        self.x = x
-        self.y = y
-        self.isShowing = True
 
-        #Catalog
-        catalog_img = pygame.image.load('data/ui/catalog_bubble.png')
-        catalog_rect = catalog_img.get_rect()
-        
-        catalog_rect.center = (self.x, self.y)
 
-        if interactable:
-            self.isShowing = False
 
-        if self.isShowing:
-            screen.blit(catalog_img , catalog_rect)
-       
 
-    #def update(self, text)
+chests = [
+    chest(), #0 johns room
+    chest(), #1 Route 2
+    chest()  #2 Manos Hut 
+]  
 
 
 if menu:
@@ -497,21 +485,15 @@ while menu:
 while game:
     if john_room and world_value == 0:
         playerX, playerY = 150, 150
-        music_list[1].play(-1)
+        music_list[1].play(-1)      
     elif john_room and world_value == 1:
         playerX, playerY = 420, 150
     while john_room:
         background = pygame.image.load('data/sprites/Johns_room.png')
         screen.blit(background, (0, 0))  # Display the background image
         mau()  # Spawn Mau the grey cat
-        chest(400, 105, playerX, playerY, interactable)
+        chests[0].update(400, 105,interactable, player_rect)
         player(), pause_menu()  # Player
-        if playerX >= 360 and playerX <= 420 and playerY <= 115:
-            playerY = 115
-            if interactable:
-                while i < 1:
-                    currency += 40
-                    i += 1
         if playerX >= 440 and playerX <= 530 and playerY >= 60 and playerY <= 120:
             catalog_bubble("Wanna go downstairs?")
             if interactable:
@@ -654,7 +636,7 @@ while game:
         screen.fill((0, 0, 0))
         screen.blit(background, (0, 0))
         player(), pause_menu(), out_of_bounds()  # Player
-        chest(530, 410, playerX, playerY, interactable)
+        chests[1].update(530, 410,interactable, player_rect)
         if playerY <= 40 and playerX < 105:
             playerY = 40
         if playerY <= 40 and playerX >= 106 and playerX <= 115:
@@ -702,15 +684,10 @@ while game:
         background = pygame.image.load('data/sprites/world/manos_hut.png')
         screen.fill((0, 0, 0))
         screen.blit(background, (0, 0))
-        chest(580, 300, playerX, playerY, interactable)  # Spawns chest
-        if playerX > 480 and playerY < 290:
-            if interactable:
-                while j < 1:
-                    currency += 40
-                    j += 1
-        out_of_bounds(), controls(),hearts(),player_pocket()
+        chests[2].update(580, 300,interactable, player_rect) # Mano's hut chest
+        out_of_bounds()
         candy(90, 240, playerX, playerY, 1)  # Cat npc
-        manos(280, 160, playerX, playerY, dummie_task, 1, interact_value),gameWindow()
+        manos(280, 160, playerX, playerY, dummie_task, 1, interact_value),player()
         if playerX > 260 and playerX <= 300 and playerY >= 170 and playerY <= 180:
             interact_value, playerY = 0, 181
         if playerX >= 250 and playerX <= 365 and playerY > 380:

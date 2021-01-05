@@ -1,3 +1,4 @@
+# COPYRIGHT 2020-2021 version 0.0.4
 import pygame
 from pygame import mixer
 screen = pygame.display.set_mode((640, 480))
@@ -6,8 +7,6 @@ black = (0, 0, 0)  # Colors
 Pixel_font = pygame.font.Font("data/fonts/pixelfont.ttf", 14)
 cynthiaImg = pygame.image.load("data/npc/Cynthia.png")
 catalogImg = pygame.image.load('data/ui/catalog_bubble.png')
-chestImg = pygame.image.load('data/sprites/chest.png')
-chestRect = chestImg.get_rect()
 candyImg = pygame.image.load("data/npc/candy.png")
 candySleeping = pygame.image.load("data/npc/candy_sleeping.png")
 mauImg = pygame.image.load("data/npc/Mau.png")
@@ -22,6 +21,9 @@ cynthias_Note = pygame.image.load('data/items/cynthias_note.png')
 manosImg = pygame.image.load("data/npc/manos.png")
 showCatalog = True
 y, pl = 0, 0
+
+
+# OLD CODE BUT IT SOULDN'T BE REMOVED FOR NOW
 def hearts():
     health = 100
     max_health = 100
@@ -31,17 +33,6 @@ def hearts():
     hp_text = Pixel_font.render(str(health), True, (255, 0, 0))
     screen.blit(heartImg, (heartX, heartY))
     screen.blit(hp_text, (heartX + 87, heartY + 12))
-def chest(x, y, playerX, playerY, bool):
-    global catalogImg
-    chestRect.center = (x, y)
-    screen.blit(chestImg, chestRect)
-    text = Pixel_font.render("You opened the chest and found ", True, (0,0,0))
-    text2 = Pixel_font.render("some coins. Now it's empty.", True, (0,0,0))
-    if playerX >= x - 80 and playerX <= x and playerY <= y + 80:
-        if bool:
-            screen.blit(catalogImg, (100, 340)),screen.blit(text, (120, 350))
-            screen.blit(text2, (120, 380))
-    return x, y
 def cynthia(cynthiaX, cynthiaY, playerX, playerY, bool, interact_value):
     global catalogImg, cynthiaImg, showCatalog
     screen.blit(cynthiaImg, (cynthiaX, cynthiaY))
@@ -165,10 +156,50 @@ def credits_text():
 
 
 player_money = 0
+
 def player_pocket():
     global player_money
     money = Pixel_font.render(str(player_money) + "€", True, black)
-    screen.blit(money, (110, 445))
+    screen.blit(money, (115, 445))
+
+
+class chest(object):
+
+    def __init__(self): 
+        self.isOpened = False   
+        self.counter = 0
+        self.value = 0
+        
+    def update(self, x, y, interactable, player_rect):
+        global player_money
+        self.x = x
+        self.y = y
+        #Images
+        chestImg = pygame.image.load('data/sprites/chest.png')
+        chestRect = chestImg.get_rect()
+        chestRect.center = (self.x, self.y)
+
+        if chestRect.collidepoint(player_rect[0] + 15, player_rect[1]):
+            catalog_bubble("Helloo owooo")
+            if interactable and not self.isOpened:  
+                while self.counter < 1:
+                    player_money += 40
+                    
+                    self.counter += 1
+                self.isOpened = True       
+            print(player_money)
+            if self.isOpened:
+                if self.value == 0:
+                    catalog_bubble("You found 40 coins")
+                else:
+                    catalog_bubble("The chest is now empty")
+            else:
+                catalog_bubble("Open the chest?")
+                
+        if not chestRect.collidepoint(player_rect[0] + 15, player_rect[1]) and self.isOpened:
+            self.value += 1
+
+        screen.blit(chestImg, chestRect)
 
 
 class coin_system(object):
