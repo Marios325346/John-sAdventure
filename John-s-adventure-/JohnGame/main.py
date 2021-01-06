@@ -71,7 +71,6 @@ walking = False
 attacking = False
 idling = True
 cooldown = 0
-
 player_hitbox = pygame.image.load('data/items/hitbox.png')
 player_rect = player_hitbox.get_rect()
 
@@ -118,6 +117,7 @@ attack_left = [ pygame.image.load('data/sprites/player/playerleft1.png'),
 
 
 # Functions
+
 def framerate():
     fps = str(int(clock.get_fps()))
     fps_text = Pixel_font.render(fps, 1, pygame.Color("yellow"))
@@ -418,10 +418,6 @@ class dummy(object):
                 pygame.draw.rect(screen, (255, 0, 0), (self.x - 49,self.y - 59, 100, 8))  # red bar
                 pygame.draw.rect(screen, (0, 255, 0), (self.x - 49,self.y - 59, self.hp, 8))  # lime bar    
 
-
-
-
-
 chests = [
     chest(), #0 johns room
     chest(), #1 Route 2
@@ -568,15 +564,15 @@ while game:
         background = pygame.image.load('data/sprites/basement.png')
         screen.fill((0, 0, 0))
         screen.blit(background, (0, 0))
-        player(), pause_menu(), sword_task(135, 25)
+        player(), pause_menu(), sword_task(100, 25)
         if playerY >= 270 and playerX <= 20:  # Collision checking & World change
             catalog_bubble("Go back to kitchen?")
             if interactable:
                 basement, kitchen, world_value = False, True, 5
         if playerY <= 65 and playerX >= -10 and playerY <= 520:  # Furniture Collisions
             playerY = 65
-        if playerY >= 0 and playerY <= 360 and playerX >= 520:
-            playerX = 520
+        if playerY >= 0 and playerY <= 360 and playerX >= 355:
+            playerX = 355
         if playerY >= 350 and playerX >= -20 and playerX <= 520:
             playerY = 350
         if playerX <= 5 and playerY <= 400:  # Out of bounds
@@ -668,10 +664,12 @@ while game:
         screen.fill((0, 0, 0))
         screen.blit(background, (0, 0))
         player(), pause_menu(), out_of_bounds(), manos_hut()  # Player
-        if playerY >= 400:
+        if playerY >= 400 and playerX >= 95: # Get to route 4
             route3, route4, world_value = False, True, 0
-        elif playerX <= 10 and playerY < 295 and playerY >= 150:
+        elif playerX <= 10 and playerY < 295 and playerY >= 150: # Get to route 2
             route3, route2, world_value = False, True, 1
+        if playerX >= 465: # Just a simple collision
+            playerX = 465
         playerX += playerX_change  # MOVEMENT X
         playerY -= playerY_change  # AND Y
         screen.blit(cursor, (pygame.mouse.get_pos()))
@@ -725,8 +723,20 @@ while game:
         player(), pause_menu(), out_of_bounds()
         if playerX >= 580:
             route4, training_field, world_value = False, True, 0
-        if playerY <= 10:
+        if playerY <= 10 and playerX <= 465:
             route3, route4, world_value = True, False, 2
+        if playerX <= 90:
+            playerX = 90
+
+        if playerY >= 130 and playerY <= 175 and playerX <= 95:
+            if interactable:
+                catalog_bubble("OUT OF ORDER")
+        if playerY > 175 and playerY < 270 and playerX <= 95:
+            if interactable:
+                catalog_bubble("You can't get in for now.")
+        if playerY >= 270 and playerY <= 320 and playerX <= 95:
+            if interactable:
+                catalog_bubble("OUT OF ORDER")
         playerX += playerX_change  # MOVEMENT X
         playerY -= playerY_change  # AND Y
         screen.blit(cursor, (pygame.mouse.get_pos()))

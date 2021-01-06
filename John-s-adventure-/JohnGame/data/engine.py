@@ -154,13 +154,12 @@ def credits_text():
     screen.blit(text8, (140, 810 - y))
 
 
-
-player_money = 0
-
+player_money = 0 #  Currency
 def player_pocket():
     global player_money
     money = Pixel_font.render(str(player_money) + "€", True, black)
     screen.blit(money, (115, 445))
+
 
 
 class chest(object):
@@ -183,11 +182,9 @@ class chest(object):
             catalog_bubble("Helloo owooo")
             if interactable and not self.isOpened:  
                 while self.counter < 1:
-                    player_money += 40
-                    
+                    player_money += 40                   
                     self.counter += 1
                 self.isOpened = True       
-            print(player_money)
             if self.isOpened:
                 if self.value == 0:
                     catalog_bubble("You found 40 coins")
