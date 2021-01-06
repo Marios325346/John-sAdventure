@@ -13,7 +13,7 @@ red = (255, 0, 0)
 lime = (0, 255, 0)
 Pixel_font = pygame.font.Font("data/fonts/pixelfont.ttf", 18)
 menu_background = pygame.image.load('data/sprites/mainmenu.png')
-cursor = pygame.image.load('data/sprites/j_g_mouse.png')
+cursor = pygame.image.load('data/ui/j_g_mouse.png')
 pygame.mouse.set_visible(False)
 playImg = pygame.image.load("data/ui/button interface.png").convert()
 playButton = playImg.get_rect()
@@ -586,7 +586,7 @@ while game:
     if basement:
         playerX, playerY, pl = 80, 340, 0     
     while basement:
-        background = pygame.image.load('data/sprites/basement.png')
+        background = pygame.image.load('data/sprites/world/basement.png')
         screen.fill((0, 0, 0))
         screen.blit(background, (0, 0))
         player(), pause_menu(), sword_task(100, 25)
