@@ -490,18 +490,43 @@ while game:
         mau()  # Spawn Mau the grey cat
         chests[0].update(400, 105,interactable, player_rect)
         player(), pause_menu()  # Player
+
+        #Downstairs collision
         if playerX >= 440 and playerX <= 530 and playerY >= 60 and playerY <= 120:
             catalog_bubble("Wanna go downstairs?")
             if interactable:
                 john_room, kitchen = False, True
-        if playerX <= 100:  # John's room collisions
-            playerX = 100
-        elif playerX >= 580:
-            playerX = 580
-        if playerY <= 40:
+
+        # Out of bounds collisions
+        if playerY <= 40: 
             playerY = 40
         elif playerY >= 410:
             playerY = 410
+
+        if playerX <= 100:  
+            playerX = 100
+        elif playerX >= 580:
+            playerX = 580
+
+        #Computer collisions
+        if playerX > 510 and playerX < 515 and playerY >= 160:
+            playerX = 510
+        if playerX >= 515  and playerY >= 160 and playerY <= 165:
+           playerY = 160
+
+        # Desks collisions
+        if playerX < 280 and playerY <= 130:
+            playerY = 130
+        if playerX >= 280 and playerX <= 285 and playerY <= 130:
+            playerX = 285
+
+        # Chest collisions
+        if playerX >= 340 and playerX <= 400 and playerY <= 80:
+            playerY = 80 # Bottom
+        if playerX >= 335 and playerX <= 340 and playerY <= 80:
+            playerX = 335 # Left
+        if playerX >= 400 and playerX <= 410 and playerY <= 80:
+            playerX = 410 # Right
         playerX += playerX_change  # Player X movement
         playerY -= playerY_change  # Player Y movement
         screen.blit(framerate(), (10, 0))
