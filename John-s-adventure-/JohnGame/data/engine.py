@@ -57,46 +57,6 @@ def mau():
     global catalogImg, mauImg
     screen.blit(mauImg, mauRect)
 
-def manos(mx, my, playerX, playerY, bool, count, interact_value):
-    global catalogImg, manosImg
-    Pixel_font = pygame.font.Font("data/fonts/pixelfont.ttf", 12)
-    Pixel_font2 = pygame.font.Font("data/fonts/pixelfont.ttf", 13)
-    dummieTask_Text = Pixel_font.render("hey man what's up?", True, (0,0,0))
-    dummieTask_Text2 = Pixel_font.render("here for your daily training? good.", True, (0,0,0))
-    dummieTask_Text3 = Pixel_font.render("start by showing me what you got", True, (0,0,0))
-    controls_guide = Pixel_font2.render("(Press left shift or [] to attack)", True, (0,0,0))
-    taskText = Pixel_font.render("not bad, we'll practice tomorrow.", True, (0,0,0))
-    screen.blit(manosImg, (mx, my))
-    if playerX >= mx - 50 and playerX <= mx + 50 and playerY >= my - 50 and playerY <= my + 30:
-        screen.blit(catalogImg, (100, 340))
-        if not bool and count == 0:  # Text before you defeat the dummy
-            if interact_value == 0 or interact_value == 1:
-                screen.blit(dummieTask_Text, (120, 355))
-            elif interact_value == 2:
-                screen.blit(dummieTask_Text2, (120, 380)), screen.blit(dummieTask_Text3, (120, 405))              
-            else:
-                screen.blit(controls_guide, (130, 390))
-        elif bool and count == 0:  # Text when you defeat the dummy
-            screen.blit(taskText, (120, 355))
-            task1 = Pixel_font.render("if you wanna hang out,", True, (0,0,0))
-            task2 = Pixel_font.render("come by my house later.", True, (0,0,0))
-            screen.blit(task1, (120, 375)), screen.blit(task2, (120, 395))          
-        elif bool and count == 1:  # Text when you talk at him in the hut
-            manos1 = Pixel_font.render('hey John why did you come by so early?', True, (0,0,0))
-            john1 = Pixel_font.render('"I found a letter at my house and"', True, (0,0,0))
-            john2 = Pixel_font.render('my sister was missing.', True, (0,0,0))
-            john3 = Pixel_font.render('Know anything about it?"', True, (0,0,0))
-            manos2 = Pixel_font.render("I might have an idea what happened", True, (0,0,0))
-            manos3 = Pixel_font.render("to your sister. Meet me outside.", True, (0,0,0))
-            manos4 = Pixel_font.render("I'll explain everything later.", True, (0,0,0))
-            if interact_value == 0 or interact_value == 1:
-                screen.blit(manos1, (120, 355))
-            elif interact_value == 2:
-                screen.blit(john1, (120, 355)),screen.blit(john2, (120, 375)),screen.blit(john3, (120, 395))                           
-            else:
-                screen.blit(manos2, (120, 355)),screen.blit(manos3, (120, 375)),screen.blit(manos4, (120, 395))              
-    return mx, my
-
 def cynthia_Note(playerX, playerY, bool):
     screen.blit(note, (120, 180))
     if playerX < 190 and playerY > 130 and playerY < 190:

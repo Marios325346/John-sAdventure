@@ -52,14 +52,12 @@ for i in range(len(music_list)):
 playerImg = pygame.image.load('data/sprites/player/playeridle.png')  # Player
 sword_Image = pygame.image.load("data/items/hitbox.png")
 swordRect = sword_Image.get_rect()
-dummieImg = pygame.image.load('data/npc/training_dummie.png')
-dummieRect = dummieImg.get_rect()
 # BOOLEANS
 LeftIdle, RightIdle, UpIdle, DownIdle = False, False, False, True
 left, right, down, up = False, False, False, False
 canChange, paused = False, False
 menu, sword_Task = True, True
-player_equipped, interactable, readNote, task_3, dummie_task = False, False, False, False, False
+player_equipped, interactable, readNote, task_3, dummy_task = False, False, False, False, False
 john_room, kitchen, basement = False, False, False  # Chunks & World Values
 route1, route2, route3, route4, training_field, manosHut, credits_screen = False, False, False, False, False, False, False
 john_room = True  # [The world] you want to start with
@@ -144,8 +142,10 @@ def exit_button():
     else:
         exitImg = pygame.image.load('data/ui/exit_button.png')
     screen.blit(exitImg, exitBtn)
+
 def hitbox():
     global playerX, playerY, player_equipped
+
     if LeftIdle:
         swordRect.center = (playerX - 16, playerY + 35)
         screen.blit(sword_Image, swordRect)
@@ -159,6 +159,7 @@ def hitbox():
         swordRect.center = (playerX + 32, playerY - 25)
         screen.blit(sword_Image, swordRect)  
     return swordRect
+
 def manos_hut():
     global playerX, playerY, interactable, route3, manosHut, world_value, readNote
     if playerX >= 80 and playerX <= 470 and playerY >= 80 and playerY <= 85:
@@ -168,13 +169,14 @@ def manos_hut():
     if playerY < 85 and playerX > 470 and playerX <= 490:
         playerX = 490
     if playerY < 90 and playerX > 255 and playerX < 305:
-        if dummie_task and task_3 and readNote:
+        if dummy_task and task_3 and readNote:
             catalog_bubble('Get inside?')
             if interactable:
                 route3, manosHut = False, True
                 world_value = 0
         else:
             catalog_bubble('This place is locked')
+
 def controls():  # Player Controls
     global playerX, playerY, playerX_change, playerY_change, walkCount, walking, attacking, idling, cooldown
     global LeftIdle, RightIdle, UpIdle, DownIdle, left, right, up, down
@@ -380,7 +382,7 @@ class dummy(object):
         self.attacked = False
 
     def update(self, sword_rect):
-        global counter, coin_storage, dummie_task, cooldown
+        global counter, coin_storage, dummy_task, cooldown
         dummyImg = pygame.image.load('data/npc/training_dummie.png')
         dummyRect = dummyImg.get_rect()
         dummyRect.center = (self.x, self.y) # Position of the dummy
@@ -405,7 +407,7 @@ class dummy(object):
             coin_storage[0].update(player_rect) # Spawn coin.
             coin_storage[1].update(player_rect) # Spawn coin.
             coin_storage[2].update(player_rect) # Spawn coin.
-            dummie_task = True # Completed your first mission
+            dummy_task = True # Completed your first mission
            
         else: # Dummy is stil alive  
              screen.blit(dummyImg, dummyRect)
@@ -420,7 +422,6 @@ class cynthia_npc(object):
     def __init__(self):
         pass
 
-    #def cynthia(cynthiaX, cynthiaY, player rect(playerX, playerY), bool, interact_value):
     def update(self, x, y, player_rect):
         global playerX, playerY, interactable, interact_value
         self.x = y
@@ -465,6 +466,96 @@ class cynthia_npc(object):
             
         screen.blit(cynthiaImg, cynthiaRect) 
 
+
+class manos_npc(object):
+
+    def __init__(self):
+        pass
+
+    def update(self, x, y, player_rect, condition):
+        global playerX, playerY, interactable, interact_value, dummy_task
+        self.x = y
+        self.y = y
+        manosImg = pygame.image.load("data/npc/manos.png")
+        manosRect = manosImg.get_rect()
+        manosRect.center = (self.x , self.y)
+        manosY = manosRect[1]
+        manosX = manosRect[0]
+        
+        #Top collision
+        if playerX >= manosX - 45 and playerX <= manosX + 25 and playerY >= manosY - 60 and playerY <= manosY - 55:
+            playerY = manosY - 60
+        
+        #Bottom collision
+        if playerX >= manosX - 45 and playerX <= manosX + 25 and playerY <= manosY + 25 and playerY >= manosY + 20:
+           playerY = manosY + 25      
+                  
+           if manosRect.collidepoint(player_rect[0] + 15, player_rect[1]):   
+               if interactable and condition == 'mission1':
+                  if not dummy_task: # checks if player has beaten the dummy
+                        if interact_value == 1:
+                            catalog_bubble("Hey man! What's up?")
+                        elif interact_value == 2:
+                            catalog_bubble("Here for your daily training? Good.")
+                        elif interact_value == 3:
+                            catalog_bubble("Start by showing me what you got!")
+                        elif interact_value == 4:                     
+                            catalog_bubble("Beat down the dummy!")
+                        elif interact_value == 5:
+                            catalog_bubble("(Press left shift or [] to attack)")
+                        elif interact_value == 6:
+                            pass
+                        else:
+                            interact_value = 0 # in case player wants to talk again without having to leave away from the npc
+                  else: # Player has beaten the dummy
+                      if interact_value == 1:
+                          catalog_bubble("Good job John!")
+                      elif interact_value == 2:
+                          catalog_bubble("You can keep the coins.")
+                      elif interact_value == 3:
+                          catalog_bubble("Anyway, thats it for today!")
+                      elif interact_value == 4:
+                          catalog_bubble("You can go now. See ya!")
+                      elif interact_value == 5:
+                          pass
+                      else:
+                          interact_value = 0
+
+               if interactable and condition == 'mission2':
+                  if interact_value == 1:
+                        catalog_bubble("Hey John, Why did you come by so early?")
+                  elif interact_value == 2:
+                    catalog_bubble('"I found a letter at my house"')
+                  elif interact_value == 3:
+                    catalog_bubble('"and my sister was missing.."')
+                  elif interact_value == 4:                     
+                    catalog_bubble('"Know anything about this letter? "')
+                  elif interact_value == 5:
+                    catalog_bubble("I might have an idea what happened")
+                  elif interact_value == 6:
+                      catalog_bubble("Meet me outside.")
+                  elif interact_value == 7:
+                      catalog_bubble("I'll explain everything later.")
+                  elif interact_value == 8:
+                      pass
+                  else:
+                      interact_value = 0 
+
+        if not manosRect.collidepoint(player_rect[0], player_rect[1]): # When player leaves the interaction reset the value
+            interact_value = 0
+            
+        # Left collision
+        if playerX >= manosX - 45 and playerX <= manosX - 40 and playerY <= manosY + 25 and playerY >= manosY - 60:
+            playerX = manosX - 45
+
+        # Right collision
+        if playerX <= manosX + 35 and playerX >= manosX + 25 and playerY <= manosY + 25 and playerY >= manosY - 60:
+            playerX = manosX + 35               
+            
+        screen.blit(manosImg, manosRect) 
+
+
+
 chests = [
     chest(), #0 johns room
     chest(), #1 Route 2
@@ -472,7 +563,8 @@ chests = [
 ]  
 
 npcs = [
-   cynthia_npc() #0 cynthia
+   cynthia_npc(), #0 cynthia
+   manos_npc() #1 manos
 ]
 
 if menu:
@@ -538,13 +630,12 @@ while game:
         screen.blit(background, (0, 0))  # Display the background image
         mau()  # Spawn Mau the grey cat
         chests[0].update(400, 105,interactable, player_rect)      
-        player(), pause_menu()  # Player      
+        player(), pause_menu()  # Player           
         #Downstairs collision
         if playerX >= 440 and playerX <= 530 and playerY >= 60 and playerY <= 120:
             catalog_bubble("Wanna go downstairs?")
             if interactable:
                 john_room, kitchen = False, True
-
         # Out of bounds collisions
         if playerY <= 40: 
             playerY = 40
@@ -588,16 +679,16 @@ while game:
     while kitchen:
         background = pygame.image.load("data/sprites/world/main_room.png")
         screen.blit(background, (0, 0))
-        player(), pause_menu(), out_of_bounds()
-        if dummie_task:
+        pause_menu(), out_of_bounds()
+        if dummy_task:
             cynthia_Note(playerX, playerY, interactable)
             if playerX < 190 and playerY > 130 and playerY < 190:
                 readNote = True
                 if interactable:
                     music_list[1].stop()
         else:
-            npcs[0].update(500,100, player_rect) # Cynthia NPC
-
+            npcs[0].update(200,250, player_rect) # Cynthia NPC
+        player()
         if playerY >= 260 and playerY <= 340 and playerX >= 510:  # Player interacts with basement's door
             catalog_bubble("Wanna go to basement?")
             if interactable:
@@ -723,7 +814,7 @@ while game:
         playerX = 50
     elif route3 and world_value == 2:
         playerY = 350
-        if dummie_task:
+        if dummy_task:
             task_3 = True
     elif route3 and world_value == 3:
         playerY, playerX = 110, 285
@@ -753,7 +844,8 @@ while game:
         chests[2].update(580, 300,interactable, player_rect) # Mano's hut chest
         out_of_bounds()
         candy(90, 240, playerX, playerY, 1)  # Cat npc
-        manos(280, 160, playerX, playerY, dummie_task, 1, interact_value),player()
+        npcs[1].update(300,350, player_rect,"mission2")
+        player()
         if playerX > 260 and playerX <= 300 and playerY >= 170 and playerY <= 180:
             interact_value, playerY = 0, 181
         if playerX >= 250 and playerX <= 365 and playerY > 380:
@@ -822,8 +914,8 @@ while game:
         screen.blit(background, (0, 0))
         blacksmith_shop()
         if not task_3:
-            candy(350, 120, playerX, playerY, 0)  # Cat npc
-            manos(240, 100, playerX, playerY, dummie_task, 0, interact_value)  # Spawn Manos
+            candy(150, 90, playerX, playerY, 0)  # Cat npc
+            npcs[1].update(250,100, player_rect,"mission1") # Spawn Manos
             if playerX >= 195 and playerX <= 200 and playerY >= 70 and playerY <= 120:
                 playerX = 195  # Left collision Manos
             if playerY > 120 and playerY < 130 and playerX > 195 and playerX <= 270:
@@ -838,7 +930,7 @@ while game:
         blacksmith_col(), pause_menu(), out_of_bounds()
         if playerX <= 10:
             route4, training_field,  world_value = True, False, 2
-            if dummie_task:
+            if dummy_task:
                 task_3 = True
         playerX += playerX_change  # MOVEMENT X
         playerY -= playerY_change  # AND Y
