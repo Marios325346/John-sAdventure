@@ -211,11 +211,8 @@ def controls():  # Player Controls
                 paused = True
             #  Player Interact
             if event.key == pygame.K_RETURN:
-                interactable = True
-                if interact_value != 3:
-                    interact_value += 1
-                else:
-                    interact_value = 1
+                interactable = True           
+                interact_value += 1        
             else:
                 interactable = False
 
@@ -418,12 +415,65 @@ class dummy(object):
                 pygame.draw.rect(screen, (255, 0, 0), (self.x - 49,self.y - 59, 100, 8))  # red bar
                 pygame.draw.rect(screen, (0, 255, 0), (self.x - 49,self.y - 59, self.hp, 8))  # lime bar    
 
+class cynthia_npc(object):
+
+    def __init__(self):
+        pass
+
+    #def cynthia(cynthiaX, cynthiaY, player rect(playerX, playerY), bool, interact_value):
+    def update(self, x, y, player_rect):
+        global playerX, playerY, interactable, interact_value
+        self.x = y
+        self.y = y
+        cynthiaImg = pygame.image.load("data/npc/Cynthia.png")
+        cynthiaRect = cynthiaImg.get_rect()
+        cynthiaRect.center = (self.x , self.y)
+        cynthiaY = cynthiaRect[1]
+        cynthiaX = cynthiaRect[0]
+        
+        #Top collision
+        if playerX >= cynthiaX - 45 and playerX <= cynthiaX + 25 and playerY >= cynthiaY - 60 and playerY <= cynthiaY - 55:
+            playerY = cynthiaY - 60
+        
+        #Bottom collision
+        if playerX >= cynthiaX - 45 and playerX <= cynthiaX + 25 and playerY <= cynthiaY + 25 and playerY >= cynthiaY + 20:
+           playerY = cynthiaY + 25      
+                  
+           if cynthiaRect.collidepoint(player_rect[0] + 15, player_rect[1]):   
+               if interactable:
+                    if interact_value == 1:
+                        catalog_bubble("Good morning big brother")
+                    elif interact_value == 2:
+                        catalog_bubble("your teacher is waiting for you")
+                    elif interact_value == 3:
+                        catalog_bubble("pick your sword from the basement")
+                    elif interact_value == 4:                     
+                        pass # Dont show anything
+                    else:
+                        interact_value = 0 # in case player wants to talk again without having to leave away from the npc
+
+        if not cynthiaRect.collidepoint(player_rect[0], player_rect[1]): # When player leaves the interaction reset the value
+            interact_value = 0
+            
+        # Left collision
+        if playerX >= cynthiaX - 45 and playerX <= cynthiaX - 40 and playerY <= cynthiaY + 25 and playerY >= cynthiaY - 60:
+            playerX = cynthiaX - 45
+
+        # Right collision
+        if playerX <= cynthiaX + 35 and playerX >= cynthiaX + 25 and playerY <= cynthiaY + 25 and playerY >= cynthiaY - 60:
+            playerX = cynthiaX + 35               
+            
+        screen.blit(cynthiaImg, cynthiaRect) 
+
 chests = [
     chest(), #0 johns room
     chest(), #1 Route 2
     chest()  #2 Manos Hut 
 ]  
 
+npcs = [
+   cynthia_npc() #0 cynthia
+]
 
 if menu:
     music_list[0].play()
@@ -431,7 +481,6 @@ while menu:
     screen.fill((0, 0, 0))
     # background image load
     screen.blit(menu_background, (1, 1))
-    controller(controller_value)
     # Play Button
     if playButton.collidepoint(pygame.mouse.get_pos()):
         playImg = pygame.image.load('data/ui/button interface hover.png')
@@ -488,9 +537,8 @@ while game:
         background = pygame.image.load('data/sprites/world/Johns_room.png')
         screen.blit(background, (0, 0))  # Display the background image
         mau()  # Spawn Mau the grey cat
-        chests[0].update(400, 105,interactable, player_rect)
-        player(), pause_menu()  # Player
-
+        chests[0].update(400, 105,interactable, player_rect)      
+        player(), pause_menu()  # Player      
         #Downstairs collision
         if playerX >= 440 and playerX <= 530 and playerY >= 60 and playerY <= 120:
             catalog_bubble("Wanna go downstairs?")
@@ -548,13 +596,8 @@ while game:
                 if interactable:
                     music_list[1].stop()
         else:
-            cynthia(350, 30, playerX, playerY, interactable, interact_value)  # Cynthia NPC
-        if playerY <= 50 and playerX >= 310 and playerX <= 400:
-            playerX = 400
-        if playerY >= 41 and playerY <= 90 and playerX >= 300 and playerX <= 380:
-            playerY = 90
-        if playerX <= 290 and playerX >= 280 and playerY <= 50:
-            playerX = 280
+            npcs[0].update(500,100, player_rect) # Cynthia NPC
+
         if playerY >= 260 and playerY <= 340 and playerX >= 510:  # Player interacts with basement's door
             catalog_bubble("Wanna go to basement?")
             if interactable:

@@ -33,26 +33,7 @@ def hearts():
     hp_text = Pixel_font.render(str(health), True, (255, 0, 0))
     screen.blit(heartImg, (heartX, heartY))
     screen.blit(hp_text, (heartX + 87, heartY + 12))
-def cynthia(cynthiaX, cynthiaY, playerX, playerY, bool, interact_value):
-    global catalogImg, cynthiaImg, showCatalog
-    screen.blit(cynthiaImg, (cynthiaX, cynthiaY))
-    cynthia_text = Pixel_font.render("Good morning brother.", True, (0,0,0))
-    cynthia_text2 = Pixel_font.render("your sword is in the basement", True, (0,0,0))
-    cynthia_text3 = Pixel_font.render("your teacher is waiting for you ", True, (0,0,0))
-    cynthia_text4 = Pixel_font.render("in the training field. -Cynthia", True, (0,0,0))
-    if playerX >= cynthiaX - 50 and playerX <= cynthiaX + 50 and playerY >= cynthiaY + 10 and playerY <= cynthiaY + 60:
-        if bool:
-            showCatalog = True
-            if showCatalog:
-                if interact_value == 1:
-                    screen.blit(catalogImg, (100, 340)),screen.blit(cynthia_text, (120, 370))
-                    screen.blit(cynthia_text2, (120, 390))
-                elif interact_value == 2:
-                    screen.blit(catalogImg, (100, 340)),screen.blit(cynthia_text3, (120, 370))                 
-                    screen.blit(cynthia_text4, (120, 390))
-                else:
-                    showCatalog = False
-    return cynthiaX, cynthiaY
+
 def candy(catX, catY, playerX, playerY, count):
     global catalogImg, candyImg
     gatoulis_text = Pixel_font.render("Meow meow meow", True, (0,0,0))
@@ -71,9 +52,11 @@ def candy(catX, catY, playerX, playerY, count):
     else:
         screen.blit(candySleeping, (catX, catY))
     return catX, catY
+
 def mau():
     global catalogImg, mauImg
     screen.blit(mauImg, mauRect)
+
 def manos(mx, my, playerX, playerY, bool, count, interact_value):
     global catalogImg, manosImg
     Pixel_font = pygame.font.Font("data/fonts/pixelfont.ttf", 12)
@@ -113,27 +96,30 @@ def manos(mx, my, playerX, playerY, bool, count, interact_value):
             else:
                 screen.blit(manos2, (120, 355)),screen.blit(manos3, (120, 375)),screen.blit(manos4, (120, 395))              
     return mx, my
+
 def cynthia_Note(playerX, playerY, bool):
     screen.blit(note, (120, 180))
     if playerX < 190 and playerY > 130 and playerY < 190:
         if bool:
             screen.blit(transparent_black, (0, 0)),screen.blit(cynthias_Note, (220, 110))
+
 def blacksmith_shop():
     global catalogImg, blacksmithImg
     screen.blit(blacksmithImg, blacksmithRect)
+
 def catalog_bubble(text):
     global catalogImg
     catalogText = Pixel_font.render(text, True, (0,0,0))
     screen.blit(catalogImg, (100, 340)), screen.blit(catalogText, (120, 350))    
     return text
+
 def catalog_bubble2(text):
     catalogText = Pixel_font.render(text, True, (0,0,0))
     screen.blit(catalogText, (120, 380))
     return text
-def controller(bool):
-    controllerImg = pygame.image.load('data/ui/controller.png')
-    if bool:
-        screen.blit(controllerImg, (550, 430))
+
+
+
 def credits_text():
     global y
     text0 = Pixel_font.render("JOHN'S ADVENTURE CHAPTER 1", True, (255, 255, 255))
@@ -161,14 +147,13 @@ def player_pocket():
     screen.blit(money, (115, 445))
 
 
-
 class chest(object):
 
     def __init__(self): 
         self.isOpened = False   
         self.counter = 0
         self.value = 0
-        
+      
     def update(self, x, y, interactable, player_rect):
         global player_money
         self.x = x
