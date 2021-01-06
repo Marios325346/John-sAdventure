@@ -9,9 +9,6 @@ cynthiaImg = pygame.image.load("data/npc/Cynthia.png")
 catalogImg = pygame.image.load('data/ui/catalog_bubble.png')
 candyImg = pygame.image.load("data/npc/candy.png")
 candySleeping = pygame.image.load("data/npc/candy_sleeping.png")
-mauImg = pygame.image.load("data/npc/Mau.png")
-mauRect = mauImg.get_rect()
-mauRect.center = (250, 455)
 blacksmithImg = pygame.image.load('data/npc/blacksmith_shop.png')
 blacksmithRect = blacksmithImg.get_rect()
 blacksmithRect.center = (467, 60)
@@ -34,28 +31,6 @@ def hearts():
     screen.blit(heartImg, (heartX, heartY))
     screen.blit(hp_text, (heartX + 87, heartY + 12))
 
-def candy(catX, catY, playerX, playerY, count):
-    global catalogImg, candyImg
-    gatoulis_text = Pixel_font.render("Meow meow meow", True, (0,0,0))
-    gatoulis_text2 = Pixel_font.render("-Candy", True, (0,0,0))
-    sleepyCandyText = Pixel_font.render("Zzzz zzzz zzzz...", True, (0,0,0))
-    sleepyCandyText2 = Pixel_font.render("She fell asleep on the warm carpet.", True, (0,0,0))
-    if playerX >= catX - 50 and playerX <= catX + 50 and playerY >= catY - 50 and playerY <= catY + 50:
-        screen.blit(catalogImg, (100, 340))
-        if count == 0:
-            screen.blit(gatoulis_text, (120, 350)),screen.blit(gatoulis_text2, (430, 430))       
-        else:
-            screen.blit(sleepyCandyText, (120, 350)),screen.blit(sleepyCandyText2, (120, 370))         
-            screen.blit(gatoulis_text2, (430, 430))
-    if count == 0:
-        screen.blit(candyImg, (catX, catY))
-    else:
-        screen.blit(candySleeping, (catX, catY))
-    return catX, catY
-
-def mau():
-    global catalogImg, mauImg
-    screen.blit(mauImg, mauRect)
 
 def cynthia_Note(playerX, playerY, bool):
     screen.blit(note, (120, 180))
@@ -186,3 +161,55 @@ class coin_system(object):
             screen.blit(coin_anim[self.coinCount // 9], coin_rect)
             screen.blit(coin_hitbox, hitbox_rect)
             self.coinCount += 1
+
+
+class manos_npc(object):
+
+    def __init__(self):
+        self.counter = 0
+
+    def update(self, x, y, player_rect):
+        global playerX, playerY, interactable, interact_value
+        self.x = x
+        self.y = y
+        manosImg = pygame.image.load("data/npc/manos.png")
+        manosRect = manosImg.get_rect()
+        manosRect.center = (self.x , self.y)
+        manosY = cynthiaRect[1]
+        manosX = cynthiaRect[0]
+        
+        #Top collision
+        if playerX >= manosX - 45 and playerX <= manosX + 25 and playerY >= manosY - 60 and playerY <= manosY - 55:
+            playerY = manosY - 60
+        
+        #Bottom collision
+        if playerX >= manosX - 45 and playerX <= manosX + 25 and playerY <= manosY + 25 and playerY >= manosY + 20:
+           playerY = manosY + 25      
+                  
+           if manosRect.collidepoint(player_rect[0] + 15, player_rect[1]): 
+               self.counter += interact_value
+               if interactable:
+                    print(self.counter)                 
+                    if  self.counter == 1:
+                        catalog_bubble("Good morning big brother")
+                    elif  self.counter == 2:
+                        catalog_bubble("your teacher is waiting for you")
+                    elif  self.counter == 3:
+                        catalog_bubble("pick your sword from the basement")
+                    elif  self.counter  == 4:                     
+                        pass # Dont show anything
+                    elif self.counter > 4:
+                         interact_value = 0
+
+        if not manos.collidepoint(player_rect[0], player_rect[1]): # When player leaves the interaction reset the value
+            self.counter = 0
+      
+        # Left collision
+        if playerX >= manosX - 45 and playerX <= manosX - 40 and playerY <= manosY + 25 and playerY >= manosY - 60:
+            playerX = manosX - 45
+
+        # Right collision
+        if playerX <= manosX + 35 and playerX >= manosX + 25 and playerY <= manosY + 25 and playerY >= manosY - 60:
+            playerX = manosX + 35               
+            
+        screen.blit(manosImg, manosRect) 

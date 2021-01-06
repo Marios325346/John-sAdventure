@@ -61,6 +61,7 @@ player_equipped, interactable, readNote, task_3, dummy_task = False, False, Fals
 john_room, kitchen, basement = False, False, False  # Chunks & World Values
 route1, route2, route3, route4, training_field, manosHut, credits_screen = False, False, False, False, False, False, False
 john_room = True  # [The world] you want to start with
+
 # VALUES
 playerX, playerX_change = 0, 0
 playerY, playerY_change = 0, 0
@@ -74,6 +75,7 @@ player_rect = player_hitbox.get_rect()
 
 world_value, counter = 0, 0  # spawn points, counter
 i, j, pl, walkCount, interact_value = 0, 0, 0, 0, 0  # Counters
+
 # Lists
 walkRight = [pygame.image.load('data/sprites/player/playerright1.png'),
              pygame.image.load('data/sprites/player/playerright2.png'),
@@ -115,7 +117,6 @@ attack_left = [ pygame.image.load('data/sprites/player/playerleft1.png'),
 
 
 # Functions
-
 def framerate():
     fps = str(int(clock.get_fps()))
     fps_text = Pixel_font.render(fps, 1, pygame.Color("yellow"))
@@ -420,13 +421,13 @@ class dummy(object):
 class cynthia_npc(object):
 
     def __init__(self):
-        pass
+        self.counter = 0
 
     def update(self, x, y, player_rect):
         global playerX, playerY, interactable, interact_value
-        self.x = y
+        self.x = x
         self.y = y
-        cynthiaImg = pygame.image.load("data/npc/Cynthia.png")
+        cynthiaImg = pygame.image.load("data/npc/cynthia.png")
         cynthiaRect = cynthiaImg.get_rect()
         cynthiaRect.center = (self.x , self.y)
         cynthiaY = cynthiaRect[1]
@@ -440,22 +441,24 @@ class cynthia_npc(object):
         if playerX >= cynthiaX - 45 and playerX <= cynthiaX + 25 and playerY <= cynthiaY + 25 and playerY >= cynthiaY + 20:
            playerY = cynthiaY + 25      
                   
-           if cynthiaRect.collidepoint(player_rect[0] + 15, player_rect[1]):   
+           if cynthiaRect.collidepoint(player_rect[0] + 15, player_rect[1]): 
+               self.counter += interact_value
                if interactable:
-                    if interact_value == 1:
+                    print(self.counter)                 
+                    if  self.counter == 1:
                         catalog_bubble("Good morning big brother")
-                    elif interact_value == 2:
+                    elif  self.counter == 2:
                         catalog_bubble("your teacher is waiting for you")
-                    elif interact_value == 3:
+                    elif  self.counter == 3:
                         catalog_bubble("pick your sword from the basement")
-                    elif interact_value == 4:                     
+                    elif  self.counter  == 4:                     
                         pass # Dont show anything
-                    else:
-                        interact_value = 0 # in case player wants to talk again without having to leave away from the npc
+                    elif self.counter > 4:
+                         interact_value = 0
 
         if not cynthiaRect.collidepoint(player_rect[0], player_rect[1]): # When player leaves the interaction reset the value
-            interact_value = 0
-            
+            self.counter = 0
+      
         # Left collision
         if playerX >= cynthiaX - 45 and playerX <= cynthiaX - 40 and playerY <= cynthiaY + 25 and playerY >= cynthiaY - 60:
             playerX = cynthiaX - 45
@@ -467,94 +470,132 @@ class cynthia_npc(object):
         screen.blit(cynthiaImg, cynthiaRect) 
 
 
-class manos_npc(object):
 
+class mau(object):
     def __init__(self):
-        pass
+        self.counter = 0
+        self.isAutakias = False
+        self.point = 0
+
+    def update(self, x, y):
+        global playerX, playerY, interactable
+        self.x = x
+        self.y = y
+        mauImg = pygame.image.load("data/npc/Mau.png")
+        mauRect = mauImg.get_rect()
+        mauRect.center = (self.x, self.y) 
+
+        mauY = mauRect[1]
+        mauX = mauRect[0]
+        #Animation
+        mau_anim = [
+            pygame.image.load('data/npc/Mau.png'),
+            pygame.image.load('data/npc/Mau2.png'),
+            pygame.image.load('data/npc/Mau.png')
+        ] 
+
+        if self.counter >= 26:
+           self.counter = 0  
+
+        #Top collision
+        if playerX >= mauX  - 45 and playerX <= mauX + 25 and playerY >= mauY - 60 and playerY <= mauY - 55:
+            playerY = mauY - 60       
+        #Bottom collision
+        if playerX >= mauX - 45 and playerX <= mauX + 25 and playerY <= mauY + 25 and playerY >= mauY + 20:
+           playerY = mauY + 25                    
+        # Left collision
+        if playerX >= mauX - 45 and playerX <= mauX - 40 and playerY <= mauY + 25 and playerY >= mauY - 60:
+            playerX = mauX - 45
+        # Right collision
+        if playerX <= mauX + 35 and playerX >= mauX + 25 and playerY <= mauY + 25 and playerY >= mauY - 60:
+            playerX = mauX + 35  
+            if mauRect.collidepoint(player_rect[0], player_rect[1]): # In Mau you interact where he is looking
+                if interactable:
+                    catalog_bubble("Meow meow meow")            
+                    while self.point < 1:
+                        r_number = random.randint(1,10)
+                        if r_number == 3:
+                            self.isAutakias = True # Something secret.. >:))))
+                        else:
+                            self.isAutakias = False
+                        self.point += 1
+            
+        if not mauRect.collidepoint(player_rect[0], player_rect[1]): # When player leaves the interaction reset the value
+            interact_value = 0  
+            self.point = 0
+                
+        if self.isAutakias: # >:))))))
+            self.counter += 1
+            screen.blit(mau_anim[self.counter // 9], mauRect)          
+        else:
+            screen.blit(mauImg, mauRect) 
+
+class candy(object):
+    def __init__(self):
+        self.counter = 0
+        self.isYpnaras = False
 
     def update(self, x, y, player_rect, condition):
-        global playerX, playerY, interactable, interact_value, dummy_task
-        self.x = y
+        global playerX, playerY, interactable, interact_value
+        self.x = x
         self.y = y
-        manosImg = pygame.image.load("data/npc/manos.png")
-        manosRect = manosImg.get_rect()
-        manosRect.center = (self.x , self.y)
-        manosY = manosRect[1]
-        manosX = manosRect[0]
+        candyImg = pygame.image.load("data/npc/candy.png")
+        candyRect = candyImg.get_rect()
+        candyRect.center = (self.x, self.y) 
+
+        candyY = candyRect[1]
+        candyX = candyRect[0]
+        #Animation
+        candy_anim = [
+            pygame.image.load('data/npc/candy_sleeping.png'),
+            pygame.image.load('data/npc/candy_sleeping.png'),
+            pygame.image.load('data/npc/candy_sleeping2.png'),
+            pygame.image.load('data/npc/candy_sleeping2.png'),
+            pygame.image.load('data/npc/candy_sleeping.png')
+        ] 
+
+        if condition == "sleeping":
+            self.isYpnaras = True
+        elif condition == "awake":
+            self.isYpnaras = False
         
         #Top collision
-        if playerX >= manosX - 45 and playerX <= manosX + 25 and playerY >= manosY - 60 and playerY <= manosY - 55:
-            playerY = manosY - 60
-        
+        if playerX >=  candyX  - 45 and playerX <=  candyX + 25 and playerY >=  candyY - 60 and playerY <=  candyY - 55:
+            playerY =  candyY - 60       
         #Bottom collision
-        if playerX >= manosX - 45 and playerX <= manosX + 25 and playerY <= manosY + 25 and playerY >= manosY + 20:
-           playerY = manosY + 25      
-                  
-           if manosRect.collidepoint(player_rect[0] + 15, player_rect[1]):   
-               if interactable and condition == 'mission1':
-                  if not dummy_task: # checks if player has beaten the dummy
+        if playerX >=  candyX - 45 and playerX <=  candyX + 25 and playerY <=  candyY + 25 and playerY >=  candyY + 20:
+           playerY =  candyY + 25    
+           if candyRect.collidepoint(player_rect[0] + 15, player_rect[1]): # In Mau you interact where he is looking
+               if interactable:
+                    if self.isYpnaras:
                         if interact_value == 1:
-                            catalog_bubble("Hey man! What's up?")
+                            catalog_bubble("Zzz she fell asleep on the warm carpet.")
                         elif interact_value == 2:
-                            catalog_bubble("Here for your daily training? Good.")
+                            catalog_bubble("She fell asleep on the warm carpet.")
                         elif interact_value == 3:
-                            catalog_bubble("Start by showing me what you got!")
-                        elif interact_value == 4:                     
-                            catalog_bubble("Beat down the dummy!")
-                        elif interact_value == 5:
-                            catalog_bubble("(Press left shift or [] to attack)")
-                        elif interact_value == 6:
                             pass
                         else:
-                            interact_value = 0 # in case player wants to talk again without having to leave away from the npc
-                  else: # Player has beaten the dummy
-                      if interact_value == 1:
-                          catalog_bubble("Good job John!")
-                      elif interact_value == 2:
-                          catalog_bubble("You can keep the coins.")
-                      elif interact_value == 3:
-                          catalog_bubble("Anyway, thats it for today!")
-                      elif interact_value == 4:
-                          catalog_bubble("You can go now. See ya!")
-                      elif interact_value == 5:
-                          pass
-                      else:
-                          interact_value = 0
-
-               if interactable and condition == 'mission2':
-                  if interact_value == 1:
-                        catalog_bubble("Hey John, Why did you come by so early?")
-                  elif interact_value == 2:
-                    catalog_bubble('"I found a letter at my house"')
-                  elif interact_value == 3:
-                    catalog_bubble('"and my sister was missing.."')
-                  elif interact_value == 4:                     
-                    catalog_bubble('"Know anything about this letter? "')
-                  elif interact_value == 5:
-                    catalog_bubble("I might have an idea what happened")
-                  elif interact_value == 6:
-                      catalog_bubble("Meet me outside.")
-                  elif interact_value == 7:
-                      catalog_bubble("I'll explain everything later.")
-                  elif interact_value == 8:
-                      pass
-                  else:
-                      interact_value = 0 
-
-        if not manosRect.collidepoint(player_rect[0], player_rect[1]): # When player leaves the interaction reset the value
-            interact_value = 0
-            
+                            interact_value = False                    
+                    else:                      
+                        catalog_bubble("Meow meow meow")
         # Left collision
-        if playerX >= manosX - 45 and playerX <= manosX - 40 and playerY <= manosY + 25 and playerY >= manosY - 60:
-            playerX = manosX - 45
-
+        if playerX >=  candyX - 45 and playerX <=  candyX - 40 and playerY <=  candyY + 25 and playerY >=  candyY - 60:
+            playerX =  candyX - 45
         # Right collision
-        if playerX <= manosX + 35 and playerX >= manosX + 25 and playerY <= manosY + 25 and playerY >= manosY - 60:
-            playerX = manosX + 35               
-            
-        screen.blit(manosImg, manosRect) 
+        if playerX <=  candyX + 35 and playerX >=  candyX + 25 and playerY <= candyY + 25 and playerY >=  candyY - 60:
+            playerX =  candyX + 35  
 
-
+        if not candyRect.collidepoint(player_rect[0], player_rect[1]): # When player leaves the interaction reset the value
+            interact_value = 0  
+            self.point = 0    
+                
+        if self.isYpnaras:
+            if self.counter >= 174: # Thats a lot of frames...
+                self.counter = 0  
+            self.counter += 1
+            screen.blit(candy_anim[self.counter // 35], candyRect)          
+        else:
+            screen.blit(candyImg, candyRect) 
 
 chests = [
     chest(), #0 johns room
@@ -564,7 +605,9 @@ chests = [
 
 npcs = [
    cynthia_npc(), #0 cynthia
-   manos_npc() #1 manos
+   manos_npc(), #1 manos
+   mau(), #2 mau
+   candy() #3 candy
 ]
 
 if menu:
@@ -628,7 +671,14 @@ while game:
     while john_room:
         background = pygame.image.load('data/sprites/world/Johns_room.png')
         screen.blit(background, (0, 0))  # Display the background image
-        mau()  # Spawn Mau the grey cat
+        #npcs[2].update(250, 250) # Spawn Mau
+        
+        npcs[0].update(150,250, player_rect) # Cynthia NPC
+        npcs[0].update(200,250, player_rect) # Cynthia NPC
+        npcs[0].update(250,250, player_rect) # Cynthia NPC
+        npcs[0].update(300,250, player_rect) # Cynthia NPC
+        npcs[0].update(350,250, player_rect) # Cynthia NPC
+        #npcs[1].update(300,350, player_rect)
         chests[0].update(400, 105,interactable, player_rect)      
         player(), pause_menu()  # Player           
         #Downstairs collision
@@ -843,7 +893,7 @@ while game:
         screen.blit(background, (0, 0))
         chests[2].update(580, 300,interactable, player_rect) # Mano's hut chest
         out_of_bounds()
-        candy(90, 240, playerX, playerY, 1)  # Cat npc
+          # Cat npc 90, 240
         npcs[1].update(300,350, player_rect,"mission2")
         player()
         if playerX > 260 and playerX <= 300 and playerY >= 170 and playerY <= 180:
@@ -914,16 +964,8 @@ while game:
         screen.blit(background, (0, 0))
         blacksmith_shop()
         if not task_3:
-            candy(150, 90, playerX, playerY, 0)  # Cat npc
+            npcs[3].update(100,100, player_rect, "sleeping") # Cat npc
             npcs[1].update(250,100, player_rect,"mission1") # Spawn Manos
-            if playerX >= 195 and playerX <= 200 and playerY >= 70 and playerY <= 120:
-                playerX = 195  # Left collision Manos
-            if playerY > 120 and playerY < 130 and playerX > 195 and playerX <= 270:
-                playerY, interact_value = 130, 0  # Bottom collision Manos
-            if playerX > 270 and playerX <= 285 and playerY >= 70 and playerY <= 120:
-                playerX = 285  # Right collision Manos
-            if playerX > 195 and playerX <= 270 and playerY >= 50 and playerY < 70:
-                playerY = 50
             Dummy.update(swordRect)# Training Dummie  
             
         player()  # Player
