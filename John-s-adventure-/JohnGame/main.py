@@ -485,7 +485,7 @@ while game:
     elif john_room and world_value == 1:
         playerX, playerY = 420, 150
     while john_room:
-        background = pygame.image.load('data/sprites/Johns_room.png')
+        background = pygame.image.load('data/sprites/world/Johns_room.png')
         screen.blit(background, (0, 0))  # Display the background image
         mau()  # Spawn Mau the grey cat
         chests[0].update(400, 105,interactable, player_rect)
@@ -764,10 +764,9 @@ while game:
                 playerX = 285  # Right collision Manos
             if playerX > 195 and playerX <= 270 and playerY >= 50 and playerY < 70:
                 playerY = 50
+            Dummy.update(swordRect)# Training Dummie  
+            
         player()  # Player
-
-        if not task_3:
-            Dummy.update(swordRect)# Training Dummie           
         blacksmith_col(), pause_menu(), out_of_bounds()
         if playerX <= 10:
             route4, training_field,  world_value = True, False, 2
