@@ -469,6 +469,57 @@ class cynthia_npc(object):
             
         screen.blit(cynthiaImg, cynthiaRect) 
 
+class manos_npc(object):
+
+    def __init__(self):
+        self.counter = 0
+
+    def update(self, x, y, player_rect):
+        global playerX, playerY, interactable, interact_value
+        self.x = x
+        self.y = y
+        cynthiaImg = pygame.image.load("data/npc/manos.png")
+        cynthiaRect = cynthiaImg.get_rect()
+        cynthiaRect.center = (self.x , self.y)
+        cynthiaY = cynthiaRect[1]
+        cynthiaX = cynthiaRect[0]
+        
+        #Top collision
+        if playerX >= cynthiaX - 45 and playerX <= cynthiaX + 25 and playerY >= cynthiaY - 60 and playerY <= cynthiaY - 55:
+            playerY = cynthiaY - 60
+        
+        #Bottom collision
+        if playerX >= cynthiaX - 45 and playerX <= cynthiaX + 25 and playerY <= cynthiaY + 25 and playerY >= cynthiaY + 20:
+           playerY = cynthiaY + 25      
+                  
+           if cynthiaRect.collidepoint(player_rect[0] + 15, player_rect[1]): 
+               self.counter += interact_value
+               if interactable:
+                    print(self.counter)                 
+                    if  self.counter == 1:
+                        catalog_bubble("Good morning big brother")
+                    elif  self.counter == 2:
+                        catalog_bubble("your teacher is waiting for you")
+                    elif  self.counter == 3:
+                        catalog_bubble("pick your sword from the basement")
+                    elif  self.counter  == 4:                     
+                        pass # Dont show anything
+                    elif self.counter > 4:
+                         interact_value = 0
+
+        if not cynthiaRect.collidepoint(player_rect[0], player_rect[1]): # When player leaves the interaction reset the value
+            self.counter = 0
+      
+        # Left collision
+        if playerX >= cynthiaX - 45 and playerX <= cynthiaX - 40 and playerY <= cynthiaY + 25 and playerY >= cynthiaY - 60:
+            playerX = cynthiaX - 45
+
+        # Right collision
+        if playerX <= cynthiaX + 35 and playerX >= cynthiaX + 25 and playerY <= cynthiaY + 25 and playerY >= cynthiaY - 60:
+            playerX = cynthiaX + 35               
+            
+        screen.blit(cynthiaImg, cynthiaRect) 
+
 
 
 class mau(object):
@@ -671,13 +722,11 @@ while game:
     while john_room:
         background = pygame.image.load('data/sprites/world/Johns_room.png')
         screen.blit(background, (0, 0))  # Display the background image
-        #npcs[2].update(250, 250) # Spawn Mau
-        
-        npcs[0].update(150,250, player_rect) # Cynthia NPC
-        npcs[0].update(200,250, player_rect) # Cynthia NPC
-        npcs[0].update(250,250, player_rect) # Cynthia NPC
-        npcs[0].update(300,250, player_rect) # Cynthia NPC
-        npcs[0].update(350,250, player_rect) # Cynthia NPC
+        #npcs[2].update(250, 250) # Spawn Mau     
+        #npcs[0].update(150,250, player_rect) # Cynthia NPC
+        #npcs[0].update(200,250, player_rect) # Cynthia NPC
+        #npcs[0].update(250,250, player_rect) # Cynthia NPC
+        #npcs[1].update(350,250, player_rect) # Cynthia NPC
         #npcs[1].update(300,350, player_rect)
         chests[0].update(400, 105,interactable, player_rect)      
         player(), pause_menu()  # Player           
@@ -893,8 +942,8 @@ while game:
         screen.blit(background, (0, 0))
         chests[2].update(580, 300,interactable, player_rect) # Mano's hut chest
         out_of_bounds()
-          # Cat npc 90, 240
-        npcs[1].update(300,350, player_rect,"mission2")
+        npcs[3].update(100,100, player_rect, "sleeping") # Cat npc
+        npcs[1].update(300,350, player_rect)
         player()
         if playerX > 260 and playerX <= 300 and playerY >= 170 and playerY <= 180:
             interact_value, playerY = 0, 181
@@ -964,8 +1013,8 @@ while game:
         screen.blit(background, (0, 0))
         blacksmith_shop()
         if not task_3:
-            npcs[3].update(100,100, player_rect, "sleeping") # Cat npc
-            npcs[1].update(250,100, player_rect,"mission1") # Spawn Manos
+            npcs[3].update(100,100, player_rect, "awake") # Cat npc
+            npcs[1].update(250,100, player_rect) # Spawn Manos
             Dummy.update(swordRect)# Training Dummie  
             
         player()  # Player
