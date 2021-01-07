@@ -20,17 +20,26 @@ showCatalog = True
 y, pl = 0, 0
 
 
-# OLD CODE BUT IT SOULDN'T BE REMOVED FOR NOW
-def hearts():
-    health = 100
-    max_health = 100
-    heartX = 20
-    heartY = 400
-    heartImg = pygame.image.load('data/sprites/player/john_ui.png')
-    hp_text = Pixel_font.render(str(health), True, (255, 0, 0))
-    screen.blit(heartImg, (heartX, heartY))
-    screen.blit(hp_text, (heartX + 87, heartY + 12))
 
+
+# OLD CODE BUT IT SOULDN'T BE REMOVED FOR NOW
+def coin_ui():
+    coinX = 533
+    coinY = 4
+    coinImg = pygame.image.load('data/ui/coin_ui.png')
+    screen.blit(coinImg, (coinX, coinY))
+    return coinX, coinY
+
+coin_pos = coin_ui()
+
+def heart_ui():
+    heartX = 4 
+    heartY = 4
+    health = 100
+    HeartImg = pygame.image.load('data/ui/heart_ui.png')
+    healthTxt = Pixel_font.render(str(health), True, (0, 0, 0))  
+    screen.blit(HeartImg, (heartX, heartY))
+    screen.blit(healthTxt, (heartX + 40, heartY + 15))
 
 def cynthia_Note(playerX, playerY, bool):
     screen.blit(note, (120, 180))
@@ -77,10 +86,10 @@ def credits_text():
 
 player_money = 0 #  Currency
 def player_pocket():
+    global coinX,coinY
     global player_money
     money = Pixel_font.render(str(player_money) + "€", True, black)
-    screen.blit(money, (115, 445))
-
+    screen.blit(money, (coin_pos[0] + 40, coin_pos[1] + 15))
 
 class chest(object):
 
