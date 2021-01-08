@@ -315,10 +315,8 @@ class cynthia_npc(object):
         
         screen.blit(cynthiaImg, cynthiaRect) 
 class manos_npc(object):
-
     def __init__(self):
         self.counter = 0
-
     def update(self, x, y, player_rect, condition):
         global playerX, playerY, interactable, interact_value, dummy_task
         self.x = x
@@ -439,10 +437,8 @@ class mau(object):
             pygame.image.load('data/npc/Mau2.png'),
             pygame.image.load('data/npc/Mau.png')
         ] 
-
         if self.counter >= 26:
            self.counter = 0  
-
         #Top collision
         if playerX >= mauX  - 45 and playerX <= mauX + 25 and playerY >= mauY - 60 and playerY <= mauY - 55:
             playerY = mauY - 60       
@@ -689,7 +685,61 @@ def controls():  # Player Controls
                 DownIdle, RightIdle, LeftIdle = False, False, False     
             if event.key == pygame.K_DOWN:
                 DownIdle = True
-                LeftIdle, RightIdle, UpIdle = False, False, False                    
+                LeftIdle, RightIdle, UpIdle = False, False, False                
+        # CONTROLLER INPUT
+        if event.type == pygame.JOYBUTTONDOWN:
+            if event.button == button_keys['left_arrow'] or event.button == button_keys['right_arrow'] or event.button == button_keys['down_arrow'] or event.button == button_keys['up_arrow']:
+                walking = True
+                idling, attacking = False, False
+            if event.button == button_keys['left_arrow']:
+                playerX_change = -3
+                left = True
+                right, up, down = False, False, False
+            if event.button == button_keys['right_arrow']:
+                playerX_change = 3
+                right = True
+                up, left, down = False, False, False
+            if event.button == button_keys['down_arrow']:
+                playerY_change = -3
+                down = True
+                left, right, up = False, False, False
+            if event.button == button_keys['up_arrow']:
+                playerY_change = 3
+                up = True
+                down, right, left = False, False, False
+            if event.button == button_keys['square']:
+                if not walking:
+                    attacking = True
+                counter = 0
+                cooldown = 2000 #Delay of the attack
+            else:
+                attacking = False
+            if event.button == button_keys['x']:
+                interactable = True          
+                interact_value += 1        
+            else:
+                interactable = False
+        if event.type == pygame.JOYBUTTONUP:
+            if event.button == button_keys['left_arrow'] or event.button == button_keys['right_arrow'] or event.button == button_keys['down_arrow'] or event.button == button_keys['up_arrow']:
+                playerX_change, playerY_change = 0, 0
+                left, right, up, down = False, False, False, False
+                walking = False
+                idling = True
+                walkCount = 0
+            if event.button == button_keys['left_arrow']:
+                LeftIdle = True
+                DownIdle, RightIdle, UpIdle = False, False, False      
+            if event.button == button_keys['right_arrow']:
+                RightIdle = True
+                DownIdle, LeftIdle, UpIdle = False, False, False             
+            if event.button == button_keys['up_arrow']:
+                UpIdle = True
+                DownIdle, RightIdle, LeftIdle = False, False, False     
+            if event.button == button_keys['down_arrow']:
+                DownIdle = True
+                LeftIdle, RightIdle, UpIdle = False, False, False 
+
+
 def gameWindow():  # This function is responsible for player's animation
     global walkCount, walking, attacking, idling, counter, cooldown, player_equipped,  attackEnemy
     global left, right, up, down
@@ -720,34 +770,36 @@ def gameWindow():  # This function is responsible for player's animation
             elif DownIdle:
                 screen.blit(playerImg, (playerX, playerY))
    
-    if player_equipped:
-        if cooldown == 0:
-            attacking = False   
-            idling = True
-            attack = False
-            attackEnemy = True
+    #if player_equipped:
+    if cooldown == 0:
+        attacking = False   
+        idling = True
+        attack = False
+        attackEnemy = True
 
-        if attacking:  # Attacking Mode turns on
-            attack = True # Player starts attacking
-            if walkCount + 1 >= 26: # Stuff when player finishes attacking                            
-                while cooldown > 1:
-                    cooldown -= 10                                                 
-            walking, idling = False, False    
-            if attack:        
-                if LeftIdle or DownIdle or UpIdle or RightIdle:
-                    hitbox()
-                if LeftIdle: 
-                    screen.blit(attack_left[walkCount // 9], (playerX - 5, playerY))
-                    walkCount += 1
-                elif RightIdle:
-                    screen.blit(attack_right[walkCount // 9], (playerX, playerY))
-                    walkCount += 1
-                elif UpIdle:
-                    screen.blit(attack_up[walkCount // 9], (playerX, playerY - 5))
-                    walkCount += 1
-                elif DownIdle:
-                    screen.blit(attack_down[walkCount // 9], (playerX, playerY))
-                    walkCount += 1
+    if attacking:  # Attacking Mode turns on
+        attack = True # Player starts attacking
+        if walkCount + 1 >= 26: # Stuff when player finishes attacking                            
+            while cooldown > 1:
+                cooldown -= 10                                                 
+        walking, idling = False, False    
+        if attack:        
+            if LeftIdle or DownIdle or UpIdle or RightIdle:
+                hitbox()
+            if LeftIdle: 
+                screen.blit(wooden_sword[1],(playerX - 40, playerY + 17))
+                screen.blit(attack_left[walkCount // 9], (playerX, playerY))
+                walkCount += 1
+            elif RightIdle:
+                screen.blit(attack_right[walkCount // 9], (playerX, playerY))
+                walkCount += 1
+            elif UpIdle:
+                screen.blit(wooden_sword[0],(playerX + 7, playerY - 40))
+                screen.blit(attack_up[walkCount // 9], (playerX, playerY))
+                walkCount += 1
+            elif DownIdle:
+                screen.blit(attack_down[walkCount // 9], (playerX, playerY))
+                walkCount += 1
 def player():
     global playerX, playerY
     gameWindow()  # Player
