@@ -83,6 +83,7 @@ i, j, pl, walkCount, interact_value = 0, 0, 0, 0, 0  # Counters
 y = 0
 playCount, settingsCount, quitCount, menuCount = 0,0,0,0
 player_money = 0 #  Currency
+menuValue = 0
 # Lists
 walkRight = [pygame.image.load('data/sprites/player/playerright1.png'),
              pygame.image.load('data/sprites/player/playerright2.png'),
@@ -96,35 +97,28 @@ walkUp = [pygame.image.load('data/sprites/player/playerup1.png'),
 walkDown = [pygame.image.load('data/sprites/player/playerdown1.png'),
             pygame.image.load('data/sprites/player/playerdown2.png'),
             pygame.image.load('data/sprites/player/playerdown1.png')]
-
 wooden_sword = [
     pygame.image.load('data/items/wooden_sword_up.png'),
     pygame.image.load('data/items/wooden_sword_left.png')
 ]
-
 attack_down = [pygame.image.load('data/sprites/player/playerdown1.png'),
                pygame.image.load('data/sprites/player/playerdownattack1.png'),
                pygame.image.load('data/sprites/player/playerdownattack2.png')]
-
 attack_up = [pygame.image.load('data/sprites/player/playerup1.png'),
              pygame.image.load('data/sprites/player/playerupattack1.png'),
              pygame.image.load('data/sprites/player/playerupattack2.png')]
-
 attack_right = [pygame.image.load('data/sprites/player/playerright1.png'),
                 pygame.image.load('data/sprites/player/playerrightattack1.png'),
                 pygame.image.load('data/sprites/player/playerrightattack2.png')]
-
 attack_left = [ pygame.image.load('data/sprites/player/playerleft1.png'),
                 pygame.image.load('data/sprites/player/playerleftattack1.png'),
                 pygame.image.load('data/sprites/player/playerleftattack2.png')]
-
 # Classes
 class chest(object):
     def __init__(self): 
         self.isOpened = False   
         self.counter = 0
-        self.value = 0
-      
+        self.value = 0    
     def update(self, x, y, interactable, player_rect):
         global player_money
         self.x = x
@@ -151,14 +145,12 @@ class chest(object):
             self.value += 1
         screen.blit(chestImg, chestRect)
 class coin_system(object):
-
     def __init__(self,x,y): # Intialize the object and gives X, Y position
         self.x = x
         self.y = y
         self.coinCount = 0
         self.visibility = True
-        self.currency = 0  # Value of the coin
-         
+        self.currency = 0  # Value of the coin        
     def update(self, player_rect):  # Updates the object's condition (Animation etc.)    
         global player_money
         # Sound
@@ -180,8 +172,7 @@ class coin_system(object):
         coin_rect.center = (self.x, self.y)        
         # Conditions
         if self.coinCount >= 26:
-           self.coinCount = 0             
-           
+           self.coinCount = 0                       
         if hitbox_rect.collidepoint(player_rect[0] + 15, player_rect[1]) and self.visibility:
             self.PickupSound.play() # Plays sound
             self.currency +=1 #Player gets 1 coin
@@ -199,20 +190,16 @@ class cloud(object):
         self.cloudSpeed = 0.05
         self.left = False
         self.right = False
-
     def update(self):
         cloudImg = pygame.image.load('data/ui/cloud.png') 
-
         if self.right:
-             self.x = 650
-        
+             self.x = 650       
         if self.left:
            self.x -= self.cloudSpeed
 
         if self.x < 650 and self.x <= -200:
             self.right = True
             self.left = False
-
         elif self.x >= 0:
             self.left = True
             self.right = False
@@ -226,14 +213,12 @@ class dummy(object):
         self.counter = 0
         self.coinCount = 0
         self.attacked = False
-
     def update(self, sword_rect):
         global counter, coin_storage, dummy_task, cooldown
         dummyImg = pygame.image.load('data/npc/training_dummie.png')
         dummyRect = dummyImg.get_rect()
         dummyRect.center = (self.x, self.y) # Position of the dummy
-        self.Hit = mixer.Sound('data/sound/sword_hit.flac')
-        
+        self.Hit = mixer.Sound('data/sound/sword_hit.flac')      
         if dummyRect.collidepoint(sword_rect[0], sword_rect[1]):    
             self.showHPbar = True # Show HP bar
             self.attacked = True
@@ -242,7 +227,6 @@ class dummy(object):
                 self.Hit.play() # Plays sound
                 counter += 1 
             attacked = False
-
         if self.hp <= 0 : # if THE DUMMY IS DEAD, turn off the hp bar
             self.showHPbar = False        
             screen.blit(pygame.image.load('data/npc/broken_dummie.png'), dummyRect) # Broken dummy
@@ -253,11 +237,9 @@ class dummy(object):
             coin_storage[0].update(player_rect) # Spawn coin.
             coin_storage[1].update(player_rect) # Spawn coin.
             coin_storage[2].update(player_rect) # Spawn coin.
-            dummy_task = True # Completed your first mission
-           
+            dummy_task = True # Completed your first mission          
         else: # Dummy is stil alive  
-             screen.blit(dummyImg, dummyRect)
-                              
+             screen.blit(dummyImg, dummyRect)                             
         if self.showHPbar:
                 pygame.draw.rect(screen, ( 0, 0, 0), (self.x - 49,self.y - 60, 102, 10))  # black bar
                 pygame.draw.rect(screen, (255, 0, 0), (self.x - 49,self.y - 59, 100, 8))  # red bar
@@ -265,7 +247,6 @@ class dummy(object):
 class cynthia_npc(object):
     def __init__(self):
         self.counter = 0
-
     def update(self, x, y, player_rect):
         global playerX, playerY, interactable, interact_value
         self.x = x
@@ -276,17 +257,14 @@ class cynthia_npc(object):
         cynthiaY = cynthiaRect[1]
         cynthiaX = cynthiaRect[0]
         name = Pixel_font.render('-Cynthia',True,(0,0,0))
-
         #Top collision
         if playerX >= cynthiaX - 45 and playerX <= cynthiaX + 25 and playerY >= cynthiaY - 60 and playerY <= cynthiaY - 55:
-            playerY = cynthiaY - 60
-            
+            playerY = cynthiaY - 60           
         #Bottom collision
         if playerX >= cynthiaX - 45 and playerX <= cynthiaX + 25 and playerY <= cynthiaY + 25 and playerY >= cynthiaY + 20:
            playerY = cynthiaY + 25
            if interactable:
-                self.counter += 1
-                print(self.counter)
+                self.counter += 1             
                 interactable = False                    
            if  self.counter == 1:
                 catalog_bubble("Good morning big brother")
@@ -301,18 +279,14 @@ class cynthia_npc(object):
                 pass # Dont show anything
            elif self.counter > 4:
                     self.counter = 0
-
         if not playerX >= cynthiaX - 45 and playerX <= cynthiaX + 25 and playerY <= cynthiaY + 25 and playerY >= cynthiaY + 20: # When player leaves the interaction reset the value
-            self.counter = 0
-      
+            self.counter = 0      
         # Left collision
         if playerX >= cynthiaX - 45 and playerX <= cynthiaX - 40 and playerY <= cynthiaY + 25 and playerY >= cynthiaY - 60:
             playerX = cynthiaX - 45
-
         # Right collision
         if playerX <= cynthiaX + 35 and playerX >= cynthiaX + 25 and playerY <= cynthiaY + 25 and playerY >= cynthiaY - 60:
-            playerX = cynthiaX + 35   
-        
+            playerX = cynthiaX + 35        
         screen.blit(cynthiaImg, cynthiaRect) 
 class manos_npc(object):
     def __init__(self):
@@ -533,7 +507,6 @@ class candy(object):
             screen.blit(candy_anim[self.counter // 35], candyRect)          
         else:
             screen.blit(candyImg, candyRect) 
-
 npcs = [
    cynthia_npc(), #0 cynthia
    manos_npc(), #1 manos
@@ -620,7 +593,7 @@ def manos_hut():
             catalog_bubble('This place is locked')
 def controls():  # Player Controls
     global playerX, playerY, playerX_change, playerY_change, walkCount, walking, attacking, idling, cooldown
-    global LeftIdle, RightIdle, UpIdle, DownIdle, left, right, up, down
+    global LeftIdle, RightIdle, UpIdle, DownIdle, left, right, up, down, menuValue
     global interactable, currency, attackEnemy, counter, paused, interact_value
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -702,11 +675,17 @@ def controls():  # Player Controls
             if event.button == button_keys['down_arrow']:
                 playerY_change = -3
                 down = True
-                left, right, up = False, False, False
+                left, right, up = False, False, False                        
+                menuValue -=1
+                if menuValue < 0:
+                    menuValue = 0
             if event.button == button_keys['up_arrow']:
                 playerY_change = 3
                 up = True
-                down, right, left = False, False, False
+                down, right, left = False, False, False   
+                menuValue +=1
+                if menuValue > 0:
+                    menuValue = 1             
             if event.button == button_keys['square']:
                 if not walking:
                     attacking = True
@@ -719,6 +698,12 @@ def controls():  # Player Controls
                 interact_value += 1        
             else:
                 interactable = False
+            if event.button == button_keys["options"]:
+                if not paused:
+                    paused = True
+                else:
+                    paused = False
+                
         if event.type == pygame.JOYBUTTONUP:
             if event.button == button_keys['left_arrow'] or event.button == button_keys['right_arrow'] or event.button == button_keys['down_arrow'] or event.button == button_keys['up_arrow']:
                 playerX_change, playerY_change = 0, 0
@@ -738,8 +723,6 @@ def controls():  # Player Controls
             if event.button == button_keys['down_arrow']:
                 DownIdle = True
                 LeftIdle, RightIdle, UpIdle = False, False, False 
-
-
 def gameWindow():  # This function is responsible for player's animation
     global walkCount, walking, attacking, idling, counter, cooldown, player_equipped,  attackEnemy
     global left, right, up, down
@@ -857,18 +840,18 @@ def out_of_bounds():
         if playerY >= 290:
             playerY = 290
 def pause_menu():
-    global transparent_black, paused, playerX_change, playerY_change, interactable, closedGame, paused
+    global transparent_black, paused, playerX_change, playerY_change, interactable, closedGame, paused, menuValue
     Pixel_fontL = pygame.font.Font("data/fonts/pixelfont.ttf", 36)
     text = Pixel_fontL.render('PAUSED', True, (255, 255, 255))
-    text2 = Pixel_font.render('To continue press Enter or (X)', True, (255, 255, 255))
+    text2 = Pixel_font.render('To continue press Enter or Start', True, (255, 255, 255))
     exitImg = pygame.image.load('data/ui/exit_button.png')
     exitBtn = exitImg.get_rect()
     exitBtn.center = (522, 138)
     def menu_button():
-        global menu, game, menuCount
+        global menu, game, menuCount, menuValue
         menuImg = pygame.image.load('data/ui/Menu.png')
         menuBtn = menuImg.get_rect()
-        menuBtn.center = (326, 300)
+        menuBtn.center = (326, 300)    
         if menuBtn.collidepoint(pygame.mouse.get_pos()):
             menuImg = pygame.image.load('data/ui/Menu_hover.png')
             for event in pygame.event.get():
@@ -876,21 +859,28 @@ def pause_menu():
                     game, menu = False, True
                     for i in range(len(music_list)):
                         music_list[i].stop()
-                    print(game,'closed')
                     menu_screen()
-                    paused = False
+                    paused = False              
         else:
             menuImg = pygame.image.load('data/ui/Menu.png')
-        if menuBtn.collidepoint(pygame.mouse.get_pos()) : #or aboutButton.collidepoint(pygame.mouse.get_pos()) or 
+        if menuBtn.collidepoint(pygame.mouse.get_pos()): #or aboutButton.collidepoint(pygame.mouse.get_pos()) or 
            while menuCount < 2:
                  music_list[4].play()
                  menuCount += 1
         if not menuBtn.collidepoint(pygame.mouse.get_pos()):
             menuCount = 0
+        if menuValue == 1:
+            menuImg = pygame.image.load('data/ui/Menu_hover.png')  
+            if interactable:
+                game, menu = False, True
+                for i in range(len(music_list)):
+                    music_list[i].stop()
+                menu_screen()
+                paused = False 
         screen.blit(menuImg, menuBtn)
     
     def quit_button():
-        global quitCount
+        global quitCount,menuValue
         quitImg = pygame.image.load("data/ui/quit.png")
         quitButton = quitImg.get_rect()
         quitButton.center = (326, 375)
@@ -902,14 +892,20 @@ def pause_menu():
                     sys.exit()
         else:
             quitImg = pygame.image.load('data/ui/quit.png')
-
         if quitButton.collidepoint(pygame.mouse.get_pos()) : #or aboutButton.collidepoint(pygame.mouse.get_pos()) or 
             while quitCount < 2:
                  music_list[4].play()
                  quitCount += 1
         if not quitButton.collidepoint(pygame.mouse.get_pos()):
             quitCount = 0
+        if menuValue == 0:
+            quitImg = pygame.image.load('data/ui/quit_hover.png')
+            if interactable:
+                 pygame.quit()
+                 sys.exit()
+
         screen.blit(quitImg, quitButton)       
+
     if paused:
         playerX_change, playerY_change = 0, 0
         screen.blit(transparent_black, (0, 0))
@@ -917,8 +913,6 @@ def pause_menu():
         screen.blit(text2, (100, 200))
         menu_button()
         quit_button()
-        if interactable:
-            paused = False
 def player_pocket():
     global coinX,coinY
     global player_money
@@ -975,7 +969,7 @@ def credits_text():
     screen.blit(text7, (140, 740 - y)),screen.blit(text9, (140, 760 - y))  
     screen.blit(text8, (140, 810 - y))
 def menu_screen():
-    global menu, game,playCount,quitCount,settingsCount, MenuCounter, canChange, paused
+    global menu, game,playCount,quitCount,settingsCount, MenuCounter, canChange, paused, menuValue
     if menu:
         isOnMenu()
         music_list[0].play()
@@ -1022,12 +1016,10 @@ def menu_screen():
         # Play Button
         if playButton.collidepoint(pygame.mouse.get_pos()):
             playImg = pygame.image.load('data/ui/button interface hover.png') 
-            #  StartSound.set_volume(0.05)
             for event in pygame.event.get():
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     menu = False
                     music_list[0].stop()
-                    # StartSound.play()
                     game = True
         else:
             playImg = pygame.image.load('data/ui/button interface.png')
@@ -1048,6 +1040,14 @@ def menu_screen():
                     sys.exit()
         else:
             quitImg = pygame.image.load('data/ui/quit.png')
+
+        if menuValue == 1:
+            playImg = pygame.image.load('data/ui/button interface hover.png') 
+        elif menuValue == 0:
+            aboutImg = pygame.image.load('data/ui/about_hover.png')
+        elif menuValue == -1:
+            quitImg = pygame.image.load('data/ui/quit_hover.png')
+
         screen.blit(playImg, playButton)
         screen.blit(quitImg, quitButton)
         screen.blit(aboutImg, aboutButton)
@@ -1055,6 +1055,7 @@ def menu_screen():
         if canChange:
             settings_catalog()
             exit_button()
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -1063,9 +1064,28 @@ def menu_screen():
                 if event.key == pygame.K_ESCAPE:
                     pygame.quit()
                     sys.exit()
+            if event.type == pygame.JOYBUTTONDOWN:                      
+                if event.button == button_keys['up_arrow']:
+                    if menuValue < 1:
+                        menuValue += 1             
+                if event.button == button_keys['down_arrow']:
+                    if menuValue > -1:
+                        menuValue -= 1
+                if event.button == button_keys['circle']:
+                        canChange = False
+                if event.button == button_keys['x']:
+                    if not canChange:
+                        if menuValue == 1:
+                            menu = False
+                            music_list[0].stop()
+                            game = True
+                        elif menuValue == 0:
+                            canChange = True
+                        elif menuValue == -1:
+                            pygame.quit()
+                            sys.exit()
         screen.blit(cursor, (pygame.mouse.get_pos()))
         pygame.display.update()
-
 menu_screen()
 while game:
     if john_room and world_value == 0:
@@ -1211,8 +1231,7 @@ while game:
                 if task_3 :
                     music_list[3].play(-1)
                 else:
-                    music_list[1].play(-1)
-                
+                    music_list[1].play(-1)               
         if playerX >= 360 and playerY <= 65:  # Fence collision
             playerY = 65
         elif playerX <= 220 and playerY <= 65:
