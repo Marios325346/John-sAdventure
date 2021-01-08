@@ -282,32 +282,34 @@ class cynthia_npc(object):
         cynthiaRect.center = (self.x , self.y)
         cynthiaY = cynthiaRect[1]
         cynthiaX = cynthiaRect[0]
-        
+        name = Pixel_font.render('-Cynthia',True,(0,0,0))
+
         #Top collision
         if playerX >= cynthiaX - 45 and playerX <= cynthiaX + 25 and playerY >= cynthiaY - 60 and playerY <= cynthiaY - 55:
             playerY = cynthiaY - 60
-        
+            
         #Bottom collision
         if playerX >= cynthiaX - 45 and playerX <= cynthiaX + 25 and playerY <= cynthiaY + 25 and playerY >= cynthiaY + 20:
-           playerY = cynthiaY + 25     
-           
+           playerY = cynthiaY + 25
            if interactable:
                 self.counter += 1
-                interactable = False
-                print(self.counter)      
-                
+                print(self.counter)
+                interactable = False                    
            if  self.counter == 1:
                 catalog_bubble("Good morning big brother")
+                screen.blit(name,(430,430))         
            elif  self.counter == 2:
                 catalog_bubble("your teacher is waiting for you")
+                screen.blit(name,(430,430))          
            elif  self.counter == 3:
                 catalog_bubble("pick your sword from the basement")
+                screen.blit(name,(430,430))      
            elif  self.counter  == 4:                     
                 pass # Dont show anything
            elif self.counter > 4:
                     self.counter = 0
 
-        if not cynthiaRect.collidepoint(player_rect[0], player_rect[1]): # When player leaves the interaction reset the value
+        if not cynthiaRect.collidepoint(player_rect[0] + 15, player_rect[1]): # When player leaves the interaction reset the value
             self.counter = 0
       
         # Left collision
@@ -317,8 +319,7 @@ class cynthia_npc(object):
         # Right collision
         if playerX <= cynthiaX + 35 and playerX >= cynthiaX + 25 and playerY <= cynthiaY + 25 and playerY >= cynthiaY - 60:
             playerX = cynthiaX + 35   
-
-            
+        
         screen.blit(cynthiaImg, cynthiaRect) 
 class manos_npc(object):
 
@@ -334,6 +335,8 @@ class manos_npc(object):
         manosRect.center = (self.x , self.y)
         manosY = manosRect[1]
         manosX = manosRect[0]
+
+        name = Pixel_font.render('-Manos',True,(0,0,0))
         
         #Top collision
         if playerX >= manosX - 45 and playerX <= manosX + 25 and playerY >= manosY - 60 and playerY <= manosY - 55:
@@ -349,14 +352,19 @@ class manos_npc(object):
                if not dummy_task: # Player has not beaten the dummy
                    if  self.counter == 1:
                         catalog_bubble("Hey John! What's Up?")
+                        screen.blit(name,(450,430))     
                    elif  self.counter == 2:
                         catalog_bubble("Here for your daily training?")
+                        screen.blit(name,(450,430))     
                    elif  self.counter == 3:
                         catalog_bubble("Good. Lets get started!")
+                        screen.blit(name,(450,430))     
                    elif  self.counter  == 4:                     
-                        catalog_bubble("Beat down that dummy!")              
+                        catalog_bubble("Beat down that dummy!")
+                        screen.blit(name,(450,430))     
                    elif  self.counter  == 5:                     
                         catalog_bubble("(Press LSHIFT or [] to attack.)")
+                        screen.blit(name,(450,430))     
                    elif  self.counter  == 6:
                         pass
                    elif self.counter > 6:
@@ -364,12 +372,16 @@ class manos_npc(object):
                else: # Player has beaten the dummy
                    if self.counter == 1:
                         catalog_bubble("Good Job!")
+                        screen.blit(name,(450,430))     
                    elif self.counter == 2:
                         catalog_bubble("You can keep the coins!")
+                        screen.blit(name,(450,430))     
                    elif self.counter == 3:
                         catalog_bubble("Anyway, that's it for today.")
+                        screen.blit(name,(450,430))     
                    elif self.counter  == 4:                     
-                        catalog_bubble("See ya later!")              
+                        catalog_bubble("See ya later!")         
+                        screen.blit(name,(450,430))     
                    elif self.counter  == 5:                     
                         pass
                    elif self.counter > 5:
@@ -378,20 +390,26 @@ class manos_npc(object):
            elif condition == "mission2":
                if  self.counter == 1:
                     catalog_bubble("Hey John! what's the rush?")
+                    screen.blit(name,(450,430))     
                elif  self.counter == 2:
                     catalog_bubble('"My sister is missing."')
+
                elif  self.counter == 3:
                     catalog_bubble('"I found this letter."')
                elif  self.counter == 4:
                     catalog_bubble('"Know anything about it?"')
                elif  self.counter == 5:
                     catalog_bubble("Mhm.")
+                    screen.blit(name,(450,430))     
                elif  self.counter == 6:
                     catalog_bubble("I know who is behind this.")
+                    screen.blit(name,(450,430))     
                elif  self.counter == 7:
                     catalog_bubble("Meet me outside.")
+                    screen.blit(name,(450,430))     
                elif  self.counter == 8:
                     catalog_bubble("I'll explain later.")
+                    screen.blit(name,(450,430))     
                elif  self.counter  == 9:                     
                     pass # Dont show anything
                elif self.counter > 9:
@@ -423,9 +441,10 @@ class mau(object):
         mauImg = pygame.image.load("data/npc/Mau.png")
         mauRect = mauImg.get_rect()
         mauRect.center = (self.x, self.y) 
-
         mauY = mauRect[1]
         mauX = mauRect[0]
+
+        name = Pixel_font.render('-Mau',True,(0,0,0))
         #Animation
         mau_anim = [
             pygame.image.load('data/npc/Mau.png'),
@@ -450,7 +469,8 @@ class mau(object):
             playerX = mauX + 35  
             if mauRect.collidepoint(player_rect[0], player_rect[1]): # In Mau you interact where he is looking
                 if interactable:
-                    catalog_bubble("Meow meow meow")            
+                    catalog_bubble("Meow meow meow") 
+                    screen.blit(name,(450,430))     
                     while self.point < 1:
                         r_number = random.randint(1,10)
                         if r_number == 3:
@@ -480,9 +500,9 @@ class candy(object):
         candyImg = pygame.image.load("data/npc/candy.png")
         candyRect = candyImg.get_rect()
         candyRect.center = (self.x, self.y) 
-
         candyY = candyRect[1]
         candyX = candyRect[0]
+        name = Pixel_font.render('-Candy',True,(0,0,0))
         #Animation
         candy_anim = [
             pygame.image.load('data/npc/candy_sleeping.png'),
@@ -516,6 +536,7 @@ class candy(object):
                             interact_value = False                    
                     else:                      
                         catalog_bubble("Meow meow meow")
+                        screen.blit(name,(450,430))     
         # Left collision
         if playerX >=  candyX - 45 and playerX <=  candyX - 40 and playerY <=  candyY + 25 and playerY >=  candyY - 60:
             playerX =  candyX - 45
@@ -545,7 +566,6 @@ npcs = [
 cloud1 = cloud(550,50)
 cloud2 = cloud(350,70)
 cloud3 = cloud(450,90)
-
 
 # Functions
 def isOnMenu():
@@ -594,7 +614,6 @@ def exit_button():
     screen.blit(exitImg, exitBtn)
 def hitbox():
     global playerX, playerY, player_equipped
-
     if LeftIdle:
         swordRect.center = (playerX - 16, playerY + 35)
         screen.blit(sword_Image, swordRect)
@@ -784,6 +803,9 @@ def sword_task(posX, posY):
             elif interact_value >= 2:
                 sword_text = Pixel_font.render("You already took the sword.", True, (0,0,0))
                 screen.blit(sword_text, (120, 350))
+    else:
+        if sword_Task:
+            interact_value = 0
     return posX, posY
 def blacksmith_col():  # Blacksmith collisions
     global playerX, playerY
@@ -1058,24 +1080,20 @@ while game:
             playerY = 40
         elif playerY >= 410:
             playerY = 410
-
         if playerX <= 100:  
             playerX = 100
         elif playerX >= 580:
             playerX = 580
-
         #Computer collisions
         if playerX > 510 and playerX < 515 and playerY >= 160:
             playerX = 510
         if playerX >= 515  and playerY >= 160 and playerY <= 165:
            playerY = 160
-
         # Desks collisions
         if playerX < 280 and playerY <= 130:
             playerY = 130
         if playerX >= 280 and playerX <= 285 and playerY <= 130:
             playerX = 285
-
         # Chest collisions
         if playerX >= 340 and playerX <= 400 and playerY <= 80:
             playerY = 80 # Bottom
@@ -1106,7 +1124,7 @@ while game:
                 readNote = True
                 if interactable:
                     music_list[1].stop()
-        if playerY >= 260 and playerY <= 340 and playerX >= 510:  # Player interacts with basement's door
+        if playerY >= 260 and playerY <= 350 and playerX >= 540:  # Player interacts with basement's door
             catalog_bubble("Wanna go to basement?")
             if interactable:
                 kitchen, basement = not kitchen, True
@@ -1128,7 +1146,6 @@ while game:
             playerY = 315
         if playerY <= 40 and playerX <= 245:  # Kitchen collision
             playerY = 40
-
         pause_menu()
         playerX += playerX_change  # Player X movement
         playerY -= playerY_change  # Player Y movement
