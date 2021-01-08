@@ -1,17 +1,16 @@
 # COPYRIGHT 2020-2021 version 0.0.4
 import pygame, sys, os, json, random  # Libraries
 from pygame import mixer
-from data.engine import *
 pygame.init()
 screen = pygame.display.set_mode((640, 480))  # Setup screen
 clock = pygame.time.Clock()
-pygame.display.set_caption("John's Adventure  v0.0.456 Unstable Demo")
+pygame.display.set_caption("John's Adventure  v0.0.5 Semi-stable Chapter 1")
 icon = pygame.image.load('data/ui/logo.ico')
 pygame.display.set_icon(icon)
 black = (0, 0, 0)  # Color black
 red = (255, 0, 0)
 lime = (0, 255, 0)
-Pixel_font = pygame.font.Font("data/fonts/pixelfont.ttf", 18)
+Pixel_font = pygame.font.Font("data/fonts/pixelfont.ttf", 14)
 cursor = pygame.image.load('data/ui/j_g_mouse.png')
 pygame.mouse.set_visible(False)
 playImg = pygame.image.load("data/ui/button interface.png").convert()
@@ -26,28 +25,34 @@ aboutButton.center = (320, 375)
 aboutUI = pygame.image.load('data/ui/about_screen.png')
 aboutRect = aboutUI.get_rect()
 aboutRect.center = (320, 250)
+catalogImg = pygame.image.load('data/ui/catalog_bubble.png')
+blacksmithImg = pygame.image.load('data/npc/blacksmith_shop.png')
+blacksmithRect = blacksmithImg.get_rect()
+blacksmithRect.center = (467, 60)
+transparent_black = pygame.image.load("data/ui/black_overlay.png")
+note = pygame.image.load('data/items/note.png')
+cynthias_Note = pygame.image.load('data/items/cynthias_note.png')
 controller_value = pygame.joystick.get_init()
 joysticks = []  # Initialize controller
 for i in range(pygame.joystick.get_count()):
     joysticks.append(pygame.joystick.Joystick(i))
 for joystick in joysticks:
     joystick.init()
-
 # 0: Left analog horizontal, 1: Left Analog Vertical, 2: Right Analog Horizontal
 # 3: Right Analog Vertical 4: Left Trigger, 5: Right Trigger
 analog_keys = {0: 0, 1: 0, 2: 0, 3: 0, 4: -1, 5: -1}
 with open(os.path.join("data/controller_keys.json"), 'r+') as file:
     button_keys = json.load(file)
 # MUSIC & SOUND
-music_list = [mixer.Sound("data/sound/forest_theme_part1.flac"),  #0
-              mixer.Sound("data/sound/home_theme.flac"), #1
-              mixer.Sound("data/sound/forest_theme.flac"), #2 
-              mixer.Sound("data/sound/dramatic.flac"), #3 
-              mixer.Sound("data/sound/Select_UI.wav") #4
-              ]
+music_list = [
+    mixer.Sound("data/sound/forest_theme_part1.flac"),  #0
+    mixer.Sound("data/sound/home_theme.flac"), #1
+    mixer.Sound("data/sound/forest_theme.flac"), #2 
+    mixer.Sound("data/sound/dramatic.flac"), #3 
+    mixer.Sound("data/sound/Select_UI.wav") #4            
+             ]
 for i in range(len(music_list)):
     music_list[i].set_volume(0.3)
-
 # IMAGES
 playerImg = pygame.image.load('data/sprites/player/playeridle.png')  # Player
 sword_Image = pygame.image.load("data/items/hitbox.png")
@@ -56,6 +61,7 @@ swordRect = sword_Image.get_rect()
 LeftIdle, RightIdle, UpIdle, DownIdle = False, False, False, True
 left, right, down, up = False, False, False, False
 canChange, paused = False, False
+showCatalog = True
 menu, sword_Task = True, True
 player_equipped, interactable, readNote, task_3, dummy_task = False, False, False, False, False
 john_room, kitchen, basement = False, False, False  # Chunks & World Values
@@ -74,8 +80,9 @@ player_hitbox = pygame.image.load('data/items/hitbox.png')
 player_rect = player_hitbox.get_rect()
 world_value, counter = 0, 0  # spawn points, counter
 i, j, pl, walkCount, interact_value = 0, 0, 0, 0, 0  # Counters
-playCount, settingsCount, quitCount = 0,0,0
-
+y = 0
+playCount, settingsCount, quitCount, menuCount = 0,0,0,0
+player_money = 0 #  Currency
 # Lists
 walkRight = [pygame.image.load('data/sprites/player/playerright1.png'),
              pygame.image.load('data/sprites/player/playerright2.png'),
@@ -111,7 +118,454 @@ attack_left = [ pygame.image.load('data/sprites/player/playerleft1.png'),
                 pygame.image.load('data/sprites/player/playerleftattack1.png'),
                 pygame.image.load('data/sprites/player/playerleftattack2.png')]
 
+# Classes
+class chest(object):
+
+    def __init__(self): 
+        self.isOpened = False   
+        self.counter = 0
+        self.value = 0
+      
+    def update(self, x, y, interactable, player_rect):
+        global player_money
+        self.x = x
+        self.y = y
+        #Images
+        chestImg = pygame.image.load('data/sprites/chest.png')
+        chestRect = chestImg.get_rect()
+        chestRect.center = (self.x, self.y)
+
+        if chestRect.collidepoint(player_rect[0] + 15, player_rect[1]):
+            catalog_bubble("Helloo owooo")
+            if interactable and not self.isOpened:  
+                while self.counter < 1:
+                    player_money += 40                   
+                    self.counter += 1
+                self.isOpened = True       
+            if self.isOpened:
+                if self.value == 0:
+                    catalog_bubble("You found 40 coins")
+                else:
+                    catalog_bubble("The chest is now empty")
+            else:
+                catalog_bubble("Open the chest?")
+                
+        if not chestRect.collidepoint(player_rect[0] + 15, player_rect[1]) and self.isOpened:
+            self.value += 1
+
+        screen.blit(chestImg, chestRect)
+class coin_system(object):
+
+    def __init__(self,x,y): # Intialize the object and gives X, Y position
+        self.x = x
+        self.y = y
+        self.coinCount = 0
+        self.visibility = True
+        self.currency = 0  # Value of the coin
+         
+    def update(self, player_rect):  # Updates the object's condition (Animation etc.)    
+        global player_money
+        # Sound
+        self.PickupSound = mixer.Sound('data/sound/Pickup_Coin.wav')
+        #Rect 1
+        coin_hitbox = pygame.image.load('data/items/hitbox.png')
+        hitbox_rect = coin_hitbox.get_rect()
+        hitbox_rect.center = (self.x - 1 , self.y)      
+        #Animation
+        coin_anim = [
+            pygame.image.load('data/items/coin1.png'),
+            pygame.image.load('data/items/coin2.png'),
+            pygame.image.load('data/items/coin3.png'),
+            pygame.image.load('data/items/coin4.png'),
+            pygame.image.load('data/items/coin5.png')
+        ] 
+        # Rect 2 for animation
+        coin_rect = coin_anim[0].get_rect()
+        coin_rect.center = (self.x, self.y)        
+        # Conditions
+        if self.coinCount >= 26:
+           self.coinCount = 0             
+           
+        if hitbox_rect.collidepoint(player_rect[0] + 15, player_rect[1]) and self.visibility:
+            self.PickupSound.play() # Plays sound
+            self.currency +=1 #Player gets 1 coin
+            player_money += self.currency #Adds it to players pocket
+            self.visibility = False # The Coin disappears       
+
+        if self.visibility: # If player hasn't touch the coin do this
+            screen.blit(coin_anim[self.coinCount // 9], coin_rect)
+            screen.blit(coin_hitbox, hitbox_rect)
+            self.coinCount += 1
+class cloud(object):
+
+    def __init__(self,x,y):   
+        self.x = x
+        self.y = y 
+        self.cloudSpeed = 0.05
+        self.left = False
+        self.right = False
+
+    def update(self):
+        cloudImg = pygame.image.load('data/ui/cloud.png') 
+
+        if self.right:
+             self.x = 650
+        
+        if self.left:
+           self.x -= self.cloudSpeed
+
+        if self.x < 650 and self.x <= -200:
+            self.right = True
+            self.left = False
+
+        elif self.x >= 0:
+            self.left = True
+            self.right = False
+        screen.blit(cloudImg, (self.x , self.y ))
+class dummy(object):
+
+    def __init__(self, x, y): # Initialize the dummy
+        self.x = x
+        self.y = y 
+        self.hp = 100 # Health
+        self.showHPbar = False
+        self.counter = 0
+        self.coinCount = 0
+        self.attacked = False
+
+    def update(self, sword_rect):
+        global counter, coin_storage, dummy_task, cooldown
+        dummyImg = pygame.image.load('data/npc/training_dummie.png')
+        dummyRect = dummyImg.get_rect()
+        dummyRect.center = (self.x, self.y) # Position of the dummy
+        self.Hit = mixer.Sound('data/sound/sword_hit.flac')
+        
+        if dummyRect.collidepoint(sword_rect[0], sword_rect[1]):    
+            self.showHPbar = True # Show HP bar
+            self.attacked = True
+            while counter < 1 and self.hp > 0 and cooldown <= 0:  # Play a sound on hit, decrease hp
+                self.hp -= 10
+                self.Hit.play() # Plays sound
+                counter += 1 
+            attacked = False
+
+        if self.hp <= 0 : # if THE DUMMY IS DEAD, turn off the hp bar
+            self.showHPbar = False        
+            screen.blit(pygame.image.load('data/npc/broken_dummie.png'), dummyRect) # Broken dummy
+            for i in range(3): # Drops 3 coins
+                ranX = random.randint(self.x - 30, self.x + 30) # Random number around dummy's x
+                ranY = random.randint(self.y - 30, self.y + 30) # Random number around dummy's y
+                coin_storage.append(coin_system(ranX, ranY)) # append the positions     
+            coin_storage[0].update(player_rect) # Spawn coin.
+            coin_storage[1].update(player_rect) # Spawn coin.
+            coin_storage[2].update(player_rect) # Spawn coin.
+            dummy_task = True # Completed your first mission
+           
+        else: # Dummy is stil alive  
+             screen.blit(dummyImg, dummyRect)
+                              
+        if self.showHPbar:
+                pygame.draw.rect(screen, ( 0, 0, 0), (self.x - 49,self.y - 60, 102, 10))  # black bar
+                pygame.draw.rect(screen, (255, 0, 0), (self.x - 49,self.y - 59, 100, 8))  # red bar
+                pygame.draw.rect(screen, (0, 255, 0), (self.x - 49,self.y - 59, self.hp, 8))  # lime bar    
+class cynthia_npc(object):
+
+    def __init__(self):
+        self.counter = 0
+
+    def update(self, x, y, player_rect):
+        global playerX, playerY, interactable, interact_value
+        self.x = x
+        self.y = y
+        cynthiaImg = pygame.image.load("data/npc/cynthia.png")
+        cynthiaRect = cynthiaImg.get_rect()
+        cynthiaRect.center = (self.x , self.y)
+        cynthiaY = cynthiaRect[1]
+        cynthiaX = cynthiaRect[0]
+        
+        #Top collision
+        if playerX >= cynthiaX - 45 and playerX <= cynthiaX + 25 and playerY >= cynthiaY - 60 and playerY <= cynthiaY - 55:
+            playerY = cynthiaY - 60
+        
+        #Bottom collision
+        if playerX >= cynthiaX - 45 and playerX <= cynthiaX + 25 and playerY <= cynthiaY + 25 and playerY >= cynthiaY + 20:
+           playerY = cynthiaY + 25     
+           
+           if interactable:
+                self.counter += 1
+                interactable = False
+                print(self.counter)      
+                
+           if  self.counter == 1:
+                catalog_bubble("Good morning big brother")
+           elif  self.counter == 2:
+                catalog_bubble("your teacher is waiting for you")
+           elif  self.counter == 3:
+                catalog_bubble("pick your sword from the basement")
+           elif  self.counter  == 4:                     
+                pass # Dont show anything
+           elif self.counter > 4:
+                    self.counter = 0
+
+        if not cynthiaRect.collidepoint(player_rect[0], player_rect[1]): # When player leaves the interaction reset the value
+            self.counter = 0
+      
+        # Left collision
+        if playerX >= cynthiaX - 45 and playerX <= cynthiaX - 40 and playerY <= cynthiaY + 25 and playerY >= cynthiaY - 60:
+            playerX = cynthiaX - 45
+
+        # Right collision
+        if playerX <= cynthiaX + 35 and playerX >= cynthiaX + 25 and playerY <= cynthiaY + 25 and playerY >= cynthiaY - 60:
+            playerX = cynthiaX + 35   
+
+            
+        screen.blit(cynthiaImg, cynthiaRect) 
+class manos_npc(object):
+
+    def __init__(self):
+        self.counter = 0
+
+    def update(self, x, y, player_rect, condition):
+        global playerX, playerY, interactable, interact_value, dummy_task
+        self.x = x
+        self.y = y
+        manosImg = pygame.image.load("data/npc/manos.png")
+        manosRect = manosImg.get_rect()
+        manosRect.center = (self.x , self.y)
+        manosY = manosRect[1]
+        manosX = manosRect[0]
+        
+        #Top collision
+        if playerX >= manosX - 45 and playerX <= manosX + 25 and playerY >= manosY - 60 and playerY <= manosY - 55:
+            playerY = manosY - 60
+        
+        #Bottom collision
+        if playerX >= manosX - 45 and playerX <= manosX + 25 and playerY <= manosY + 25 and playerY >= manosY + 20:
+           playerY = manosY + 25                         
+           if interactable:
+                self.counter += 1
+                interactable = False     
+           if condition == "mission1":
+               if not dummy_task: # Player has not beaten the dummy
+                   if  self.counter == 1:
+                        catalog_bubble("Hey John! What's Up?")
+                   elif  self.counter == 2:
+                        catalog_bubble("Here for your daily training?")
+                   elif  self.counter == 3:
+                        catalog_bubble("Good. Lets get started!")
+                   elif  self.counter  == 4:                     
+                        catalog_bubble("Beat down that dummy!")              
+                   elif  self.counter  == 5:                     
+                        catalog_bubble("(Press LSHIFT or [] to attack.)")
+                   elif  self.counter  == 6:
+                        pass
+                   elif self.counter > 6:
+                            self.counter = 0
+               else: # Player has beaten the dummy
+                   if self.counter == 1:
+                        catalog_bubble("Good Job!")
+                   elif self.counter == 2:
+                        catalog_bubble("You can keep the coins!")
+                   elif self.counter == 3:
+                        catalog_bubble("Anyway, that's it for today.")
+                   elif self.counter  == 4:                     
+                        catalog_bubble("See ya later!")              
+                   elif self.counter  == 5:                     
+                        pass
+                   elif self.counter > 5:
+                            self.counter = 0
+
+           elif condition == "mission2":
+               if  self.counter == 1:
+                    catalog_bubble("Hey John! what's the rush?")
+               elif  self.counter == 2:
+                    catalog_bubble('"My sister is missing."')
+               elif  self.counter == 3:
+                    catalog_bubble('"I found this letter."')
+               elif  self.counter == 4:
+                    catalog_bubble('"Know anything about it?"')
+               elif  self.counter == 5:
+                    catalog_bubble("Mhm.")
+               elif  self.counter == 6:
+                    catalog_bubble("I know who is behind this.")
+               elif  self.counter == 7:
+                    catalog_bubble("Meet me outside.")
+               elif  self.counter == 8:
+                    catalog_bubble("I'll explain later.")
+               elif  self.counter  == 9:                     
+                    pass # Dont show anything
+               elif self.counter > 9:
+                        self.counter = 0
+               
+
+        if not manosRect.collidepoint(player_rect[0], player_rect[1]): # When player leaves the interaction reset the value
+            self.counter = 0
+      
+        # Left collision
+        if playerX >= manosX - 45 and playerX <= manosX - 40 and playerY <= manosY + 25 and playerY >= manosY - 60:
+            playerX = manosX - 45
+
+        # Right collision
+        if playerX <= manosX + 35 and playerX >= manosX + 25 and playerY <= manosY + 25 and playerY >= manosY - 60:
+            playerX = manosX + 35   
+            
+        screen.blit(manosImg, manosRect) 
+class mau(object):
+    def __init__(self):
+        self.counter = 0
+        self.isAutakias = False
+        self.point = 0
+
+    def update(self, x, y):
+        global playerX, playerY, interactable
+        self.x = x
+        self.y = y
+        mauImg = pygame.image.load("data/npc/Mau.png")
+        mauRect = mauImg.get_rect()
+        mauRect.center = (self.x, self.y) 
+
+        mauY = mauRect[1]
+        mauX = mauRect[0]
+        #Animation
+        mau_anim = [
+            pygame.image.load('data/npc/Mau.png'),
+            pygame.image.load('data/npc/Mau2.png'),
+            pygame.image.load('data/npc/Mau.png')
+        ] 
+
+        if self.counter >= 26:
+           self.counter = 0  
+
+        #Top collision
+        if playerX >= mauX  - 45 and playerX <= mauX + 25 and playerY >= mauY - 60 and playerY <= mauY - 55:
+            playerY = mauY - 60       
+        #Bottom collision
+        if playerX >= mauX - 45 and playerX <= mauX + 25 and playerY <= mauY + 25 and playerY >= mauY + 20:
+           playerY = mauY + 25                    
+        # Left collision
+        if playerX >= mauX - 45 and playerX <= mauX - 40 and playerY <= mauY + 25 and playerY >= mauY - 60:
+            playerX = mauX - 45
+        # Right collision
+        if playerX <= mauX + 35 and playerX >= mauX + 25 and playerY <= mauY + 25 and playerY >= mauY - 60:
+            playerX = mauX + 35  
+            if mauRect.collidepoint(player_rect[0], player_rect[1]): # In Mau you interact where he is looking
+                if interactable:
+                    catalog_bubble("Meow meow meow")            
+                    while self.point < 1:
+                        r_number = random.randint(1,10)
+                        if r_number == 3:
+                            self.isAutakias = True # Something secret.. >:))))
+                        else:
+                            self.isAutakias = False
+                        self.point += 1
+            
+        if not mauRect.collidepoint(player_rect[0], player_rect[1]): # When player leaves the interaction reset the value
+            interact_value = 0  
+            self.point = 0
+                
+        if self.isAutakias: # >:))))))
+            self.counter += 1
+            screen.blit(mau_anim[self.counter // 9], mauRect)          
+        else:
+            screen.blit(mauImg, mauRect) 
+class candy(object):
+    def __init__(self):
+        self.counter = 0
+        self.isYpnaras = False
+
+    def update(self, x, y, player_rect, condition):
+        global playerX, playerY, interactable, interact_value
+        self.x = x
+        self.y = y
+        candyImg = pygame.image.load("data/npc/candy.png")
+        candyRect = candyImg.get_rect()
+        candyRect.center = (self.x, self.y) 
+
+        candyY = candyRect[1]
+        candyX = candyRect[0]
+        #Animation
+        candy_anim = [
+            pygame.image.load('data/npc/candy_sleeping.png'),
+            pygame.image.load('data/npc/candy_sleeping.png'),
+            pygame.image.load('data/npc/candy_sleeping2.png'),
+            pygame.image.load('data/npc/candy_sleeping2.png'),
+            pygame.image.load('data/npc/candy_sleeping.png')
+        ] 
+
+        if condition == "sleeping":
+            self.isYpnaras = True
+        elif condition == "awake":
+            self.isYpnaras = False
+        
+        #Top collision
+        if playerX >=  candyX  - 45 and playerX <=  candyX + 25 and playerY >=  candyY - 60 and playerY <=  candyY - 55:
+            playerY =  candyY - 60       
+        #Bottom collision
+        if playerX >=  candyX - 45 and playerX <=  candyX + 25 and playerY <=  candyY + 25 and playerY >=  candyY + 20:
+           playerY =  candyY + 25    
+           if candyRect.collidepoint(player_rect[0] + 15, player_rect[1]): # In Mau you interact where he is looking
+               if interactable:
+                    if self.isYpnaras:
+                        if interact_value == 1:
+                            catalog_bubble("Zzzzzz....")
+                        elif interact_value == 2:
+                            catalog_bubble("She fell asleep on the warm carpet.")
+                        elif interact_value == 3:
+                            pass
+                        else:
+                            interact_value = False                    
+                    else:                      
+                        catalog_bubble("Meow meow meow")
+        # Left collision
+        if playerX >=  candyX - 45 and playerX <=  candyX - 40 and playerY <=  candyY + 25 and playerY >=  candyY - 60:
+            playerX =  candyX - 45
+        # Right collision
+        if playerX <=  candyX + 35 and playerX >=  candyX + 25 and playerY <= candyY + 25 and playerY >=  candyY - 60:
+            playerX =  candyX + 35  
+
+        if not candyRect.collidepoint(player_rect[0], player_rect[1]): # When player leaves the interaction reset the value
+            interact_value = 0  
+            self.point = 0    
+                
+        if self.isYpnaras:
+            if self.counter >= 174: # Thats a lot of frames...
+                self.counter = 0  
+            self.counter += 1
+            screen.blit(candy_anim[self.counter // 35], candyRect)          
+        else:
+            screen.blit(candyImg, candyRect) 
+
+npcs = [
+   cynthia_npc(), #0 cynthia
+   manos_npc(), #1 manos
+   mau(), #2 mau
+   candy() #3 candy
+]
+
+cloud1 = cloud(550,50)
+cloud2 = cloud(350,70)
+cloud3 = cloud(450,90)
+
+
 # Functions
+def isOnMenu():
+    global john_room, kitchen, basement, route1, route2, route3, route4, training_field, manosHut, credits_screen, world_value,sword_Task
+    global i, j, pl, walkCount, interact_value, player_equipped, interactable, readNote, task_3, dummy_task, player_money, chests, coin_storage,y
+    player_equipped, interactable, readNote, task_3, dummy_task = False, False, False, False, False
+    john_room, kitchen, basement = False, False, False  # Chunks & World Values
+    route1, route2, route3, route4, training_field, manosHut, credits_screen = False, False, False, False, False, False, False
+    sword_Task = True
+    john_room = True  # [The world] you want to start with
+    world_value = 0  # spawn points, counter
+    player_money = 0 #  Currency
+    i, j, pl, walkCount, interact_value, y= 0, 0, 0, 0, 0,0  # Counters
+   
+    chests = [
+    chest(), #0 johns room
+    chest(), #1 Route 2
+    chest()  #2 Manos Hut
+    ]
+    coin_storage = []
 def framerate():
     fps = str(int(clock.get_fps()))
     fps_text = Pixel_font.render(fps, 1, pygame.Color("yellow"))
@@ -134,7 +588,7 @@ def exit_button():
         exitImg = pygame.image.load('data/ui/exit_button_hover.png')
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONDOWN:
-                canChange = False
+                canChange = False 
     else:
         exitImg = pygame.image.load('data/ui/exit_button.png')
     screen.blit(exitImg, exitBtn)
@@ -352,486 +806,236 @@ def out_of_bounds():
         if playerY >= 290:
             playerY = 290
 def pause_menu():
-    global transparent_black, paused, playerX_change, playerY_change, interactable
+    global transparent_black, paused, playerX_change, playerY_change, interactable, closedGame, paused
     Pixel_fontL = pygame.font.Font("data/fonts/pixelfont.ttf", 36)
     text = Pixel_fontL.render('PAUSED', True, (255, 255, 255))
     text2 = Pixel_font.render('To continue press Enter or (X)', True, (255, 255, 255))
+    exitImg = pygame.image.load('data/ui/exit_button.png')
+    exitBtn = exitImg.get_rect()
+    exitBtn.center = (522, 138)
+
+    def menu_button():
+        global menu, game, menuCount
+        menuImg = pygame.image.load('data/ui/Menu.png')
+        menuBtn = menuImg.get_rect()
+        menuBtn.center = (326, 300)
+
+        if menuBtn.collidepoint(pygame.mouse.get_pos()):
+            menuImg = pygame.image.load('data/ui/Menu_hover.png')
+            for event in pygame.event.get():
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    game, menu = False, True
+                    for i in range(len(music_list)):
+                        music_list[i].stop()
+                    print(game,'closed')
+                    menu_screen()
+                    paused = False
+        else:
+            menuImg = pygame.image.load('data/ui/Menu.png')
+
+        if menuBtn.collidepoint(pygame.mouse.get_pos()) : #or aboutButton.collidepoint(pygame.mouse.get_pos()) or 
+           while menuCount < 2:
+                 music_list[4].play()
+                 menuCount += 1
+
+        if not menuBtn.collidepoint(pygame.mouse.get_pos()):
+            menuCount = 0
+
+        screen.blit(menuImg, menuBtn)
+    
+    def quit_button():
+        global quitCount
+        quitImg = pygame.image.load("data/ui/quit.png")
+        quitButton = quitImg.get_rect()
+        quitButton.center = (326, 375)
+
+        if quitButton.collidepoint(pygame.mouse.get_pos()):
+            quitImg = pygame.image.load('data/ui/quit_hover.png')
+            for event in pygame.event.get():
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    pygame.quit()
+                    sys.exit()
+        else:
+            quitImg = pygame.image.load('data/ui/quit.png')
+
+        if quitButton.collidepoint(pygame.mouse.get_pos()) : #or aboutButton.collidepoint(pygame.mouse.get_pos()) or 
+            while quitCount < 2:
+                 music_list[4].play()
+                 quitCount += 1
+
+        if not quitButton.collidepoint(pygame.mouse.get_pos()):
+            quitCount = 0
+
+        screen.blit(quitImg, quitButton)
+        
     if paused:
         playerX_change, playerY_change = 0, 0
         screen.blit(transparent_black, (0, 0))
-        screen.blit(text, (220, 150))
-        screen.blit(text2, (100, 300))
-        exit_button()
+        screen.blit(text, (225, 100))
+        screen.blit(text2, (100, 200))
+        menu_button()
+        quit_button()
+
         if interactable:
             paused = False
-    
-# Classes
-coin_storage = []
-
-
-class cloud(object):
-
-    def __init__(self,x,y):   
-        self.x = x
-        self.y = y 
-        self.cloudSpeed = 0.05
-        self.left = False
-        self.right = False
-
-    def update(self):
-        cloudImg = pygame.image.load('data/ui/cloud.png') 
-
-        if self.right:
-             self.x = 650
-        
-        if self.left:
-           self.x -= self.cloudSpeed
-
-        if self.x < 650 and self.x <= -200:
-            self.right = True
-            self.left = False
-
-        elif self.x >= 0:
-            self.left = True
-            self.right = False
-        screen.blit(cloudImg, (self.x , self.y ))
-        
-class dummy(object):
-
-    def __init__(self, x, y): # Initialize the dummy
-        self.x = x
-        self.y = y 
-        self.hp = 100 # Health
-        self.showHPbar = False
-        self.counter = 0
-        self.coinCount = 0
-        self.attacked = False
-
-    def update(self, sword_rect):
-        global counter, coin_storage, dummy_task, cooldown
-        dummyImg = pygame.image.load('data/npc/training_dummie.png')
-        dummyRect = dummyImg.get_rect()
-        dummyRect.center = (self.x, self.y) # Position of the dummy
-        self.Hit = mixer.Sound('data/sound/sword_hit.flac')
-        
-        if dummyRect.collidepoint(sword_rect[0], sword_rect[1]):    
-            self.showHPbar = True # Show HP bar
-            self.attacked = True
-            while counter < 1 and self.hp > 0 and cooldown <= 0:  # Play a sound on hit, decrease hp
-                self.hp -= 10
-                self.Hit.play() # Plays sound
-                counter += 1 
-            attacked = False
-
-        if self.hp <= 0 : # if THE DUMMY IS DEAD, turn off the hp bar
-            self.showHPbar = False        
-            screen.blit(pygame.image.load('data/npc/broken_dummie.png'), dummyRect) # Broken dummy
-            for i in range(3): # Drops 3 coins
-                ranX = random.randint(self.x - 30, self.x + 30) # Random number around dummy's x
-                ranY = random.randint(self.y - 30, self.y + 30) # Random number around dummy's y
-                coin_storage.append(coin_system(ranX, ranY)) # append the positions     
-            coin_storage[0].update(player_rect) # Spawn coin.
-            coin_storage[1].update(player_rect) # Spawn coin.
-            coin_storage[2].update(player_rect) # Spawn coin.
-            dummy_task = True # Completed your first mission
-           
-        else: # Dummy is stil alive  
-             screen.blit(dummyImg, dummyRect)
-                              
-        if self.showHPbar:
-                pygame.draw.rect(screen, ( 0, 0, 0), (self.x - 49,self.y - 60, 102, 10))  # black bar
-                pygame.draw.rect(screen, (255, 0, 0), (self.x - 49,self.y - 59, 100, 8))  # red bar
-                pygame.draw.rect(screen, (0, 255, 0), (self.x - 49,self.y - 59, self.hp, 8))  # lime bar    
-
-class cynthia_npc(object):
-
-    def __init__(self):
-        self.counter = 0
-
-    def update(self, x, y, player_rect):
-        global playerX, playerY, interactable, interact_value
-        self.x = x
-        self.y = y
-        cynthiaImg = pygame.image.load("data/npc/cynthia.png")
-        cynthiaRect = cynthiaImg.get_rect()
-        cynthiaRect.center = (self.x , self.y)
-        cynthiaY = cynthiaRect[1]
-        cynthiaX = cynthiaRect[0]
-        
-        #Top collision
-        if playerX >= cynthiaX - 45 and playerX <= cynthiaX + 25 and playerY >= cynthiaY - 60 and playerY <= cynthiaY - 55:
-            playerY = cynthiaY - 60
-        
-        #Bottom collision
-        if playerX >= cynthiaX - 45 and playerX <= cynthiaX + 25 and playerY <= cynthiaY + 25 and playerY >= cynthiaY + 20:
-           playerY = cynthiaY + 25     
-           #print('bottom')
-                  
-           #if cynthiaRect.collidepoint(player_rect[0] + 15, player_rect[1]):      
-           if interactable:
-                self.counter += 1
-                interactable = False
-                print(self.counter)      
-                
-           if  self.counter == 1:
-                catalog_bubble("Good morning big brother")
-           elif  self.counter == 2:
-                catalog_bubble("your teacher is waiting for you")
-           elif  self.counter == 3:
-                catalog_bubble("pick your sword from the basement")
-           elif  self.counter  == 4:                     
-                pass # Dont show anything
-           elif self.counter > 4:
-                    self.counter = 0
-
-        if not cynthiaRect.collidepoint(player_rect[0], player_rect[1]): # When player leaves the interaction reset the value
-            self.counter = 0
-      
-        # Left collision
-        if playerX >= cynthiaX - 45 and playerX <= cynthiaX - 40 and playerY <= cynthiaY + 25 and playerY >= cynthiaY - 60:
-            playerX = cynthiaX - 45
-            print('left')
-
-        # Right collision
-        if playerX <= cynthiaX + 35 and playerX >= cynthiaX + 25 and playerY <= cynthiaY + 25 and playerY >= cynthiaY - 60:
-            playerX = cynthiaX + 35   
-            print('right')
-            
-        screen.blit(cynthiaImg, cynthiaRect) 
-
-class manos_npc(object):
-
-    def __init__(self):
-        self.counter = 0
-
-    def update(self, x, y, player_rect, condition):
-        global playerX, playerY, interactable, interact_value, dummy_task
-        self.x = x
-        self.y = y
-        manosImg = pygame.image.load("data/npc/manos.png")
-        manosRect = manosImg.get_rect()
-        manosRect.center = (self.x , self.y)
-        manosY = manosRect[1]
-        manosX = manosRect[0]
-        
-        #Top collision
-        if playerX >= manosX - 45 and playerX <= manosX + 25 and playerY >= manosY - 60 and playerY <= manosY - 55:
-            playerY = manosY - 60
-        
-        #Bottom collision
-        if playerX >= manosX - 45 and playerX <= manosX + 25 and playerY <= manosY + 25 and playerY >= manosY + 20:
-           playerY = manosY + 25     
-                     
-           if interactable:
-                self.counter += 1
-                interactable = False
-                print(self.counter)      
-           if condition == "mission1":
-               if not dummy_task: # Player has not beaten the dummy
-                   if  self.counter == 1:
-                        catalog_bubble("Hey John! What's Up?")
-                   elif  self.counter == 2:
-                        catalog_bubble("Here for your daily training?")
-                   elif  self.counter == 3:
-                        catalog_bubble("Good. Lets get started!")
-                   elif  self.counter  == 4:                     
-                        catalog_bubble("Beat down that dummy!")              
-                   elif  self.counter  == 5:                     
-                        catalog_bubble("(Press LSHIFT or [] to attack.)")
-                   elif  self.counter  == 6:
-                        pass
-                   elif self.counter > 6:
-                            self.counter = 0
-               else: # Player has beaten the dummy
-                   if self.counter == 1:
-                        catalog_bubble("Good Job!")
-                   elif self.counter == 2:
-                        catalog_bubble("You can keep the coins!")
-                   elif self.counter == 3:
-                        catalog_bubble("Anyway, that's it for today.")
-                   elif self.counter  == 4:                     
-                        catalog_bubble("See ya later!")              
-                   elif self.counter  == 5:                     
-                        pass
-                   elif self.counter > 5:
-                            self.counter = 0
-
-           elif condition == "mission2":
-               if  self.counter == 1:
-                    catalog_bubble("Hey John! what's the rush?")
-               elif  self.counter == 2:
-                    catalog_bubble('"My sister is missing."')
-               elif  self.counter == 3:
-                    catalog_bubble('"I found this letter."')
-               elif  self.counter == 4:
-                    catalog_bubble('"Know anything about it?"')
-               elif  self.counter == 5:
-                    catalog_bubble("Mhm.")
-               elif  self.counter == 6:
-                    catalog_bubble("I know who is behind this.")
-               elif  self.counter == 7:
-                    catalog_bubble("Meet me outside.")
-               elif  self.counter == 8:
-                    catalog_bubble("I'll explain later.")
-               elif  self.counter  == 9:                     
-                    pass # Dont show anything
-               elif self.counter > 9:
-                        self.counter = 0
-               
-
-        if not manosRect.collidepoint(player_rect[0], player_rect[1]): # When player leaves the interaction reset the value
-            self.counter = 0
-      
-        # Left collision
-        if playerX >= manosX - 45 and playerX <= manosX - 40 and playerY <= manosY + 25 and playerY >= manosY - 60:
-            playerX = manosX - 45
-
-        # Right collision
-        if playerX <= manosX + 35 and playerX >= manosX + 25 and playerY <= manosY + 25 and playerY >= manosY - 60:
-            playerX = manosX + 35   
-            
-        screen.blit(manosImg, manosRect) 
-
-class mau(object):
-    def __init__(self):
-        self.counter = 0
-        self.isAutakias = False
-        self.point = 0
-
-    def update(self, x, y):
-        global playerX, playerY, interactable
-        self.x = x
-        self.y = y
-        mauImg = pygame.image.load("data/npc/Mau.png")
-        mauRect = mauImg.get_rect()
-        mauRect.center = (self.x, self.y) 
-
-        mauY = mauRect[1]
-        mauX = mauRect[0]
-        #Animation
-        mau_anim = [
-            pygame.image.load('data/npc/Mau.png'),
-            pygame.image.load('data/npc/Mau2.png'),
-            pygame.image.load('data/npc/Mau.png')
-        ] 
-
-        if self.counter >= 26:
-           self.counter = 0  
-
-        #Top collision
-        if playerX >= mauX  - 45 and playerX <= mauX + 25 and playerY >= mauY - 60 and playerY <= mauY - 55:
-            playerY = mauY - 60       
-        #Bottom collision
-        if playerX >= mauX - 45 and playerX <= mauX + 25 and playerY <= mauY + 25 and playerY >= mauY + 20:
-           playerY = mauY + 25                    
-        # Left collision
-        if playerX >= mauX - 45 and playerX <= mauX - 40 and playerY <= mauY + 25 and playerY >= mauY - 60:
-            playerX = mauX - 45
-        # Right collision
-        if playerX <= mauX + 35 and playerX >= mauX + 25 and playerY <= mauY + 25 and playerY >= mauY - 60:
-            playerX = mauX + 35  
-            if mauRect.collidepoint(player_rect[0], player_rect[1]): # In Mau you interact where he is looking
-                if interactable:
-                    catalog_bubble("Meow meow meow")            
-                    while self.point < 1:
-                        r_number = random.randint(1,10)
-                        if r_number == 3:
-                            self.isAutakias = True # Something secret.. >:))))
-                        else:
-                            self.isAutakias = False
-                        self.point += 1
-            
-        if not mauRect.collidepoint(player_rect[0], player_rect[1]): # When player leaves the interaction reset the value
-            interact_value = 0  
-            self.point = 0
-                
-        if self.isAutakias: # >:))))))
-            self.counter += 1
-            screen.blit(mau_anim[self.counter // 9], mauRect)          
-        else:
-            screen.blit(mauImg, mauRect) 
-
-class candy(object):
-    def __init__(self):
-        self.counter = 0
-        self.isYpnaras = False
-
-    def update(self, x, y, player_rect, condition):
-        global playerX, playerY, interactable, interact_value
-        self.x = x
-        self.y = y
-        candyImg = pygame.image.load("data/npc/candy.png")
-        candyRect = candyImg.get_rect()
-        candyRect.center = (self.x, self.y) 
-
-        candyY = candyRect[1]
-        candyX = candyRect[0]
-        #Animation
-        candy_anim = [
-            pygame.image.load('data/npc/candy_sleeping.png'),
-            pygame.image.load('data/npc/candy_sleeping.png'),
-            pygame.image.load('data/npc/candy_sleeping2.png'),
-            pygame.image.load('data/npc/candy_sleeping2.png'),
-            pygame.image.load('data/npc/candy_sleeping.png')
-        ] 
-
-        if condition == "sleeping":
-            self.isYpnaras = True
-        elif condition == "awake":
-            self.isYpnaras = False
-        
-        #Top collision
-        if playerX >=  candyX  - 45 and playerX <=  candyX + 25 and playerY >=  candyY - 60 and playerY <=  candyY - 55:
-            playerY =  candyY - 60       
-        #Bottom collision
-        if playerX >=  candyX - 45 and playerX <=  candyX + 25 and playerY <=  candyY + 25 and playerY >=  candyY + 20:
-           playerY =  candyY + 25    
-           if candyRect.collidepoint(player_rect[0] + 15, player_rect[1]): # In Mau you interact where he is looking
-               if interactable:
-                    if self.isYpnaras:
-                        if interact_value == 1:
-                            catalog_bubble("Zzzzzz....")
-                        elif interact_value == 2:
-                            catalog_bubble("She fell asleep on the warm carpet.")
-                        elif interact_value == 3:
-                            pass
-                        else:
-                            interact_value = False                    
-                    else:                      
-                        catalog_bubble("Meow meow meow")
-        # Left collision
-        if playerX >=  candyX - 45 and playerX <=  candyX - 40 and playerY <=  candyY + 25 and playerY >=  candyY - 60:
-            playerX =  candyX - 45
-        # Right collision
-        if playerX <=  candyX + 35 and playerX >=  candyX + 25 and playerY <= candyY + 25 and playerY >=  candyY - 60:
-            playerX =  candyX + 35  
-
-        if not candyRect.collidepoint(player_rect[0], player_rect[1]): # When player leaves the interaction reset the value
-            interact_value = 0  
-            self.point = 0    
-                
-        if self.isYpnaras:
-            if self.counter >= 174: # Thats a lot of frames...
-                self.counter = 0  
-            self.counter += 1
-            screen.blit(candy_anim[self.counter // 35], candyRect)          
-        else:
-            screen.blit(candyImg, candyRect) 
-
-chests = [
-    chest(), #0 johns room
-    chest(), #1 Route 2
-    chest()  #2 Manos Hut 
-]  
-
-npcs = [
-   cynthia_npc(), #0 cynthia
-   manos_npc(), #1 manos
-   mau(), #2 mau
-   candy() #3 candy
-]
-
-cloud1 = cloud(550,50)
-cloud2 = cloud(350,70)
-cloud3 = cloud(450,90)
-
-if menu:
-    music_list[0].play()
-    MenuCounter = 0  
-while menu:
-    screen.fill((0, 0, 0))
-    # background image load
-    menu_anim = [
-        pygame.image.load('data/ui/mainmenubackground1.png'),
-        pygame.image.load('data/ui/mainmenubackground1.png'),
-        pygame.image.load('data/ui/mainmenubackground2.png'),
-        pygame.image.load('data/ui/mainmenubackground2.png'),
-        pygame.image.load('data/ui/mainmenubackground1.png')
-    ]
-
-    menu_tile = pygame.image.load('data/ui/mainmenutile.png')
-
-    if MenuCounter >= 114:
+def player_pocket():
+    global coinX,coinY
+    global player_money
+    money = Pixel_font.render(str(player_money) + "€", True, black)
+    screen.blit(money, (coin_pos[0] + 40, coin_pos[1] + 15))
+def coin_ui():
+    coinX = 533
+    coinY = 4
+    coinImg = pygame.image.load('data/ui/coin_ui.png')
+    screen.blit(coinImg, (coinX, coinY))
+    return coinX, coinY
+coin_pos = coin_ui()
+def heart_ui():
+    heartX = 4 
+    heartY = 4
+    health = 100
+    HeartImg = pygame.image.load('data/ui/heart_ui.png')
+    healthTxt = Pixel_font.render(str(health), True, (0, 0, 0))  
+    screen.blit(HeartImg, (heartX, heartY))
+    screen.blit(healthTxt, (heartX + 40, heartY + 15))
+def cynthia_Note(playerX, playerY, bool):
+    screen.blit(note, (120, 180))
+    if playerX < 190 and playerY > 130 and playerY < 190:
+        if bool:
+            screen.blit(transparent_black, (0, 0)),screen.blit(cynthias_Note, (220, 110))
+def blacksmith_shop():
+    global catalogImg, blacksmithImg
+    screen.blit(blacksmithImg, blacksmithRect)
+def catalog_bubble(text):
+    global catalogImg
+    catalogText = Pixel_font.render(text, True, (0,0,0))
+    screen.blit(catalogImg, (100, 340)), screen.blit(catalogText, (120, 350))    
+    return text
+def catalog_bubble2(text):
+    catalogText = Pixel_font.render(text, True, (0,0,0))
+    screen.blit(catalogText, (120, 380))
+    return text
+def credits_text():
+    global y
+    text0 = Pixel_font.render("JOHN'S ADVENTURE CHAPTER 1", True, (255, 255, 255))
+    text1 = Pixel_font.render('Thank you for playing the game!', True, (255, 255, 255))
+    text2 = Pixel_font.render('Credits', True, (255, 255, 255))
+    text3 = Pixel_font.render('Story writer Manos Danezis', True, (255, 255, 255))
+    text5 = Pixel_font.render('__Programming Team__', True, (255, 255, 255))
+    text6 = Pixel_font.render('Programmer Leader Marios Papazogloy', True, (255, 255, 255))
+    text7 = Pixel_font.render('Level/ Art Design Marios Papazogloy', True, (255, 255, 255))
+    text8 = Pixel_font.render('Music Design Thanos Pallis', True, (255, 255, 255))
+    text9 = Pixel_font.render('Manos Danezis', True, (255, 255, 255))
+    for i in range(1):
+        y += 0.2
+    screen.blit(text0, (140, 250-y)),screen.blit(text1, (140, 350-y))  
+    screen.blit(text2, (140, 500-y)),screen.blit(text3, (140, 550-y)) 
+    screen.blit(text5, (140, 670 - y)),screen.blit(text6, (140, 690 - y))
+    screen.blit(text7, (140, 740 - y)),screen.blit(text9, (140, 760 - y))  
+    screen.blit(text8, (140, 810 - y))
+def menu_screen():
+    global menu, game,playCount,quitCount,settingsCount, MenuCounter, canChange, paused
+    if menu:
+        isOnMenu()
+        music_list[0].play()
         MenuCounter = 0  
+        paused = False
+    while menu:
+        screen.fill((0, 0, 0))
+        # background image load
+        menu_anim = [
+            pygame.image.load('data/ui/mainmenubackground1.png'),
+            pygame.image.load('data/ui/mainmenubackground1.png'),
+            pygame.image.load('data/ui/mainmenubackground2.png'),
+            pygame.image.load('data/ui/mainmenubackground2.png'),
+            pygame.image.load('data/ui/mainmenubackground1.png')
+        ]
 
-    MenuCounter += 1
-    screen.blit(menu_anim[MenuCounter // 23], (1, 1)) # Background 
-    #Clouds
-    cloud1.update()
-    cloud2.update()
-    cloud3.update()
-    screen.blit(menu_tile,(1,1)) # Tile 1
+        menu_tile = pygame.image.load('data/ui/mainmenutile.png')
 
-    if playButton.collidepoint(pygame.mouse.get_pos()) : #or aboutButton.collidepoint(pygame.mouse.get_pos()) or 
-        while playCount < 2:
-            music_list[4].play()
-            playCount += 1
+        if MenuCounter >= 114:
+            MenuCounter = 0  
 
-    if aboutButton.collidepoint(pygame.mouse.get_pos()) : #or aboutButton.collidepoint(pygame.mouse.get_pos()) or 
-        while settingsCount < 2:
-             music_list[4].play()
-             settingsCount += 1
+        MenuCounter += 1
+        screen.blit(menu_anim[MenuCounter // 23], (1, 1)) # Background 
+        #Clouds
+        cloud1.update()
+        cloud2.update()
+        cloud3.update()
+        screen.blit(menu_tile,(1,1)) # Tile 1
 
-    if quitButton.collidepoint(pygame.mouse.get_pos()) : #or aboutButton.collidepoint(pygame.mouse.get_pos()) or 
-        while quitCount < 2:
-             music_list[4].play()
-             quitCount += 1
+        if playButton.collidepoint(pygame.mouse.get_pos()) : #or aboutButton.collidepoint(pygame.mouse.get_pos()) or 
+            while playCount < 2:
+                music_list[4].play()
+                playCount += 1
 
-    if not playButton.collidepoint(pygame.mouse.get_pos()):
-         playCount = 0
+        if aboutButton.collidepoint(pygame.mouse.get_pos()) : #or aboutButton.collidepoint(pygame.mouse.get_pos()) or 
+            while settingsCount < 2:
+                 music_list[4].play()
+                 settingsCount += 1
 
-    if not aboutButton.collidepoint(pygame.mouse.get_pos()):
-        settingsCount = 0
+        if quitButton.collidepoint(pygame.mouse.get_pos()) : #or aboutButton.collidepoint(pygame.mouse.get_pos()) or 
+            while quitCount < 2:
+                 music_list[4].play()
+                 quitCount += 1
 
-    if not quitButton.collidepoint(pygame.mouse.get_pos()):
-        quitCount = 0
+        if not playButton.collidepoint(pygame.mouse.get_pos()):
+             playCount = 0
 
-    # Play Button
-    if playButton.collidepoint(pygame.mouse.get_pos()):
-        playImg = pygame.image.load('data/ui/button interface hover.png') 
-        #  StartSound.set_volume(0.05)
+        if not aboutButton.collidepoint(pygame.mouse.get_pos()):
+            settingsCount = 0
+
+        if not quitButton.collidepoint(pygame.mouse.get_pos()):
+            quitCount = 0
+
+        # Play Button
+        if playButton.collidepoint(pygame.mouse.get_pos()):
+            playImg = pygame.image.load('data/ui/button interface hover.png') 
+            #  StartSound.set_volume(0.05)
+            for event in pygame.event.get():
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    menu = False
+                    music_list[0].stop()
+                    # StartSound.play()
+                    game = True
+        else:
+            playImg = pygame.image.load('data/ui/button interface.png')
+        # Settings
+        if aboutButton.collidepoint(pygame.mouse.get_pos()):
+            aboutImg = pygame.image.load('data/ui/about_hover.png')
+            for event in pygame.event.get():
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    canChange = True
+        else:
+            aboutImg = pygame.image.load('data/ui/about.png')
+        # Quit
+        if quitButton.collidepoint(pygame.mouse.get_pos()):
+            quitImg = pygame.image.load('data/ui/quit_hover.png')
+            for event in pygame.event.get():
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    pygame.quit()
+                    sys.exit()
+        else:
+            quitImg = pygame.image.load('data/ui/quit.png')
+        screen.blit(playImg, playButton)
+        screen.blit(quitImg, quitButton)
+        screen.blit(aboutImg, aboutButton)
+        # When player clicks settings
+        if canChange:
+            settings_catalog()
+            exit_button()
         for event in pygame.event.get():
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                menu = False
-                music_list[0].stop()
-                # StartSound.play()
-                game = True
-    else:
-        playImg = pygame.image.load('data/ui/button interface.png')
-    # Settings
-    if aboutButton.collidepoint(pygame.mouse.get_pos()):
-        aboutImg = pygame.image.load('data/ui/about_hover.png')
-        for event in pygame.event.get():
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                canChange = True
-    else:
-        aboutImg = pygame.image.load('data/ui/about.png')
-    # Quit
-    if quitButton.collidepoint(pygame.mouse.get_pos()):
-        quitImg = pygame.image.load('data/ui/quit_hover.png')
-        for event in pygame.event.get():
-            if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-    else:
-        quitImg = pygame.image.load('data/ui/quit.png')
-    screen.blit(playImg, playButton)
-    screen.blit(quitImg, quitButton)
-    screen.blit(aboutImg, aboutButton)
-    # When player clicks settings
-    if canChange:
-        settings_catalog()
-        exit_button()
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit()
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_ESCAPE:
-                pygame.quit()
-                sys.exit()
-    screen.blit(cursor, (pygame.mouse.get_pos()))
-    pygame.display.update()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    pygame.quit()
+                    sys.exit()
+        screen.blit(cursor, (pygame.mouse.get_pos()))
+        pygame.display.update()
+
+menu_screen()
 while game:
     if john_room and world_value == 0:
         playerX, playerY = 150, 150
@@ -1074,10 +1278,13 @@ while game:
             playerY = 150
         if playerX < 60:
             playerX = 60
-        if playerX >= 480 and playerY < 240:
-            playerX = 480  # Bed
-        if playerX > 480 and playerY > 240 and playerY < 260:
-            playerY = 260
+
+        if playerX >= 480 and playerY < 280:
+            playerX = 480  # Bed Left col
+        if playerX >= 480 and playerY >= 280 and playerY < 300:
+            playerY = 300 # Bed Bottom col
+
+
         if playerY <= 320 and playerX > 200 and playerX < 210:
             playerX = 210  # Sofa
         if playerY <= 330 and playerX > 120 and playerX < 200:
@@ -1126,8 +1333,8 @@ while game:
     if training_field:
         interact_value, pl = 0, 0
         if world_value == 0:
+            Dummy = dummy(385,290)
             playerX = 50
-        Dummy = dummy(385,290)
     while training_field:
         background = pygame.image.load('data/sprites/world/training_field.png')
         screen.fill((0, 0, 0))
@@ -1155,5 +1362,6 @@ while game:
         controls()
         credits_text()
         screen.blit(cursor, (pygame.mouse.get_pos()))
+        pause_menu()
         clock.tick(60)
         pygame.display.update()
