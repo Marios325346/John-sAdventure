@@ -5,7 +5,7 @@ from pygame import mixer
 pygame.init()
 screen = pygame.display.set_mode((640, 480))  # Setup screen
 clock = pygame.time.Clock()
-pygame.display.set_caption("John's Adventure  v0.0.5 Semi-stable Chapter 1")
+pygame.display.set_caption("John's Adventure Chapter 1")
 icon = pygame.image.load('data/ui/logo.ico')
 pygame.display.set_icon(icon)
 # COLORS
@@ -886,6 +886,8 @@ def menu_screen():
             MenuCounter = 0
         MenuCounter += 1
         screen.blit(menu_anim[MenuCounter // 23], (1, 1)),cloud1.update(),cloud2.update(),cloud3.update(), screen.blit(menu_tile, (1, 1))  # Clouds
+        credits = Pixel_font.render("@iBox Studios 2021", True, (0, 0, 0))
+        screen.blit(credits, (1, 1))
         if not canChange:
             if playButton.collidepoint(pygame.mouse.get_pos()):
                 while playCount < 2:
@@ -1181,7 +1183,7 @@ while game:
             John.x = 520
     while route4:
         screen.blit(background, (0, 0)),John.update(), out_of_bounds(), John.controls()
-        if John.x >= 580:
+        if John.x >= 580 and John.y <= 360:
             route4, training_field, world_value = False, True, 0
         if John.y <= 10 and John.x <= 465:
             route3, route4, world_value = True, False, 2
@@ -1207,6 +1209,10 @@ while game:
             route4, training_field, world_value = True, False, 2
             if dummy_task:
                 task_3 = True
+        if John.y > 360 and John.x <= 550:
+            John.y = 360  # Bottom tree col
+        if John.y <= 370 and John.x > 535:
+            John.x = 535  # Right tree collisions
         pause_menu(),screen.blit(cursor, (pygame.mouse.get_pos())),screen.blit(framerate(), (10, 0)),clock.tick(60),pygame.display.update()
     while credits_screen:
         screen.fill((0, 0, 0)),John.controls(),credits_text(),screen.blit(cursor, (pygame.mouse.get_pos())),pause_menu(),clock.tick(60),pygame.display.update()
