@@ -1,16 +1,21 @@
-# COPYRIGHT 2020-2021 version 0.0.5
+# COPYRIGHT 2020-2021 version 0.0.5 Marios Papazogloy
 import pygame, sys, os, json, random  # Libraries
 from pygame import mixer
-
+# INITIALIZE
 pygame.init()
 screen = pygame.display.set_mode((640, 480))  # Setup screen
 clock = pygame.time.Clock()
 pygame.display.set_caption("John's Adventure  v0.0.5 Semi-stable Chapter 1")
 icon = pygame.image.load('data/ui/logo.ico')
 pygame.display.set_icon(icon)
+# COLORS
 black = (0, 0, 0)  # Color black
 red = (255, 0, 0)
 lime = (0, 255, 0)
+# FONTS AND IMAGES
+playerImg = pygame.image.load('data/sprites/player/playeridle.png')  # Player
+sword_Image = pygame.image.load("data/items/hitbox2.png")
+swordRect = sword_Image.get_rect()
 Pixel_font = pygame.font.Font("data/fonts/pixelfont.ttf", 14)
 cursor = pygame.image.load('data/ui/j_g_mouse.png')
 pygame.mouse.set_visible(False)
@@ -30,15 +35,16 @@ catalogImg = pygame.image.load('data/ui/catalog_bubble.png')
 blacksmithImg = pygame.image.load('data/npc/blacksmith_shop.png')
 blacksmithRect = blacksmithImg.get_rect()
 blacksmithRect.center = (467, 60)
+player_hitbox = pygame.image.load('data/items/hitbox.png')
+player_rect = player_hitbox.get_rect()
 transparent_black = pygame.image.load("data/ui/black_overlay.png")
+# CONTROLLER SUPPORT
 controller_value = pygame.joystick.get_init()
 joysticks = []  # Initialize controller
 for i in range(pygame.joystick.get_count()):
     joysticks.append(pygame.joystick.Joystick(i))
 for joystick in joysticks:
     joystick.init()
-# 0: Left analog horizontal, 1: Left Analog Vertical, 2: Right Analog Horizontal
-# 3: Right Analog Vertical 4: Left Trigger, 5: Right Trigger
 analog_keys = {0: 0, 1: 0, 2: 0, 3: 0, 4: -1, 5: -1}
 with open(os.path.join("data/controller_keys.json"), 'r+') as file:
     button_keys = json.load(file)
@@ -52,61 +58,39 @@ music_list = [
 ]
 for i in range(len(music_list)):
     music_list[i].set_volume(0.2)
-# IMAGES
-playerImg = pygame.image.load('data/sprites/player/playeridle.png')  # Player
-sword_Image = pygame.image.load("data/items/hitbox2.png")
-swordRect = sword_Image.get_rect()
 # BOOLEANS
 LeftIdle, RightIdle, UpIdle, DownIdle = False, False, False, True
 left, right, down, up = False, False, False, False
-canChange, paused = False, False
-showCatalog = True
-menu, sword_Task = True, True
-player_equipped, interactable, readNote, task_3, dummy_task = False, False, False, False, False
-john_room, kitchen, basement = False, False, False  # Chunks & World Values
+menu, sword_Task, showCatalog = True, True, True
+player_equipped, interactable, readNote, task_3, dummy_task, canChange, paused = False, False, False, False, False, False, False
+john_room, kitchen, basement = True, False, False  # Chunks & World Values
 route1, route2, route3, route4, training_field, manosHut, credits_screen = False, False, False, False, False, False, False
-john_room = True  # [The world] you want to start with
 # VALUES
-health = 100
-music_counter = 0
-player_hitbox = pygame.image.load('data/items/hitbox.png')
-player_rect = player_hitbox.get_rect()
-world_value, counter = 0, 0  # spawn points, counter
-cooldown = 3000
-i, j, pl, walkCount, interact_value = 0, 0, 0, 0, 0  # Counters
-y = 0
-playCount, settingsCount, quitCount, menuCount = 0, 0, 0, 0
-player_money = 0  # Currency
-
-try:
+cooldown, health = 3000, 100
+i, j, pl, walkCount, interact_value, y, world_value, counter, options = 0, 0, 0, 0, 0, 0, 0, 0, 0  # Counters
+playCount, settingsCount, quitCount, menuCount, player_money, music_counter = 0, 0, 0, 0, 0, 0  # and storage
+try:  # Checks if there is a controller else leave it
     if joysticks[2]:
         menuValue = 0
 except:
-    print('Controller not found')
-    menuValue = 4
-
-
-# Classes
+    menuValue = 4  # Kinda disables controller ui changes
+# CLASSES
 class chest(object):
     def __init__(self):
         self.isOpened = False
         self.counter = 0
         self.value = 0
-
     def update(self, x, y, player_rect):
         global player_money, interactable
         self.x = x
         self.y = y
-        # Images
         chestImg = pygame.image.load('data/sprites/chest.png')
-        chestRect = chestImg.get_rect()
+        chestRect = chestImg.get_rect() # Images
         chestRect.center = (self.x, self.y)
-
         if chestRect.collidepoint(player_rect[0] + 15, player_rect[1]):
             if interactable:
                 self.value += 1
                 interactable = False
-
             if not self.isOpened:
                 if self.value == 1:
                     interact_bubble("Open the chest?")
@@ -122,10 +106,8 @@ class chest(object):
                     interact_bubble("Open the chest?")
                 elif self.value == 2:
                     interact_bubble("The chest is empty")
-
         if not chestRect.collidepoint(player_rect[0] + 15, player_rect[1]):
             self.value = 0
-
         screen.blit(chestImg, chestRect)
 
 
@@ -165,7 +147,6 @@ class coin_system(object):
             self.currency += 1  # Player gets 1 coin
             player_money += self.currency  # Adds it to players pocket
             self.visibility = False  # The Coin disappears
-
         if self.visibility:  # If player hasn't touch the coin do this
             screen.blit(coin_anim[self.coinCount // 9], coin_rect)
             screen.blit(coin_hitbox, hitbox_rect)
@@ -703,7 +684,7 @@ class Player:
         self.y += self.velY
 
     def controls(self):
-        global paused, interact_value, interactable, counter, cooldown
+        global paused, interact_value, interactable, counter, cooldown, menuValue, options
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -747,19 +728,39 @@ class Player:
 
             if event.type == pygame.JOYBUTTONDOWN:
                 if event.button == button_keys["left_arrow"]:
-                    John.left_pressed = True
-                    John.right_pressed, John.up_pressed, John.down_pressed = False, False, False
+                    self.left_pressed = True
+                    self.left = True
+                    self.right, self.up, self.down = False, False, False
+                    self.right_pressed = False
                 if event.button == button_keys["right_arrow"]:
                     John.right_pressed = True
-                    John.left_pressed, John.up_pressed, John.down_pressed = False, False, False
+                    self.right = True
+                    self.left, self.up, self.down = False, False, False
+                    self.left_pressed = False
                 if event.button == button_keys["up_arrow"]:
-                    John.up_pressed = True
-                    John.down_pressed, John.left_pressed, John.right_pressed = False, False, False
+                    self.up_pressed = True
+                    self.up = True
+                    self.down, self.left, self.right = False, False, False
+                    if paused:
+                        if menuValue < 1:
+                            menuValue += 1
+                    self.down_pressed = False
                 if event.button == button_keys["down_arrow"]:
-                    John.down_pressed = True
-                    John.up_pressed, John.left_pressed, John.right_pressed = False, False, False
+                    self.down_pressed = True
+                    self.down = True
+                    self.up, self.left, self.right = False, False, False
+                    self.up_pressed = False
+                    if paused:
+                        if menuValue > 0:
+                            menuValue -= 1
                 if event.button == button_keys["options"]:
-                    paused = True
+                    if options < 1:
+                        options += 1
+                        paused = True
+                    else:
+                        paused = False
+                        options = 0
+                    print(options)
                 #  Player Interact
                 if event.button == button_keys["x"]:
                     interactable = True
@@ -777,17 +778,21 @@ class Player:
 
             if event.type == pygame.JOYBUTTONUP:
                 if event.button == button_keys["left_arrow"]:
-                    John.left_pressed = False
-                    John.LeftIdle = True
+                    self.left_pressed = False
+                    self.LeftIdle = True
+                    self.left = False
                 if event.button == button_keys["right_arrow"]:
-                    John.right_pressed = False
-                    John.RightIdle = True
+                    self.right_pressed = False
+                    self.RightIdle = True
+                    self.right = False
                 if event.button == button_keys["up_arrow"]:
-                    John.up_pressed = False
-                    John.UpIdle = True
+                    self.up_pressed = False
+                    self.UpIdle = True
+                    self.up = False
                 if event.button == button_keys["down_arrow"]:
-                    John.down_pressed = False
-                    John.DownIdle = True
+                    self.down_pressed = False
+                    self.DownIdle = True
+                    self.down = False
 
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_LEFT:
@@ -873,26 +878,6 @@ def exit_button():
     else:
         exitImg = pygame.image.load('data/ui/exit_button.png')
     screen.blit(exitImg, exitBtn)
-
-
-def manos_hut():
-    global interactable, route3, manosHut, world_value, readNote
-    if John.x >= 80 and John.x <= 470 and John.y >= 80 and John.y <= 85:
-        John.y = 85
-    if John.x >= 70 and John.x < 80 and John.y < 85:
-        John.x = 70
-    if John.y < 90 and John.x > 470 and John.x <= 490:
-        John.x = 490
-
-    if John.y < 90 and John.x > 255 and John.x < 305:
-        if dummy_task and task_3 and readNote:
-            interact_bubble('Get inside?')
-            if interactable:
-                route3, manosHut = False, True
-                world_value = 0
-        else:
-            interact_bubble('This place is locked')
-
 
 def player_stuff():
     coinX = 533
@@ -1107,7 +1092,6 @@ def menu_screen():
         cloud2.update()
         cloud3.update()
         screen.blit(menu_tile, (1, 1))  # Tile 1
-
         if not canChange:
             if playButton.collidepoint(
                     pygame.mouse.get_pos()):  # or aboutButton.collidepoint(pygame.mouse.get_pos()) or
@@ -1158,14 +1142,12 @@ def menu_screen():
                         sys.exit()
             else:
                 quitImg = pygame.image.load('data/ui/quit.png')
-
         if menuValue == 1:
             playImg = pygame.image.load('data/ui/button interface hover.png')
         elif menuValue == 0:
             aboutImg = pygame.image.load('data/ui/about_hover.png')
         elif menuValue == -1:
             quitImg = pygame.image.load('data/ui/quit_hover.png')
-
         screen.blit(playImg, playButton)
         screen.blit(quitImg, quitButton)
         screen.blit(aboutImg, aboutButton)
@@ -1173,7 +1155,6 @@ def menu_screen():
         if canChange:
             settings_catalog()
             exit_button()
-
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -1196,6 +1177,7 @@ def menu_screen():
                         if menuValue == 1:
                             menu = False
                             music_list[0].stop()
+                            music_list[1].play(-1)
                             game = True
                         elif menuValue == 0:
                             canChange = True
@@ -1213,6 +1195,7 @@ while game:
     elif john_room and world_value == 1:
         John.x, John.y = 420, 150
     if john_room:
+        music_list[1].play(-1)
         background = pygame.image.load('data/sprites/world/Johns_room.png')
     while john_room:
         screen.blit(background, (0, 0))  # Display the background image
@@ -1286,7 +1269,7 @@ while game:
                     kitchen, route1, basement, world_value = False, True, False, 0
                     music_list[1].stop()
             else:
-                catalog_bubble("Door is locked")
+                interact_bubble("Door is locked")
         if John.x > 135 and John.x <= 145 and John.y <= 305:  # Table collisions
             John.x = 145
         if John.x < 145 and John.y < 315:
@@ -1399,13 +1382,27 @@ while game:
         background = pygame.image.load('data/sprites/world/route3.png')
     while route3:
         screen.blit(background, (0, 0))
-        John.update(), out_of_bounds(), John.controls(), manos_hut()  # Player
+        John.update(), out_of_bounds(), John.controls(),  # Player
         if John.y >= 400 and John.x >= 95:  # Get to route 4
             route3, route4, world_value = False, True, 0
         elif John.x <= 10 and John.y < 295 and John.y >= 150:  # Get to route 2
             route3, route2, world_value = False, True, 1
         if John.x >= 465:  # Just a simple collision
             John.x = 465
+        if John.x >= 80 and John.x <= 470 and John.y >= 80 and John.y <= 85:
+            John.y = 85
+        if John.x >= 70 and John.x < 80 and John.y < 85:
+            John.x = 70
+        if John.y < 90 and John.x > 470 and John.x <= 490:
+            John.x = 490
+        if John.y < 90 and John.x > 255 and John.x < 305:
+            if dummy_task and task_3 and readNote:
+                interact_bubble('Get inside?')
+                if interactable:
+                    route3, manosHut = False, True
+                    world_value = 0
+            else:
+                interact_bubble('This place is locked')
         pause_menu()
         screen.blit(cursor, (pygame.mouse.get_pos()))
         screen.blit(framerate(), (10, 0))
