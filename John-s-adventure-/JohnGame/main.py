@@ -30,7 +30,6 @@ aboutButton = aboutImg.get_rect()
 aboutButton.center = (320, 375)
 aboutUI = pygame.image.load('data/ui/about_screen.png')
 aboutRect = aboutUI.get_rect()
-aboutRect.center = (320, 250)
 catalogImg = pygame.image.load('data/ui/catalog_bubble.png')
 blacksmithImg = pygame.image.load('data/npc/blacksmith_shop.png')
 blacksmithRect = blacksmithImg.get_rect()
@@ -159,7 +158,7 @@ class dummy(object):
         self.showHPbar = False
         self.coinCount = 0
         self.attacked = False
-    def update(self, sword_rect):
+    def update(self, sword_rect): 
         global counter, coin_storage, dummy_task, cooldown
         dummyImg = pygame.image.load('data/npc/training_dummie.png')
         dummyRect = dummyImg.get_rect()
