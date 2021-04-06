@@ -3,7 +3,7 @@ import pygame, sys, os, json, random  # Libraries
 from pygame import mixer
 # INITIALIZE
 pygame.init()
-screen = pygame.display.set_mode((640, 480))  # Setup screen
+screen = pygame.display.set_mode((640, 480), pygame.DOUBLEBUF, pygame.HWSURFACE)  # Setup screen
 clock = pygame.time.Clock()
 pygame.display.set_caption("John's Adventure Chapter 1")
 icon = pygame.image.load('data/ui/logo.ico')
@@ -71,8 +71,7 @@ except:
 class chest(object):
     def __init__(self):
         self.isOpened = False
-        self.counter = 0
-        self.value = 0
+        self.counter , self.value = 0, 0
     def update(self, x, y):
         global player_money, interactable, player_rect
         self.x = x
@@ -132,8 +131,7 @@ class coin_system(object):
             self.coinCount += 1
 class cloud(object):
     def __init__(self, x, y):
-        self.x = x
-        self.y = y
+        self.x, self.y = x , y
         self.cloudSpeed = 0.05
         self.left = False
         self.right = False
@@ -153,8 +151,7 @@ class cloud(object):
         screen.blit(cloudImg, (self.x, self.y))
 class dummy(object):
     def __init__(self, x, y):  # Initialize the dummy
-        self.x = x
-        self.y = y
+        self.x, self.y = x, y
         self.hp = 100  # Health
         self.showHPbar = False
         self.coinCount = 0
@@ -170,6 +167,7 @@ class dummy(object):
             self.showHPbar = True  # Show HP bar
             self.attacked = True
             while counter < 1 and self.hp > 0 and cooldown == 0:  # Play a sound on hit, decrease hp
+                print('ouch!')
                 self.hp -= 10
                 self.Hit.play()  # Plays sound
                 counter += 1
@@ -252,12 +250,10 @@ class manos_npc(object):
                 if not dummy_task:  # Player has not beaten the dummy
                     if self.counter == 1:
                         catalog_bubble("Hey John! What's Up?", "Here for your daily training?")
-                        screen.blit(name, (450, 430))
-                        screen.blit(npc_icon, (120, 352))
+                        screen.blit(name, (450, 430)), screen.blit(npc_icon, (120, 352))
                     elif self.counter == 2:
                         catalog_bubble("Good. Lets get started!", "Beat down that dummy!")
-                        screen.blit(name, (450, 430))
-                        screen.blit(npc_icon, (120, 352))
+                        screen.blit(name, (450, 430)), screen.blit(npc_icon, (120, 352))
                     elif self.counter == 3:
                         interact_bubble("(Press LSHIFT or [] to attack.)")
                         screen.blit(name, (450, 430))
@@ -276,8 +272,7 @@ class manos_npc(object):
                         screen.blit(name, (450, 430))
                     elif self.counter == 3:
                         catalog_bubble("Say hi from me to Cynthia", None)
-                        screen.blit(npc_icon, (120, 352))
-                        screen.blit(name, (450, 430))
+                        screen.blit(npc_icon, (120, 352)), screen.blit(name, (450, 430))
                     elif self.counter == 4:
                         pass
                     elif self.counter > 4:
@@ -285,20 +280,17 @@ class manos_npc(object):
             elif condition == "mission2":
                 if self.counter == 1:
                     catalog_bubble("Hey John! what's the rush?", None)
-                    screen.blit(npc_icon, (120, 352))
-                    screen.blit(name, (450, 430))
+                    screen.blit(npc_icon, (120, 352)), screen.blit(name, (450, 430))
                 elif self.counter == 2:
                     catalog_bubble('"My sister is missing.', 'and I found this letter." ')
                 elif self.counter == 3:
                     catalog_bubble('"Know anything about it?"', None)
                 elif self.counter == 4:
                     catalog_bubble("Mhm.", "I know who is behind this.")
-                    screen.blit(name, (450, 430))
-                    screen.blit(npc_icon, (120, 352))
+                    screen.blit(name, (450, 430)), screen.blit(npc_icon, (120, 352))
                 elif self.counter == 5:
                     catalog_bubble("Meet me outside.", "I'll explain later.")
-                    screen.blit(name, (450, 430))
-                    screen.blit(npc_icon, (120, 352))
+                    screen.blit(name, (450, 430)), screen.blit(npc_icon, (120, 352))
                 elif self.counter == 6:
                     pass  # Dont show anything
                 elif self.counter > 6:
@@ -315,36 +307,32 @@ class mau(object):
         self.counter = 0
         self.isAutakias = False
         self.point = 0
+        self.mau_anim = [pygame.image.load('data/npc/Mau.png'),pygame.image.load('data/npc/Mau2.png'), pygame.image.load('data/npc/Mau.png')]  # Animation
+        self.mauImg = pygame.image.load("data/npc/Mau.png")
+        self.mauRect = self.mauImg.get_rect()
+        self.name = Pixel_font.render('-Mau', True, (0, 0, 0))
+        self.npc_icon = pygame.image.load('data/npc/npc_mau_icon.png')
+
     def update(self, x, y):
         global interactable
-        self.x = x
-        self.y = y
-        mauImg = pygame.image.load("data/npc/Mau.png")
-        mauRect = mauImg.get_rect()
-        mauRect.center = (self.x, self.y)
-        mauY = mauRect[1]
-        mauX = mauRect[0]
-        npc_icon = pygame.image.load('data/npc/npc_mau_icon.png')
-        name = Pixel_font.render('-Mau', True, (0, 0, 0))
-        mau_anim = [pygame.image.load('data/npc/Mau.png'),pygame.image.load('data/npc/Mau2.png'),    pygame.image.load('data/npc/Mau.png')]  # Animation
+        self.x, self.y = x, y
+        self.mauRect.center = (self.x, self.y)
         if self.counter >= 26:
             self.counter = 0  # Top collision
-        if John.x >= mauX - 45 and John.x <= mauX + 25 and John.y >= mauY - 60 and John.y <= mauY - 55:
-            John.y = mauY - 60  # Bottom collision
-        if John.x >= mauX - 45 and John.x <= mauX + 25 and John.y <= mauY + 25 and John.y >= mauY + 20:
-            John.y = mauY + 25  # Left collision
-        if John.x >= mauX - 45 and John.x <= mauX - 40 and John.y <= mauY + 25 and John.y >= mauY - 60:
-            John.x = mauX - 45  # Right collision
-        if John.x <= mauX + 35 and John.x >= mauX + 25 and John.y <= mauY + 25 and John.y >= mauY - 60:
-            John.x = mauX + 35
-            if mauRect.collidepoint(player_rect[0], player_rect[1]):  # In Mau you interact where he is looking
+        if John.x >= self.mauRect[0] - 45 and John.x <= self.mauRect[0] + 25 and John.y >= self.mauRect[1] - 60 and John.y <= self.mauRect[1] - 55:
+            John.y = self.mauRect[1] - 60  # Bottom collision
+        if John.x >= self.mauRect[0] - 45 and John.x <= self.mauRect[0] + 25 and John.y <= self.mauRect[1] + 25 and John.y >= self.mauRect[1] + 20:
+            John.y = self.mauRect[1] + 25  # Left collision
+        if John.x >= self.mauRect[0] - 45 and John.x <= self.mauRect[0] - 40 and John.y <= self.mauRect[1] + 25 and John.y >= self.mauRect[1] - 60:
+            John.x = self.mauRect[0] - 45  # Right collision
+        if John.x <= self.mauRect[0] + 35 and John.x >= self.mauRect[0] + 25 and John.y <= self.mauRect[1] + 25 and John.y >= self.mauRect[1] - 60:
+            John.x = self.mauRect[0] + 35
+            if self.mauRect.collidepoint(player_rect[0], player_rect[1]):  # In Mau you interact where he is looking
                 if interactable:
                     catalog_bubble("Meow meow meow", None)
-                    screen.blit(name, (450, 430))
-                    screen.blit(npc_icon, (120, 352))
+                    screen.blit(self.name, (450, 430)), screen.blit(self.npc_icon, (120, 352))         
                     while self.point < 1:
-                        r_number = random.randint(1, 10)
-                        if r_number == 3:
+                        if random.randint(1, 10) == 3:
                             self.isAutakias = True  # Something secret.. >:))))
                         else:
                             self.isAutakias = False
@@ -353,34 +341,33 @@ class mau(object):
             self.point = 0
         if self.isAutakias:  # >:))))))
             self.counter += 1
-            screen.blit(mau_anim[self.counter // 9], mauRect)
+            screen.blit(self.mau_anim[self.counter // 9], self.mauRect)
         else:
-            screen.blit(mauImg, mauRect)
+            screen.blit(self.mauImg, self.mauRect)
 class candy(object):
     def __init__(self):
         self.counter = 0
         self.isYpnaras = False
+        self.npc_icon = pygame.image.load('data/npc/npc_candy_icon.png')
+        self.candy_anim = [pygame.image.load('data/npc/candy_sleeping.png'),pygame.image.load('data/npc/candy_sleeping.png'),  pygame.image.load('data/npc/candy_sleeping2.png'),pygame.image.load('data/npc/candy_sleeping2.png'),  pygame.image.load('data/npc/candy_sleeping.png')]   # Animation
+        self.image = pygame.image.load("data/npc/candy.png")
+        self.candyRect = self.image.get_rect()
+
     def update(self, x, y, player_rect, condition):
         global interactable, interact_value
         self.x = x
         self.y = y
-        candyImg = pygame.image.load("data/npc/candy.png")
-        candyRect = candyImg.get_rect()
-        candyRect.center = (self.x, self.y)
-        candyY = candyRect[1]
-        candyX = candyRect[0]
+        self.candyRect.center = (self.x, self.y)  
         name = Pixel_font.render('-Candy', True, (0, 0, 0))
-        npc_icon = pygame.image.load('data/npc/npc_candy_icon.png')
-        candy_anim = [pygame.image.load('data/npc/candy_sleeping.png'),pygame.image.load('data/npc/candy_sleeping.png'),  pygame.image.load('data/npc/candy_sleeping2.png'),pygame.image.load('data/npc/candy_sleeping2.png'),  pygame.image.load('data/npc/candy_sleeping.png')]   # Animation
         if condition == "sleeping":
             self.isYpnaras = True
         elif condition == "awake":
             self.isYpnaras = False
-        if John.x >= candyX - 45 and John.x <= candyX + 25 and John.y >= candyY - 60 and John.y <= candyY - 55:
-            John.y = candyY - 60  # Top collision
-        if John.x >= candyX - 45 and John.x <= candyX + 25 and John.y <= candyY + 25 and John.y >= candyY + 20:
-            John.y = candyY + 25  # Bottom collision
-            if candyRect.collidepoint(player_rect[0] + 15, player_rect[1]):  # In Mau you interact where he is looking
+        if John.x >= self.candyRect[0] - 45 and John.x <= self.candyRect[0] + 25 and John.y >= self.candyRect[1] - 60 and John.y <= self.candyRect[1] - 55:
+            John.y = self.candyRect[1] - 60  # Top collision
+        if John.x >= self.candyRect[0] - 45 and John.x <= self.candyRect[0] + 25 and John.y <= self.candyRect[1] + 25 and John.y >= self.candyRect[1] + 20:
+            John.y = self.candyRect[1] + 25  # Bottom collision
+            if self.candyRect.collidepoint(player_rect[0] + 15, player_rect[1]):
                 if interactable:
                     if self.isYpnaras:
                         if interact_value == 1:
@@ -392,20 +379,20 @@ class candy(object):
                         else:
                             interact_value = False
                     else:  # Candy is awake
-                        catalog_bubble("Meow meow meow", None),screen.blit(name, (450, 430)), screen.blit(npc_icon, (120, 352))
-        if John.x >= candyX - 45 and John.x <= candyX - 40 and John.y <= candyY + 25 and John.y >= candyY - 60:
-            John.x = candyX - 45    # Left collision
-        if John.x <= candyX + 35 and John.x >= candyX + 25 and John.y <= candyY + 25 and John.y >= candyY - 60:
-            John.x = candyX + 35   # Right collision
-        if not candyRect.collidepoint(player_rect[0], player_rect[1]):  # When player leaves the interaction reset the value
+                        catalog_bubble("Meow meow meow", None),screen.blit(name, (450, 430)), screen.blit(self.npc_icon, (120, 352))
+        if John.x >= self.candyRect[0] - 45 and John.x <= self.candyRect[0] - 40 and John.y <= self.candyRect[1] + 25 and John.y >= self.candyRect[1] - 60:
+            John.x = self.candyRect[0] - 45    # Left collision
+        if John.x <= self.candyRect[0] + 35 and John.x >= self.candyRect[0] + 25 and John.y <= self.candyRect[1] + 25 and John.y >= self.candyRect[1] - 60:
+            John.x = self.candyRect[0] + 35   # Right collision
+        if not self.candyRect.collidepoint(player_rect[0], player_rect[1]):
             interact_value, self.point = 0,0
         if self.isYpnaras:
-            if self.counter >= 174:  # Thats a lot of frames...
+            if self.counter >= 174:  
                 self.counter = 0
             self.counter += 1
-            screen.blit(candy_anim[self.counter // 35], candyRect)
+            screen.blit(self.candy_anim[self.counter // 35], self.candyRect)
         else:
-            screen.blit(candyImg, candyRect)
+            screen.blit(self.image, self.candyRect)
 class cynthia_note(object):
     def __init__(self, x, y):
         self.counter = 0
@@ -433,123 +420,109 @@ class cynthia_note(object):
                 self.counter = 0
 class Player:
     def __init__(self, x, y):
-        self.x = int(x)
-        self.y = int(y)
-        self.velY = 0
-        self.velX = 0
+        # Values
+        self.x, self.velX = int(x), 0
+        self.y, self.velY = int(y), 0
         self.speed = 3
-        self.left_pressed = False  # Keystrokes vvv
-        self.right_pressed = False
-        self.up_pressed = False
-        self.down_pressed = False
         self.walkCount = 0
-        self.LeftIdle = False # Idle vvv
-        self.RightIdle = False
-        self.DownIdle = True
-        self.UpIdle = False
-        self.attack = False
-        self.up = False  # Movement vvv
-        self.down = False
-        self.left = False
-        self.right = False
+        # Booleans
+        self.left_pressed, self.right_pressed, self.down_pressed, self.up_pressed = False, False, False, False  # Keystrokes vvv
+        self.LeftIdle, self.RightIdle, self.DownIdle, self.UpIdle = False, False, True, False  # Player Idle situation
+        self.attack = False # attacking situation
+        self.up, self.down, self.left, self.right = False, False, False, False
+        # Lists
+        self.wooden_sword = [pygame.image.load('data/items/wooden_sword_up.png'),pygame.image.load('data/items/wooden_sword_left.png')]
+        self.attack_down = [pygame.image.load('data/sprites/player/playerdown1.png'),pygame.image.load('data/sprites/player/playerdownattack1.png'),pygame.image.load('data/sprites/player/playerdownattack2.png')]
+        self.attack_up = [pygame.image.load('data/sprites/player/playerup1.png'),pygame.image.load('data/sprites/player/playerupattack1.png'), pygame.image.load('data/sprites/player/playerup1.png')]
+        self.attack_right = [pygame.image.load('data/sprites/player/playerright1.png'), pygame.image.load('data/sprites/player/playerrightattack1.png'), pygame.image.load('data/sprites/player/playerrightattack2.png')]
+        self.attack_left = [pygame.image.load('data/sprites/player/playerleft1.png'),pygame.image.load('data/sprites/player/playerleftattack1.png'), pygame.image.load('data/sprites/player/playerleftattack2.png')]
+        self.walkRight = [pygame.image.load('data/sprites/player/playerright1.png'), pygame.image.load('data/sprites/player/playerright2.png'),pygame.image.load('data/sprites/player/playerright1.png')]
+        self.walkLeft = [pygame.image.load('data/sprites/player/playerleft1.png'), pygame.image.load('data/sprites/player/playerleft2.png'),pygame.image.load('data/sprites/player/playerleft1.png')]
+        self.walkUp = [pygame.image.load('data/sprites/player/playerup1.png'), pygame.image.load('data/sprites/player/playerup2.png'),pygame.image.load('data/sprites/player/playerup1.png')]
+        self.walkDown = [pygame.image.load('data/sprites/player/playerdown1.png'),pygame.image.load('data/sprites/player/playerdown2.png'), pygame.image.load('data/sprites/player/playerdown1.png')]
+
     def update(self):
         global cooldown
-        self.velX = 0
-        self.velY = 0
-        wooden_sword = [pygame.image.load('data/items/wooden_sword_up.png'),pygame.image.load('data/items/wooden_sword_left.png')]  # Lists vvv
-        attack_down = [pygame.image.load('data/sprites/player/playerdown1.png'),pygame.image.load('data/sprites/player/playerdownattack1.png'),pygame.image.load('data/sprites/player/playerdownattack2.png')]
-        attack_up = [pygame.image.load('data/sprites/player/playerup1.png'),pygame.image.load('data/sprites/player/playerupattack1.png'),pygame.image.load('data/sprites/player/playerupattack2.png')]
-        attack_right = [pygame.image.load('data/sprites/player/playerright1.png'), pygame.image.load('data/sprites/player/playerrightattack1.png'), pygame.image.load('data/sprites/player/playerrightattack2.png')]
-        attack_left = [pygame.image.load('data/sprites/player/playerleft1.png'),pygame.image.load('data/sprites/player/playerleftattack1.png'), pygame.image.load('data/sprites/player/playerleftattack2.png')]
-        walkRight = [pygame.image.load('data/sprites/player/playerright1.png'), pygame.image.load('data/sprites/player/playerright2.png'),pygame.image.load('data/sprites/player/playerright1.png')]
-        walkLeft = [pygame.image.load('data/sprites/player/playerleft1.png'), pygame.image.load('data/sprites/player/playerleft2.png'),pygame.image.load('data/sprites/player/playerleft1.png')]
-        walkUp = [pygame.image.load('data/sprites/player/playerup1.png'), pygame.image.load('data/sprites/player/playerup2.png'),pygame.image.load('data/sprites/player/playerup1.png')]
-        walkDown = [pygame.image.load('data/sprites/player/playerdown1.png'),pygame.image.load('data/sprites/player/playerdown2.png'), pygame.image.load('data/sprites/player/playerdown1.png')]
+        self.velX, self.velY = 0, 0
         if self.walkCount + 1 >= 27:  # Animation Counter
             self.walkCount = 0
             if self.attack:
-                while cooldown > 0:
-                    cooldown -= 10
-        if cooldown == 0:
-            self.attack = False
+                while cooldown != 0:
+                        cooldown -= 10
+                self.attack = False
+            
         if self.up_pressed:   # Player Movement and Animation
             self.velY = -self.speed
             if self.up:
-                screen.blit(walkUp[self.walkCount // 9], (self.x, self.y))
+                screen.blit(self.walkUp[self.walkCount // 9], (self.x, self.y))
                 self.walkCount += 1
         if self.down_pressed:
             self.velY = self.speed
             if self.down:
-                screen.blit(walkDown[self.walkCount // 9], (self.x, self.y))
+                screen.blit(self.walkDown[self.walkCount // 9], (self.x, self.y))
                 self.walkCount += 1
         if self.left_pressed:
             self.velX = -self.speed
             if self.right_pressed and self.left_pressed:
                 self.velX = -self.speed
             if self.left:
-                self.velX = -self.speed
-                screen.blit(walkLeft[self.walkCount // 9], (self.x, self.y))
+                screen.blit(self.walkLeft[self.walkCount // 9], (self.x, self.y))
                 self.walkCount += 1
         if self.right_pressed:
             self.velX = self.speed
             if self.right_pressed and self.left_pressed:
                 self.velX = -self.speed
             if self.right:
-                screen.blit(walkRight[self.walkCount // 9], (self.x, self.y))
+                screen.blit(self.walkRight[self.walkCount // 9], (self.x, self.y))
                 self.walkCount += 1
         if not self.right and not self.left and not self.up and not self.down:  # ANIMATION BACKUP DO NOT TOUCH
             if self.right_pressed:
-                screen.blit(walkRight[self.walkCount // 9], (self.x, self.y))
+                screen.blit(self.walkRight[self.walkCount // 9], (self.x, self.y))
                 self.walkCount += 1
             if self.left_pressed:
-                screen.blit(walkLeft[self.walkCount // 9], (self.x, self.y))
+                screen.blit(self.walkLeft[self.walkCount // 9], (self.x, self.y))
                 self.walkCount += 1
             if self.up_pressed:
-                screen.blit(walkUp[self.walkCount // 9], (self.x, self.y))
+                screen.blit(self.walkUp[self.walkCount // 9], (self.x, self.y))
                 self.walkCount += 1
             if self.down_pressed:
-                screen.blit(walkDown[self.walkCount // 9], (self.x, self.y))
+                screen.blit(self.walkDown[self.walkCount // 9], (self.x, self.y))
                 self.walkCount += 1
         if self.left_pressed or self.right_pressed or self.down_pressed or self.up_pressed: # Player is idle/ attacking
-            self.LeftIdle = False
-            self.RightIdle = False
-            self.DownIdle = False
-            self.UpIdle = False
+            self.LeftIdle, self.RightIdle, self.DownIdle, self.UpIdle = False, False, False, False
         if self.LeftIdle:
             if self.attack and cooldown > 0 and player_equipped:
-                screen.blit(wooden_sword[1], (self.x - 40, self.y + 17))
-                screen.blit(attack_left[self.walkCount // 9], (self.x, self.y))
+                screen.blit(self.wooden_sword[1], (self.x - 40, self.y + 17)),screen.blit(self.attack_left[self.walkCount // 9], (self.x, self.y))
                 self.walkCount += 1
-                swordRect.center = (John.x - 16, John.y + 35)
+                swordRect.center = (self.x - 16, self.y + 35)
                 screen.blit(sword_Image, swordRect)
             else:
-                screen.blit(walkLeft[0], (self.x, self.y))
+                screen.blit(self.walkLeft[0], (self.x, self.y))
         elif self.RightIdle:
             if self.attack and cooldown > 0 and player_equipped:
-                screen.blit(attack_right[self.walkCount // 9], (self.x, self.y))
+                screen.blit(self.attack_right[self.walkCount // 9], (self.x, self.y))
                 self.walkCount += 1
-                swordRect.center = (John.x + 80, John.y + 35)
+                swordRect.center = (self.x + 80, self.y + 35)
                 screen.blit(sword_Image, swordRect)
             else:
-                screen.blit(walkRight[0], (self.x, self.y))
+                screen.blit(self.walkRight[0], (self.x, self.y))
         elif self.UpIdle:
             if self.attack and cooldown > 0 and player_equipped:
-                screen.blit(wooden_sword[0], (self.x + 7, self.y - 40))
-                screen.blit(attack_up[self.walkCount // 9], (self.x, self.y))
+                screen.blit(self.wooden_sword[0], (self.x + 7, self.y - 40)), screen.blit(self.attack_up[self.walkCount // 9], (self.x, self.y))
                 self.walkCount += 1
-                swordRect.center = (John.x + 32, John.y - 25)
+                swordRect.center = (self.x + 32, self.y - 25)
                 screen.blit(sword_Image, swordRect)
             else:
-                screen.blit(walkUp[0], (self.x, self.y))
+                screen.blit(self.walkUp[0], (self.x, self.y))
         elif self.DownIdle:
             if self.attack and cooldown > 0 and player_equipped:
-                screen.blit(attack_down[self.walkCount // 9], (self.x, self.y))
+                screen.blit(self.attack_down[self.walkCount // 9], (self.x, self.y))
                 self.walkCount += 1
-                swordRect.center = (John.x + 35, John.y + 80)
+                swordRect.center = (self.x + 35, self.y + 80)
                 screen.blit(sword_Image, swordRect)
             else:
                 screen.blit(playerImg, (self.x, self.y))
-        player_stuff()
+        player_stuff()   
         self.x += self.velX
         self.y += self.velY
     def controls(self):
@@ -559,122 +532,37 @@ class Player:
                 pygame.quit()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:
-                    self.left_pressed = True
-                    self.left = True
-                    self.right, self.up, self.down = False, False, False
-                    self.right_pressed = False
+                    self.left_pressed, self.right_pressed = True, False
+                    self.left, self.right, self.up, self.down = True, False, False, False
                 if event.key == pygame.K_RIGHT:
-                    John.right_pressed = True
-                    self.right = True
-                    self.left, self.up, self.down = False, False, False
-                    self.left_pressed = False
+                    self.right_pressed, self.left_pressed = True, False
+                    self.right, self.left, self.up, self.down = True, False, False, False
                 if event.key == pygame.K_UP:
-                    self.up_pressed = True
-                    self.up = True
-                    self.down, self.left, self.right = False, False, False
-                    self.down_pressed = False
+                    self.up_pressed, self.down_pressed = True, False
+                    self.up, self.down, self.left, self.right = True,False, False, False
                 if event.key == pygame.K_DOWN:
-                    self.down_pressed = True
-                    self.down = True
-                    self.up, self.left, self.right = False, False, False
-                    self.up_pressed = False
+                    self.down_pressed, self.up_pressed = True, False
+                    self.down, self.up, self.left, self.right = True, False, False, False
                 if event.key == pygame.K_ESCAPE:
                     paused = True
-                #  Player Interact
-                if event.key == pygame.K_RETURN:
+                if event.key == pygame.K_RETURN: # Player interact
                     interactable = True
                     interact_value += 1
                 else:
                     interactable = False
-                #  Player attack
-                if event.key == pygame.K_LSHIFT:
-                    John.walkCount = 0
-                    John.attack = True
-                    counter = 0
-                    cooldown = 2000
+                if event.key == pygame.K_LSHIFT: # Player Attack
+                    self.attack, self.walkCount, counter, cooldown = True, 0, 0, 2000
                 else:
-                    John.attack = False
-            if event.type == pygame.JOYBUTTONDOWN:
-                if event.button == button_keys["left_arrow"]:
-                    self.left_pressed = True
-                    self.left = True
-                    self.right, self.up, self.down = False, False, False
-                    self.right_pressed = False
-                if event.button == button_keys["right_arrow"]:
-                    John.right_pressed = True
-                    self.right = True
-                    self.left, self.up, self.down = False, False, False
-                    self.left_pressed = False
-                if event.button == button_keys["up_arrow"]:
-                    self.up_pressed = True
-                    self.up = True
-                    self.down, self.left, self.right = False, False, False
-                    if paused:
-                        if menuValue < 1:
-                            menuValue += 1
-                    self.down_pressed = False
-                if event.button == button_keys["down_arrow"]:
-                    self.down_pressed = True
-                    self.down = True
-                    self.up, self.left, self.right = False, False, False
-                    self.up_pressed = False
-                    if paused:
-                        if menuValue > 0:
-                            menuValue -= 1
-                if event.button == button_keys["options"]:
-                    if options < 1:
-                        options += 1
-                        paused = True
-                    else:
-                        paused = False
-                        options = 0
-                if event.button == button_keys["x"]:    #  Player Interact
-                    interactable = True
-                    interact_value += 1
-                else:
-                    interactable = False
-                #  Player attack
-                if event.button == button_keys["square"]:
-                    John.walkCount = 0
-                    John.attack = True
-                    counter = 0
-                    cooldown = 2000
-                else:
-                    John.attack = False
-            if event.type == pygame.JOYBUTTONUP:
-                if event.button == button_keys["left_arrow"]:
-                    self.left_pressed = False
-                    self.LeftIdle = True
-                    self.left = False
-                if event.button == button_keys["right_arrow"]:
-                    self.right_pressed = False
-                    self.RightIdle = True
-                    self.right = False
-                if event.button == button_keys["up_arrow"]:
-                    self.up_pressed = False
-                    self.UpIdle = True
-                    self.up = False
-                if event.button == button_keys["down_arrow"]:
-                    self.down_pressed = False
-                    self.DownIdle = True
-                    self.down = False
+                    self.attack = False
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_LEFT:
-                    self.left_pressed = False
-                    self.LeftIdle = True
-                    self.left = False
+                    self.LeftIdle,self.left_pressed,self.left = True, False, False 
                 if event.key == pygame.K_RIGHT:
-                    self.right_pressed = False
-                    self.RightIdle = True
-                    self.right = False
+                    self.RightIdle, self.right_pressed, self.right = True, False, False
                 if event.key == pygame.K_UP:
-                    self.up_pressed = False
-                    self.UpIdle = True
-                    self.up = False
+                    self.UpIdle,self.up_pressed,self.up = True, False, False
                 if event.key == pygame.K_DOWN:
-                    self.down_pressed = False
-                    self.DownIdle = True
-                    self.down = False
+                    self.DownIdle, self.down_pressed, self.down = True, False, False
 John = Player(0, 0)
 npcs = [cynthia_npc(), manos_npc(),mau(),candy()]
 cloud1 = cloud(550, 50)
