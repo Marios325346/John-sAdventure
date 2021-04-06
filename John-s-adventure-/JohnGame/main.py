@@ -1,6 +1,8 @@
 # COPYRIGHT 2020-2021 version 0.0.5 Marios Papazogloy
 import pygame, sys, os, json, random  # Libraries
 from pygame import mixer
+from data.scripts.player import *
+
 # INITIALIZE
 pygame.init()
 screen = pygame.display.set_mode((640, 480), pygame.DOUBLEBUF, pygame.HWSURFACE)  # Setup screen
@@ -9,9 +11,7 @@ pygame.display.set_caption("John's Adventure Chapter 1")
 icon = pygame.image.load('data/ui/logo.ico')
 pygame.display.set_icon(icon)
 # COLORS
-black = (0, 0, 0)  # Color black
-red = (255, 0, 0)
-lime = (0, 255, 0)
+black, red, lime = (0, 0, 0), (255,0,0), (0,255,0)  # Colors
 # FONTS AND IMAGES
 playerImg = pygame.image.load('data/sprites/player/playeridle.png')  # Player
 sword_Image = pygame.image.load("data/items/hitbox2.png")
@@ -38,8 +38,8 @@ blacksmithRect.center = (467, 60)
 player_hitbox = pygame.image.load('data/items/hitbox.png')
 player_rect = player_hitbox.get_rect()
 transparent_black = pygame.image.load("data/ui/black_overlay.png")
-# CONTROLLER SUPPORT
-controller_value = pygame.joystick.get_init()
+
+controller_value = pygame.joystick.get_init() # CONTROLLER SUPPORT
 joysticks = []  # Initialize controller
 for i in range(pygame.joystick.get_count()):
     joysticks.append(pygame.joystick.Joystick(i))
@@ -52,8 +52,6 @@ music_list = [mixer.Sound("data/sound/forest_theme_part1.flac"),mixer.Sound("dat
 for i in range(len(music_list)): # MUSIC & SOUND VOLUME
     music_list[i].set_volume(0.2)
 # BOOLEANS
-LeftIdle, RightIdle, UpIdle, DownIdle = False, False, False, True
-left, right, down, up = False, False, False, False
 menu, sword_Task, showCatalog = True, True, True
 player_equipped, interactable, readNote, task_3, dummy_task, canChange, paused = False, False, False, False, False, False, False
 john_room, kitchen, basement = True, False, False  # Chunks & World Values
@@ -68,6 +66,152 @@ try:  # Checks if there is a controller else leave it
 except:
     menuValue = 4  # Kinda disables controller ui changes
 # CLASSES
+class Player:
+    def __init__(self, x, y):
+        # Values
+        self.x, self.velX = int(x), 0
+        self.y, self.velY = int(y), 0
+        self.speed = 3
+        self.walkCount = 0
+        #self.cooldown = 2000
+        # Booleans
+        self.left_pressed, self.right_pressed, self.down_pressed, self.up_pressed = False, False, False, False  # Keystrokes vvv
+        self.LeftIdle, self.RightIdle, self.DownIdle, self.UpIdle = False, False, True, False  # Player Idle situation
+        self.attack = False # attacking situation
+        self.up, self.down, self.left, self.right = False, False, False, False
+        # Lists
+        self.wooden_sword = [pygame.image.load('data/items/wooden_sword_up.png'),pygame.image.load('data/items/wooden_sword_left.png')]
+        self.attack_down = [pygame.image.load('data/sprites/player/playerdown1.png'),pygame.image.load('data/sprites/player/playerdownattack1.png'),pygame.image.load('data/sprites/player/playerdownattack2.png')]
+        self.attack_up = [pygame.image.load('data/sprites/player/playerup1.png'),pygame.image.load('data/sprites/player/playerupattack1.png'), pygame.image.load('data/sprites/player/playerup1.png')]
+        self.attack_right = [pygame.image.load('data/sprites/player/playerright1.png'), pygame.image.load('data/sprites/player/playerrightattack1.png'), pygame.image.load('data/sprites/player/playerrightattack2.png')]
+        self.attack_left = [pygame.image.load('data/sprites/player/playerleft1.png'),pygame.image.load('data/sprites/player/playerleftattack1.png'), pygame.image.load('data/sprites/player/playerleftattack2.png')]
+        self.walkRight = [pygame.image.load('data/sprites/player/playerright1.png'), pygame.image.load('data/sprites/player/playerright2.png'),pygame.image.load('data/sprites/player/playerright1.png')]
+        self.walkLeft = [pygame.image.load('data/sprites/player/playerleft1.png'), pygame.image.load('data/sprites/player/playerleft2.png'),pygame.image.load('data/sprites/player/playerleft1.png')]
+        self.walkUp = [pygame.image.load('data/sprites/player/playerup1.png'), pygame.image.load('data/sprites/player/playerup2.png'),pygame.image.load('data/sprites/player/playerup1.png')]
+        self.walkDown = [pygame.image.load('data/sprites/player/playerdown1.png'),pygame.image.load('data/sprites/player/playerdown2.png'), pygame.image.load('data/sprites/player/playerdown1.png')]
+
+    def update(self):
+        global cooldown
+        self.velX, self.velY = 0, 0
+        if self.walkCount + 1 >= 27:  # Animation Counter
+            self.walkCount = 0
+            if self.attack:
+                while cooldown != 0:
+                    cooldown -= 10
+                self.attack = False
+            
+        if self.up_pressed:   # Player Movement and Animation
+            self.velY = -self.speed
+            if self.up:
+                screen.blit(self.walkUp[self.walkCount // 9], (self.x, self.y))
+                self.walkCount += 1
+        if self.down_pressed:
+            self.velY = self.speed
+            if self.down:
+                screen.blit(self.walkDown[self.walkCount // 9], (self.x, self.y))
+                self.walkCount += 1
+        if self.left_pressed:
+            self.velX = -self.speed
+            if self.right_pressed and self.left_pressed:
+                self.velX = -self.speed
+            if self.left:
+                screen.blit(self.walkLeft[self.walkCount // 9], (self.x, self.y))
+                self.walkCount += 1
+        if self.right_pressed:
+            self.velX = self.speed
+            if self.right_pressed and self.left_pressed:
+                self.velX = -self.speed
+            if self.right:
+                screen.blit(self.walkRight[self.walkCount // 9], (self.x, self.y))
+                self.walkCount += 1
+        if not self.right and not self.left and not self.up and not self.down:  # ANIMATION BACKUP DO NOT TOUCH
+            if self.right_pressed:
+                screen.blit(self.walkRight[self.walkCount // 9], (self.x, self.y))
+                self.walkCount += 1
+            if self.left_pressed:
+                screen.blit(self.walkLeft[self.walkCount // 9], (self.x, self.y))
+                self.walkCount += 1
+            if self.up_pressed:
+                screen.blit(self.walkUp[self.walkCount // 9], (self.x, self.y))
+                self.walkCount += 1
+            if self.down_pressed:
+                screen.blit(self.walkDown[self.walkCount // 9], (self.x, self.y))
+                self.walkCount += 1
+        if self.left_pressed or self.right_pressed or self.down_pressed or self.up_pressed: # Player is idle/ attacking
+            self.LeftIdle, self.RightIdle, self.DownIdle, self.UpIdle = False, False, False, False
+        if self.LeftIdle:
+            if self.attack and cooldown > 0 and player_equipped:
+                screen.blit(self.wooden_sword[1], (self.x - 40, self.y + 17)), self.screen.blit(self.attack_left[self.walkCount // 9], (self.x, self.y))
+                self.walkCount += 1
+                swordRect.center = (self.x - 16, self.y + 35)
+                screen.blit(sword_Image, swordRect)
+            else:
+                screen.blit(self.walkLeft[0], (self.x, self.y))
+        elif self.RightIdle:
+            if self.attack and cooldown > 0 and player_equipped:
+                screen.blit(self.attack_right[self.walkCount // 9], (self.x, self.y))
+                self.walkCount += 1
+                swordRect.center = (self.x + 80, self.y + 35)
+                screen.blit(sword_Image, swordRect)
+            else:
+                screen.blit(self.walkRight[0], (self.x, self.y))
+        elif self.UpIdle:
+            if self.attack and cooldown > 0 and player_equipped:
+                screen.blit(self.wooden_sword[0], (self.x + 7, self.y - 40)), self.screen.blit(self.attack_up[self.walkCount // 9], (self.x, self.y))
+                self.walkCount += 1
+                swordRect.center = (self.x + 32, self.y - 25)
+                self.blit(sword_Image, swordRect)
+            else:
+                screen.blit(self.walkUp[0], (self.x, self.y))
+        elif self.DownIdle:
+            if self.attack and cooldown > 0 and player_equipped:
+                self.screen.blit(self.attack_down[self.walkCount // 9], (self.x, self.y))
+                self.walkCount += 1
+                swordRect.center = (self.x + 35, self.y + 80)            
+                self.screen.blit(sword_Image, swordRect)
+            else:
+                screen.blit(self.walkDown[0], (self.x, self.y))
+        player_stuff()   
+        self.x += self.velX
+        self.y += self.velY
+    def controls(self):
+        global paused, interact_value, interactable, counter, cooldown, menuValue, options
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_LEFT:
+                    self.left_pressed, self.right_pressed = True, False
+                    self.left, self.right, self.up, self.down = True, False, False, False
+                if event.key == pygame.K_RIGHT:
+                    self.right_pressed, self.left_pressed = True, False
+                    self.right, self.left, self.up, self.down = True, False, False, False
+                if event.key == pygame.K_UP:
+                    self.up_pressed, self.down_pressed = True, False
+                    self.up, self.down, self.left, self.right = True,False, False, False
+                if event.key == pygame.K_DOWN:
+                    self.down_pressed, self.up_pressed = True, False
+                    self.down, self.up, self.left, self.right = True, False, False, False
+                if event.key == pygame.K_ESCAPE:
+                    paused = True
+                if event.key == pygame.K_RETURN: # Player interact
+                    interactable = True
+                    interact_value += 1
+                else:
+                    interactable = False
+                if event.key == pygame.K_LSHIFT: # Player Attack
+                    self.attack, self.walkCount, counter, self.cooldown = True, 0, 0, 2000
+                else:
+                    self.attack = False
+            if event.type == pygame.KEYUP:
+                if event.key == pygame.K_LEFT:
+                    self.LeftIdle,self.left_pressed,self.left = True, False, False 
+                if event.key == pygame.K_RIGHT:
+                    self.RightIdle, self.right_pressed, self.right = True, False, False
+                if event.key == pygame.K_UP:
+                    self.UpIdle,self.up_pressed,self.up = True, False, False
+                if event.key == pygame.K_DOWN:
+                    self.DownIdle, self.down_pressed, self.down = True, False, False
 class chest(object):
     def __init__(self):
         self.isOpened = False
@@ -418,151 +562,7 @@ class cynthia_note(object):
                 pass
             else:
                 self.counter = 0
-class Player:
-    def __init__(self, x, y):
-        # Values
-        self.x, self.velX = int(x), 0
-        self.y, self.velY = int(y), 0
-        self.speed = 3
-        self.walkCount = 0
-        # Booleans
-        self.left_pressed, self.right_pressed, self.down_pressed, self.up_pressed = False, False, False, False  # Keystrokes vvv
-        self.LeftIdle, self.RightIdle, self.DownIdle, self.UpIdle = False, False, True, False  # Player Idle situation
-        self.attack = False # attacking situation
-        self.up, self.down, self.left, self.right = False, False, False, False
-        # Lists
-        self.wooden_sword = [pygame.image.load('data/items/wooden_sword_up.png'),pygame.image.load('data/items/wooden_sword_left.png')]
-        self.attack_down = [pygame.image.load('data/sprites/player/playerdown1.png'),pygame.image.load('data/sprites/player/playerdownattack1.png'),pygame.image.load('data/sprites/player/playerdownattack2.png')]
-        self.attack_up = [pygame.image.load('data/sprites/player/playerup1.png'),pygame.image.load('data/sprites/player/playerupattack1.png'), pygame.image.load('data/sprites/player/playerup1.png')]
-        self.attack_right = [pygame.image.load('data/sprites/player/playerright1.png'), pygame.image.load('data/sprites/player/playerrightattack1.png'), pygame.image.load('data/sprites/player/playerrightattack2.png')]
-        self.attack_left = [pygame.image.load('data/sprites/player/playerleft1.png'),pygame.image.load('data/sprites/player/playerleftattack1.png'), pygame.image.load('data/sprites/player/playerleftattack2.png')]
-        self.walkRight = [pygame.image.load('data/sprites/player/playerright1.png'), pygame.image.load('data/sprites/player/playerright2.png'),pygame.image.load('data/sprites/player/playerright1.png')]
-        self.walkLeft = [pygame.image.load('data/sprites/player/playerleft1.png'), pygame.image.load('data/sprites/player/playerleft2.png'),pygame.image.load('data/sprites/player/playerleft1.png')]
-        self.walkUp = [pygame.image.load('data/sprites/player/playerup1.png'), pygame.image.load('data/sprites/player/playerup2.png'),pygame.image.load('data/sprites/player/playerup1.png')]
-        self.walkDown = [pygame.image.load('data/sprites/player/playerdown1.png'),pygame.image.load('data/sprites/player/playerdown2.png'), pygame.image.load('data/sprites/player/playerdown1.png')]
 
-    def update(self):
-        global cooldown
-        self.velX, self.velY = 0, 0
-        if self.walkCount + 1 >= 27:  # Animation Counter
-            self.walkCount = 0
-            if self.attack:
-                while cooldown != 0:
-                        cooldown -= 10
-                self.attack = False
-            
-        if self.up_pressed:   # Player Movement and Animation
-            self.velY = -self.speed
-            if self.up:
-                screen.blit(self.walkUp[self.walkCount // 9], (self.x, self.y))
-                self.walkCount += 1
-        if self.down_pressed:
-            self.velY = self.speed
-            if self.down:
-                screen.blit(self.walkDown[self.walkCount // 9], (self.x, self.y))
-                self.walkCount += 1
-        if self.left_pressed:
-            self.velX = -self.speed
-            if self.right_pressed and self.left_pressed:
-                self.velX = -self.speed
-            if self.left:
-                screen.blit(self.walkLeft[self.walkCount // 9], (self.x, self.y))
-                self.walkCount += 1
-        if self.right_pressed:
-            self.velX = self.speed
-            if self.right_pressed and self.left_pressed:
-                self.velX = -self.speed
-            if self.right:
-                screen.blit(self.walkRight[self.walkCount // 9], (self.x, self.y))
-                self.walkCount += 1
-        if not self.right and not self.left and not self.up and not self.down:  # ANIMATION BACKUP DO NOT TOUCH
-            if self.right_pressed:
-                screen.blit(self.walkRight[self.walkCount // 9], (self.x, self.y))
-                self.walkCount += 1
-            if self.left_pressed:
-                screen.blit(self.walkLeft[self.walkCount // 9], (self.x, self.y))
-                self.walkCount += 1
-            if self.up_pressed:
-                screen.blit(self.walkUp[self.walkCount // 9], (self.x, self.y))
-                self.walkCount += 1
-            if self.down_pressed:
-                screen.blit(self.walkDown[self.walkCount // 9], (self.x, self.y))
-                self.walkCount += 1
-        if self.left_pressed or self.right_pressed or self.down_pressed or self.up_pressed: # Player is idle/ attacking
-            self.LeftIdle, self.RightIdle, self.DownIdle, self.UpIdle = False, False, False, False
-        if self.LeftIdle:
-            if self.attack and cooldown > 0 and player_equipped:
-                screen.blit(self.wooden_sword[1], (self.x - 40, self.y + 17)),screen.blit(self.attack_left[self.walkCount // 9], (self.x, self.y))
-                self.walkCount += 1
-                swordRect.center = (self.x - 16, self.y + 35)
-                screen.blit(sword_Image, swordRect)
-            else:
-                screen.blit(self.walkLeft[0], (self.x, self.y))
-        elif self.RightIdle:
-            if self.attack and cooldown > 0 and player_equipped:
-                screen.blit(self.attack_right[self.walkCount // 9], (self.x, self.y))
-                self.walkCount += 1
-                swordRect.center = (self.x + 80, self.y + 35)
-                screen.blit(sword_Image, swordRect)
-            else:
-                screen.blit(self.walkRight[0], (self.x, self.y))
-        elif self.UpIdle:
-            if self.attack and cooldown > 0 and player_equipped:
-                screen.blit(self.wooden_sword[0], (self.x + 7, self.y - 40)), screen.blit(self.attack_up[self.walkCount // 9], (self.x, self.y))
-                self.walkCount += 1
-                swordRect.center = (self.x + 32, self.y - 25)
-                screen.blit(sword_Image, swordRect)
-            else:
-                screen.blit(self.walkUp[0], (self.x, self.y))
-        elif self.DownIdle:
-            if self.attack and cooldown > 0 and player_equipped:
-                screen.blit(self.attack_down[self.walkCount // 9], (self.x, self.y))
-                self.walkCount += 1
-                swordRect.center = (self.x + 35, self.y + 80)
-                screen.blit(sword_Image, swordRect)
-            else:
-                screen.blit(playerImg, (self.x, self.y))
-        player_stuff()   
-        self.x += self.velX
-        self.y += self.velY
-    def controls(self):
-        global paused, interact_value, interactable, counter, cooldown, menuValue, options
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_LEFT:
-                    self.left_pressed, self.right_pressed = True, False
-                    self.left, self.right, self.up, self.down = True, False, False, False
-                if event.key == pygame.K_RIGHT:
-                    self.right_pressed, self.left_pressed = True, False
-                    self.right, self.left, self.up, self.down = True, False, False, False
-                if event.key == pygame.K_UP:
-                    self.up_pressed, self.down_pressed = True, False
-                    self.up, self.down, self.left, self.right = True,False, False, False
-                if event.key == pygame.K_DOWN:
-                    self.down_pressed, self.up_pressed = True, False
-                    self.down, self.up, self.left, self.right = True, False, False, False
-                if event.key == pygame.K_ESCAPE:
-                    paused = True
-                if event.key == pygame.K_RETURN: # Player interact
-                    interactable = True
-                    interact_value += 1
-                else:
-                    interactable = False
-                if event.key == pygame.K_LSHIFT: # Player Attack
-                    self.attack, self.walkCount, counter, cooldown = True, 0, 0, 2000
-                else:
-                    self.attack = False
-            if event.type == pygame.KEYUP:
-                if event.key == pygame.K_LEFT:
-                    self.LeftIdle,self.left_pressed,self.left = True, False, False 
-                if event.key == pygame.K_RIGHT:
-                    self.RightIdle, self.right_pressed, self.right = True, False, False
-                if event.key == pygame.K_UP:
-                    self.UpIdle,self.up_pressed,self.up = True, False, False
-                if event.key == pygame.K_DOWN:
-                    self.DownIdle, self.down_pressed, self.down = True, False, False
 John = Player(0, 0)
 npcs = [cynthia_npc(), manos_npc(),mau(),candy()]
 cloud1 = cloud(550, 50)
